@@ -1,0 +1,26 @@
+// This is a demonstration of workflow language
+
+workflow Test "Example workflow"
+
+init Task1
+
+task Task1 {
+  entry A1
+  next Task2, Task3
+}
+
+task Task2 {
+  next Task1
+}
+
+task Task3 {
+  entry A1
+}
+
+task Task4 {
+  entry A2
+}
+
+action A1
+action A2
+action A3

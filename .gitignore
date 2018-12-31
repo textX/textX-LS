@@ -1,3 +1,7 @@
+client/node_modules
+client/out
+client/.vscode/settings.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
