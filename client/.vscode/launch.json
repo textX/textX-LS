@@ -1,0 +1,51 @@
+// A launch configuration that compiles the extension and then opens it inside a new window
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "extensionHost",
+            "request": "launch",
+            "name": "Launch Client",
+            "runtimeExecutable": "${execPath}",
+            "sourceMaps": true,
+            "args": [
+                "--disable-extensions",
+                "--extensionDevelopmentPath=${workspaceRoot}",
+            ],
+            "outFiles": [
+                "${workspaceRoot}/out/**/*.js"
+            ],
+            "preLaunchTask": "textx-extension-watch:client",
+            "env": {
+                "SERVER_PORT": "2087",
+                "VSCODE_DEBUG_MODE": "true"
+            }
+        },
+        {
+            "name": "Launch Server",
+            "type": "python",
+            "request": "launch",
+            "console": "none",
+            "module": "textx_ls_server",
+            "args": [
+                "--tcp",
+                "--port=2087"
+            ],
+            "debugStdLib": true,
+            "pythonPath": "${config:python.pythonPath}",
+            "cwd": "${workspaceFolder}/../textX-LS/server",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/../textX-LS/server"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Server + Client",
+            "configurations": [
+                "Launch Server",
+                "Launch Client"
+            ]
+        }
+    ]
+}
