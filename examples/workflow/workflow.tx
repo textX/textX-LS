@@ -1,0 +1,42 @@
+/* Simple workflow language. */
+
+Program:
+  workflow = Workflow
+  init = Init
+  tasks *= Task
+  actions *= Action
+;
+
+Workflow:
+  'workflow' name=ID desc=STRING?
+;
+
+Init:
+  'init' init=[Task]
+;
+
+Task:
+  'task' name=ID '{'
+    ( entry=Entry | leave=Leave | next=Next )*
+  '}'
+;
+
+Entry:
+	'entry' entry=[Action]
+;
+
+Leave:
+	'leave' leave=[Action]
+;
+
+Next:
+	'next' next+=[Task][',']
+;
+
+Action:
+  'action' name=ID
+;
+
+Comment:
+  /\/\/.*$/
+;

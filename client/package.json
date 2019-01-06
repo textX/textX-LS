@@ -1,0 +1,67 @@
+{
+  "name": "textX",
+  "description": "VS Code extension for domain specific languages based on textX",
+  "author": "textX team",
+  "repository": "https://github.com/textX/textX-LS",
+  "license": "MIT",
+  "version": "0.1.0",
+  "publisher": "textX",
+  "icon": "art/textX-logo.png",
+  "engines": {
+    "vscode": "^1.30.1"
+  },
+  "categories": [
+    "Programming Languages",
+    "Domain Specific Languages",
+    "DSL",
+    "textX"
+  ],
+  "activationEvents": [
+    "workspaceContains: Textxfile",
+    "onLanguage:textx",
+    "onLanguage:textxfile"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "textxfile",
+        "aliases": [
+          "Textxfile"
+        ],
+        "filenamePatterns": [
+          "*.textxfile",
+          "Textxfile"
+        ]
+      },
+      {
+        "id": "textx",
+        "aliases": [
+          "textX"
+        ],
+        "extensions": [
+          ".tx"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ]
+  },
+  "main": "./out/extension",
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "vscode": "npm run vscode:prepublish && VSCODE=$(which code-insiders || which code || echo echo ERROR: neither the code nor code-insiders vscode executable is installed); USER=dummy-dont-share-vscode-instance $VSCODE --user-data-dir=$PWD/.vscode-dev/user-data --extensionHomePath=$PWD/.vscode-dev/extensions --extensionDevelopmentPath=$PWD $*"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.18",
+    "tslint": "^5.12.0",
+    "tslint-microsoft-contrib": "^6.0.0",
+    "tsutils": "^3.5.2",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "vscode": "^1.1.26",
+    "vscode-languageclient": "^5.2.1"
+  }
+}
