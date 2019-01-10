@@ -19,6 +19,13 @@ print('packages:', packages)
 README = codecs.open(os.path.join(os.path.dirname(__file__), 'README.md'),
                      'r', encoding='utf-8').read()
 
+# pip install .
+# pip install .[test]
+
+tests_require = [
+    "pytest==4.0.2",
+]
+
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
@@ -33,6 +40,10 @@ setup(
     packages=packages,
     include_package_data=True,
     install_requires=["textX==1.8.0"],
+    extras_require={
+        'test': tests_require,
+    },
+    tests_require=tests_require,
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
