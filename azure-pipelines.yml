@@ -1,0 +1,58 @@
+resources:
+- repo: self
+
+queue:
+  name: Hosted Ubuntu 1604
+variables:
+  python.version: '3.5, 3.6, 3.7'
+steps:
+- task: UsePythonVersion@0
+  displayName: 'Use Python $(python.version)'
+  inputs:
+    versionSpec: '$(python.version)'
+
+
+- script: |
+   python -m pip install --upgrade pip
+   pip install flake8
+   pip install pytest
+   pip install bandit
+  displayName: 'Install dependencies'
+
+- script: 'cd core && python -m pip install . && cd ../server && python -m pip install .'
+  workingDirectory: 'textX-LS'
+
+  displayName: 'Install packages from source'
+
+- script: 'flake8 .'
+  workingDirectory: 'textX-LS/core'
+
+  displayName: '[textX-LS-core] Flake8'
+  continueOnError: true
+
+- script: pytest
+  workingDirectory: 'textX-LS/core'
+
+  displayName: '[textX-LS-core] Tests'
+
+- script: 'bandit -r .'
+  workingDirectory: 'textX-LS/core'
+
+  displayName: '[textX-LS-core] Bandit'
+
+- script: 'flake8 .'
+  workingDirectory: 'textX-LS/server'
+
+  displayName: '[textX-LS-server] Flake8'
+  continueOnError: true
+
+- script: pytest
+  workingDirectory: 'textX-LS/server'
+
+  displayName: '[textX-LS-server] Tests'
+
+- script: 'bandit -r .'
+  workingDirectory: 'textX-LS/server'
+
+  displayName: '[textX-LS-server] Bandit'
+
