@@ -67,3 +67,4 @@ steps:
 
 - bash: 'exit 1'
   displayName: 'Overall check'
+  condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
