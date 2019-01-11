@@ -64,3 +64,6 @@ steps:
 
   displayName: '[textX-LS-server] Bandit'
   continueOnError: true
+
+- bash: 'exit 1'
+  displayName: 'Overall check'
