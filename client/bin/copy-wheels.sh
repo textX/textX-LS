@@ -13,8 +13,8 @@ server_dist_dir="$server_dir/dist"
 
 
 # Build wheels
-cd $core_dir && python setup.py sdist bdist_wheel > /dev/null 2>&1
-cd $server_dir && python setup.py sdist bdist_wheel > /dev/null 2>&1
+cd $core_dir && python setup.py sdist bdist_wheel
+cd $server_dir && python setup.py sdist bdist_wheel
 
 # Copy wheels
 cd $core_dist_dir && cp *.whl $client_wheels_dir
