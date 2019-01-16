@@ -1,9 +1,9 @@
-"use strict";
-
 import * as net from "net";
-import * as path from "path";
-import { ExtensionContext, workspace } from "vscode";
+import { ExtensionContext, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
+
+import { TEXTX_LS_SERVER } from "./constants";
+import { installLSWithProgress } from "./setup";
 
 let client: LanguageClient;
 
@@ -49,20 +49,19 @@ function startLangServer(
   return new LanguageClient(command, serverOptions, getClientOptions());
 }
 
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
+
   if (isStartedInDebugMode()) {
     // Development - Run the server manually
     client = startLangServerTCP(parseInt(process.env.SERVER_PORT));
   } else {
     // Production - Client is going to run the server (for use within `.vsix` package)
-    const cwd = path.join(__dirname, "../");
-    const pythonPath = workspace.getConfiguration("python").get<string>("pythonPath");
-
-    if (!pythonPath) {
-      throw new Error("`python.pythonPath` is not set");
+    try {
+      const python = await installLSWithProgress(context);
+      client = startLangServer(python, ["-m", TEXTX_LS_SERVER], context.extensionPath);
+    } catch (err) {
+      window.showErrorMessage(err);
     }
-
-    client = startLangServer(pythonPath, ["-m", "server"], cwd);
   }
 
   context.subscriptions.push(client.start());
