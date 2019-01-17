@@ -1,0 +1,558 @@
+{
+  "triggers": [
+    {
+      "branchFilters": [
+        "+*",
+        "+refs/tags/*"
+      ],
+      "pathFilters": [],
+      "batchChanges": false,
+      "maxConcurrentBuildsPerBranch": 1,
+      "pollingInterval": 0,
+      "triggerType": 2
+    },
+    {
+      "branchFilters": [
+        "+master"
+      ],
+      "forks": {
+        "enabled": false,
+        "allowSecrets": false
+      },
+      "pathFilters": [],
+      "isCommentRequiredForPullRequest": false,
+      "triggerType": 64
+    }
+  ],
+  "variables": {
+    "python.version": {
+      "value": "3.5, 3.6, 3.7"
+    },
+    "system.debug": {
+      "value": "false",
+      "allowOverride": true
+    }
+  },
+  "retentionRules": [
+    {
+      "branches": [
+        "+refs/heads/*"
+      ],
+      "artifacts": [],
+      "artifactTypesToDelete": [
+        "FilePath",
+        "SymbolStore"
+      ],
+      "daysToKeep": 10,
+      "minimumToKeep": 1,
+      "deleteBuildRecord": true,
+      "deleteTestResults": true
+    }
+  ],
+  "properties": {},
+  "tags": [],
+  "_links": {
+    "self": {
+      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/2?revision=41"
+    },
+    "web": {
+      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_build/definition?definitionId=2"
+    },
+    "editor": {
+      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_build/designer?id=2&_a=edit-build-definition"
+    },
+    "badge": {
+      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/status/2"
+    }
+  },
+  "buildNumberFormat": "$(BuildID)",
+  "jobAuthorizationScope": 1,
+  "jobTimeoutInMinutes": 60,
+  "jobCancelTimeoutInMinutes": 5,
+  "badgeEnabled": true,
+  "process": {
+    "phases": [
+      {
+        "steps": [
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": false,
+            "alwaysRun": false,
+            "displayName": "Use Python $(python.version)",
+            "timeoutInMinutes": 0,
+            "task": {
+              "id": "33c63b11-352b-45a2-ba1b-54cb568a29ca",
+              "versionSpec": "0.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "versionSpec": "$(python.version)",
+              "addToPath": "true",
+              "architecture": "x64"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": false,
+            "alwaysRun": false,
+            "displayName": "Install dependencies",
+            "timeoutInMinutes": 0,
+            "task": {
+              "id": "d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+              "versionSpec": "2.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "script": "python -m pip install --upgrade pip\npip install flake8\npip install pytest\npip install bandit",
+              "workingDirectory": "",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": true,
+            "alwaysRun": false,
+            "displayName": "Install packages from source",
+            "timeoutInMinutes": 0,
+            "condition": "succeeded()",
+            "task": {
+              "id": "d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+              "versionSpec": "2.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "script": "cd core\npython -m pip install .\ncd ../server\npython -m pip install .",
+              "workingDirectory": "textX-LS",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": true,
+            "alwaysRun": false,
+            "displayName": "[textX-LS-core] Flake8",
+            "timeoutInMinutes": 0,
+            "condition": "",
+            "task": {
+              "id": "d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+              "versionSpec": "2.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "script": "flake8 .",
+              "workingDirectory": "textX-LS/core",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": true,
+            "alwaysRun": false,
+            "displayName": "[textX-LS-core] Tests",
+            "timeoutInMinutes": 0,
+            "condition": "",
+            "task": {
+              "id": "d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+              "versionSpec": "2.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "script": "pytest",
+              "workingDirectory": "textX-LS/core",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": true,
+            "alwaysRun": false,
+            "displayName": "[textX-LS-core] Bandit",
+            "timeoutInMinutes": 0,
+            "condition": "",
+            "task": {
+              "id": "d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+              "versionSpec": "2.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "script": "bandit -r textx_ls_core",
+              "workingDirectory": "textX-LS/core",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": true,
+            "alwaysRun": false,
+            "displayName": "[textX-LS-server] Flake8",
+            "timeoutInMinutes": 0,
+            "condition": "",
+            "task": {
+              "id": "d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+              "versionSpec": "2.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "script": "flake8 .",
+              "workingDirectory": "textX-LS/server",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": true,
+            "alwaysRun": false,
+            "displayName": "[textX-LS-server] Tests",
+            "timeoutInMinutes": 0,
+            "condition": "",
+            "task": {
+              "id": "d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+              "versionSpec": "2.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "script": "pytest",
+              "workingDirectory": "textX-LS/server",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": true,
+            "alwaysRun": false,
+            "displayName": "[textX-LS-server] Bandit",
+            "timeoutInMinutes": 0,
+            "condition": "",
+            "task": {
+              "id": "d9bafed4-0b18-4f58-968d-86655b4d2ce9",
+              "versionSpec": "2.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "script": "bandit -r textx_ls_server",
+              "workingDirectory": "textX-LS/server",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": true,
+            "alwaysRun": false,
+            "displayName": "[textX-vscode] Install node modules",
+            "timeoutInMinutes": 0,
+            "condition": "",
+            "task": {
+              "id": "fe47e961-9fa8-4106-8639-368c022d43ad",
+              "versionSpec": "1.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "command": "install",
+              "workingDir": "client",
+              "verbose": "false",
+              "customCommand": "",
+              "customRegistry": "useNpmrc",
+              "customFeed": "",
+              "customEndpoint": "",
+              "publishRegistry": "useExternalRegistry",
+              "publishFeed": "",
+              "publishEndpoint": ""
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": true,
+            "alwaysRun": false,
+            "displayName": "[textX-vscode] tslint",
+            "timeoutInMinutes": 0,
+            "condition": "",
+            "task": {
+              "id": "6c731c3c-3c68-459a-a5c9-bde6e6595b5b",
+              "versionSpec": "3.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "targetType": "inline",
+              "filePath": "",
+              "arguments": "",
+              "script": "./node_modules/.bin/tslint src\\*.ts",
+              "workingDirectory": "client",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": false,
+            "alwaysRun": false,
+            "displayName": "Fail if one of the steps succeeded with issues ",
+            "timeoutInMinutes": 0,
+            "condition": "in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')",
+            "task": {
+              "id": "6c731c3c-3c68-459a-a5c9-bde6e6595b5b",
+              "versionSpec": "3.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "targetType": "inline",
+              "filePath": "",
+              "arguments": "",
+              "script": "exit 1",
+              "workingDirectory": "",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": false,
+            "alwaysRun": false,
+            "displayName": "Change versions (except for master branch and tags)",
+            "timeoutInMinutes": 0,
+            "condition": "and(ne(variables['Build.SourceBranch'], 'refs/heads/master'), ne(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), True))",
+            "refName": "",
+            "task": {
+              "id": "6c731c3c-3c68-459a-a5c9-bde6e6595b5b",
+              "versionSpec": "3.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "targetType": "inline",
+              "filePath": "",
+              "arguments": "",
+              "script": "# Install dependencies to build packages\npip install wheel\nnpm i -g vsce\n\n# Append build id to versions\nget_setuppy_version() {\n    version=$(grep -o \"'\\d.\\d.\\d'\" $1)\n    echo \"${version//\\'}\"\n}\n\nreplace_setuppy_version() {\n    version=$(get_setuppy_version $1)\n    build_version=$version+$2\n    sed -i \"\" \"s|$version|$build_version|g\" $1\n}\n\nreplace_packagejson_version() {\n    version_line=$(grep -o '\"version\".*' $1)\n    version=$(python -m json.tool package.json | awk -F'\"' '/version/{print $4}')\n    build_version=$version+$2\n    build_version_line=${version_line/$version/$build_version}\n    sed -i \"\" \"s|$version_line|$build_version_line|g\" $1\n}\n\nbuild_suffix=${BUILD_SOURCEVERSION:0:8}\nreplace_setuppy_version ./textX-LS/core/setup.py $build_suffix\nreplace_setuppy_version ./textX-LS/server/setup.py $build_suffix\n\ncd client\nreplace_packagejson_version package.json $build_suffix\n",
+              "workingDirectory": "",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": false,
+            "alwaysRun": false,
+            "displayName": "Create wheels and extension file",
+            "timeoutInMinutes": 0,
+            "condition": "",
+            "task": {
+              "id": "6c731c3c-3c68-459a-a5c9-bde6e6595b5b",
+              "versionSpec": "3.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "targetType": "inline",
+              "filePath": "",
+              "arguments": "",
+              "script": "# Build .vsix file\nvsce package\n\n# Create output env vars\nthis_folder=$(dirname \"$(pwd)\")\n\nTEXTX_LS_CORE_ARTIFACT_NAME=$(ls ./wheels | grep core)\nTEXTX_LS_SERVER_ARTIFACT_NAME=$(ls ./wheels | grep server)\nTEXTX_LS_VSCODE_ARTIFACT_NAME=$(ls | grep vsix)\n\n# Create output variables\necho \"##vso[task.setvariable variable=TEXTX_LS_CORE_ARTIFACT_NAME]$TEXTX_LS_CORE_ARTIFACT_NAME\"\necho \"##vso[task.setvariable variable=TEXTX_LS_SERVER_ARTIFACT_NAME]$TEXTX_LS_SERVER_ARTIFACT_NAME\"\necho \"##vso[task.setvariable variable=TEXTX_LS_VSCODE_ARTIFACT_NAME]$TEXTX_LS_VSCODE_ARTIFACT_NAME\"",
+              "workingDirectory": "client",
+              "failOnStderr": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": false,
+            "alwaysRun": false,
+            "displayName": "Copy wheels and vsix to artifact staging dir",
+            "timeoutInMinutes": 0,
+            "condition": "succeeded()",
+            "task": {
+              "id": "5bfb729a-a7c8-4a78-a7c3-8d717bb7c13c",
+              "versionSpec": "2.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "SourceFolder": "client",
+              "Contents": "wheels/*.whl\n*.vsix",
+              "TargetFolder": "$(build.artifactstagingdirectory)",
+              "CleanTargetFolder": "false",
+              "OverWrite": "false",
+              "flattenFolders": "false"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": false,
+            "alwaysRun": false,
+            "displayName": "[textX-LS-core] Publish Artifact",
+            "timeoutInMinutes": 0,
+            "condition": "succeeded()",
+            "task": {
+              "id": "2ff763a7-ce83-4e1f-bc89-0ae63477cebe",
+              "versionSpec": "1.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "PathtoPublish": "$(build.artifactstagingdirectory)/wheels/$(TEXTX_LS_CORE_ARTIFACT_NAME)",
+              "ArtifactName": "$(TEXTX_LS_CORE_ARTIFACT_NAME)",
+              "ArtifactType": "Container",
+              "TargetPath": "",
+              "Parallel": "false",
+              "ParallelCount": "8"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": false,
+            "alwaysRun": false,
+            "displayName": "[textX-LS-server] Publish Artifact",
+            "timeoutInMinutes": 0,
+            "condition": "succeeded()",
+            "task": {
+              "id": "2ff763a7-ce83-4e1f-bc89-0ae63477cebe",
+              "versionSpec": "1.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "PathtoPublish": "$(build.artifactstagingdirectory)/wheels/$(TEXTX_LS_SERVER_ARTIFACT_NAME)",
+              "ArtifactName": "$(TEXTX_LS_SERVER_ARTIFACT_NAME)",
+              "ArtifactType": "Container",
+              "TargetPath": "",
+              "Parallel": "false",
+              "ParallelCount": "8"
+            }
+          },
+          {
+            "environment": {},
+            "enabled": true,
+            "continueOnError": false,
+            "alwaysRun": false,
+            "displayName": "[textX-vscode] Publish Artifact",
+            "timeoutInMinutes": 0,
+            "condition": "succeeded()",
+            "task": {
+              "id": "2ff763a7-ce83-4e1f-bc89-0ae63477cebe",
+              "versionSpec": "1.*",
+              "definitionType": "task"
+            },
+            "inputs": {
+              "PathtoPublish": "$(build.artifactstagingdirectory)/$(TEXTX_LS_VSCODE_ARTIFACT_NAME)",
+              "ArtifactName": "$(TEXTX_LS_VSCODE_ARTIFACT_NAME)",
+              "ArtifactType": "Container",
+              "TargetPath": "",
+              "Parallel": "false",
+              "ParallelCount": "8"
+            }
+          }
+        ],
+        "name": "Build and Test",
+        "refName": "Phase_1",
+        "condition": "succeeded()",
+        "target": {
+          "executionOptions": {
+            "multipliers": [
+              "python.version"
+            ],
+            "maxConcurrency": 1,
+            "continueOnError": false,
+            "type": 1
+          },
+          "allowScriptsAuthAccessOption": false,
+          "type": 1
+        },
+        "jobAuthorizationScope": 1,
+        "jobCancelTimeoutInMinutes": 1
+      }
+    ],
+    "type": 1
+  },
+  "repository": {
+    "properties": {
+      "apiUrl": "https://api.github.com/repos/textX/textX-LS",
+      "branchesUrl": "https://api.github.com/repos/textX/textX-LS/branches",
+      "cloneUrl": "https://github.com/textX/textX-LS.git",
+      "fullName": "textX/textX-LS",
+      "manageUrl": "https://github.com/textX/textX-LS",
+      "refsUrl": "https://api.github.com/repos/textX/textX-LS/git/refs",
+      "defaultBranch": "master",
+      "connectedServiceId": "d365b9d0-e402-450a-a2ea-d47fb5250f8b",
+      "isPrivate": "False",
+      "isFork": "False",
+      "ownerAvatarUrl": "https://avatars3.githubusercontent.com/u/40911596?v=4",
+      "lastUpdated": "01/16/2019 10:08:18",
+      "nodeId": "MDEwOlJlcG9zaXRvcnkxNjM2MDk3ODY=",
+      "hasAdminPermissions": "True",
+      "safeOwnerId": "40911596",
+      "safeOwnerName": "textX",
+      "safeRepository": "textX/textX-LS",
+      "ownerIsAUser": "False",
+      "checkoutNestedSubmodules": "false",
+      "cleanOptions": "0",
+      "fetchDepth": "0",
+      "gitLfsSupport": "false",
+      "reportBuildStatus": "true",
+      "skipSyncSource": "false",
+      "labelSourcesFormat": "$(build.buildNumber)",
+      "labelSources": "0",
+      "definitionId": "2",
+      "branch": "master"
+    },
+    "id": "textX/textX-LS",
+    "type": "GitHub",
+    "name": "textX/textX-LS",
+    "url": "https://github.com/textX/textX-LS.git",
+    "defaultBranch": "master",
+    "clean": "false",
+    "checkoutSubmodules": false
+  },
+  "processParameters": {},
+  "quality": 1,
+  "authoredBy": {
+    "displayName": "Daniel Elero",
+    "url": "https://app.vssps.visualstudio.com/A57b67369-cc70-42b8-8966-84ad7135237f/_apis/Identities/2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "_links": {
+      "avatar": {
+        "href": "https://dev.azure.com/textX/_apis/GraphProfile/MemberAvatars/msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+      }
+    },
+    "id": "2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "uniqueName": "danixeee@gmail.com",
+    "imageUrl": "https://dev.azure.com/textX/_api/_common/identityImage?id=2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "descriptor": "msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+  },
+  "drafts": [],
+  "queue": {
+    "_links": {
+      "self": {
+        "href": "https://dev.azure.com/textX/_apis/build/Queues/5"
+      }
+    },
+    "id": 5,
+    "name": "Hosted macOS",
+    "url": "https://dev.azure.com/textX/_apis/build/Queues/5",
+    "pool": {
+      "id": 5,
+      "name": "Hosted macOS",
+      "isHosted": true
+    }
+  },
+  "id": 2,
+  "name": "[textX-LS-macOS] Build and test",
+  "url": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/2?revision=41",
+  "uri": "vstfs:///Build/Definition/2",
+  "path": "\\",
+  "type": 2,
+  "queueStatus": 0,
+  "revision": 41,
+  "createdDate": "2019-01-17T19:20:04.723Z",
+  "project": {
+    "id": "eda60864-9145-4ba1-adc1-9d7ab7d7487e",
+    "name": "textX-LS",
+    "url": "https://dev.azure.com/textX/_apis/projects/eda60864-9145-4ba1-adc1-9d7ab7d7487e",
+    "state": 1,
+    "revision": 11,
+    "visibility": 2
+  }
+}
