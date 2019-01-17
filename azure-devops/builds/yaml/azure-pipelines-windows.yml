@@ -1,0 +1,87 @@
+resources:
+- repo: self
+
+queue:
+  name: Hosted VS2017
+  demands: npm
+
+variables:
+  python.version: '3.5, 3.6, 3.7'
+steps:
+- task: UsePythonVersion@0
+  displayName: 'Use Python $(python.version)'
+  inputs:
+    versionSpec: '$(python.version)'
+
+
+- script: |
+   python -m pip install --upgrade pip
+   pip install flake8
+   pip install pytest
+   pip install bandit
+  displayName: 'Install dependencies'
+
+- script: |
+   cd core
+   python -m pip install .
+   cd ../server
+   python -m pip install .
+  workingDirectory: 'textX-LS'
+
+  displayName: 'Install packages from source'
+  continueOnError: true
+
+- script: 'flake8 .'
+  workingDirectory: 'textX-LS/core'
+
+  displayName: '[textX-LS-core] Flake8'
+  continueOnError: true
+
+- script: pytest
+  workingDirectory: 'textX-LS/core'
+
+  displayName: '[textX-LS-core] Tests'
+  continueOnError: true
+
+- script: 'bandit -r textx_ls_core'
+  workingDirectory: 'textX-LS/core'
+
+  displayName: '[textX-LS-core] Bandit'
+  continueOnError: true
+
+- script: 'flake8 .'
+  workingDirectory: 'textX-LS/server'
+
+  displayName: '[textX-LS-server] Flake8'
+  continueOnError: true
+
+- script: pytest
+  workingDirectory: 'textX-LS/server'
+
+  displayName: '[textX-LS-server] Tests'
+  continueOnError: true
+
+- script: 'bandit -r textx_ls_server'
+  workingDirectory: 'textX-LS/server'
+
+  displayName: '[textX-LS-server] Bandit'
+  continueOnError: true
+
+- task: Npm@1
+  displayName: '[vs-code-client] Install node modules'
+  inputs:
+    workingDir: client
+
+    verbose: false
+
+
+- bash: './node_modules/.bin/tslint src\*.ts'
+  workingDirectory: client
+
+  displayName: '[vs-code-client] tslint'
+  continueOnError: true
+
+- bash: 'exit 1'
+  displayName: 'Fail if one of the steps succeeded with issues '
+  condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
+

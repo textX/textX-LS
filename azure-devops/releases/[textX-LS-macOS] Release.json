@@ -1,0 +1,525 @@
+{
+  "source": 2,
+  "revision": 2,
+  "description": null,
+  "createdBy": {
+    "displayName": "Daniel Elero",
+    "url": "https://app.vssps.visualstudio.com/A57b67369-cc70-42b8-8966-84ad7135237f/_apis/Identities/2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "_links": {
+      "avatar": {
+        "href": "https://dev.azure.com/textX/_apis/GraphProfile/MemberAvatars/msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+      }
+    },
+    "id": "2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "uniqueName": "danixeee@gmail.com",
+    "imageUrl": "https://dev.azure.com/textX/_api/_common/identityImage?id=2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "descriptor": "msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+  },
+  "createdOn": "2019-01-17T15:44:21.240Z",
+  "modifiedBy": {
+    "displayName": "Daniel Elero",
+    "url": "https://app.vssps.visualstudio.com/A57b67369-cc70-42b8-8966-84ad7135237f/_apis/Identities/2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "_links": {
+      "avatar": {
+        "href": "https://dev.azure.com/textX/_apis/GraphProfile/MemberAvatars/msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+      }
+    },
+    "id": "2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "uniqueName": "danixeee@gmail.com",
+    "imageUrl": "https://dev.azure.com/textX/_api/_common/identityImage?id=2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "descriptor": "msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+  },
+  "modifiedOn": "2019-01-17T18:54:51.573Z",
+  "isDeleted": false,
+  "variables": {},
+  "variableGroups": [],
+  "environments": [
+    {
+      "id": 1,
+      "name": "[textX-LS-core] Deploy to PyPI",
+      "rank": 1,
+      "owner": {
+        "displayName": "Daniel Elero",
+        "url": "https://app.vssps.visualstudio.com/A57b67369-cc70-42b8-8966-84ad7135237f/_apis/Identities/2eb9a3c9-aaff-4182-9cf2-008673437d51",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/textX/_apis/GraphProfile/MemberAvatars/msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+          }
+        },
+        "id": "2eb9a3c9-aaff-4182-9cf2-008673437d51",
+        "uniqueName": "danixeee@gmail.com",
+        "imageUrl": "https://dev.azure.com/textX/_api/_common/identityImage?id=2eb9a3c9-aaff-4182-9cf2-008673437d51",
+        "descriptor": "msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+      },
+      "variables": {},
+      "variableGroups": [],
+      "preDeployApprovals": {
+        "approvals": [
+          {
+            "rank": 1,
+            "isAutomated": true,
+            "isNotificationOn": false,
+            "id": 1
+          }
+        ],
+        "approvalOptions": {
+          "requiredApproverCount": null,
+          "releaseCreatorCanBeApprover": false,
+          "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+          "enforceIdentityRevalidation": false,
+          "timeoutInMinutes": 0,
+          "executionOrder": 1
+        }
+      },
+      "deployStep": {
+        "id": 6
+      },
+      "postDeployApprovals": {
+        "approvals": [
+          {
+            "rank": 1,
+            "isAutomated": true,
+            "isNotificationOn": false,
+            "id": 7
+          }
+        ],
+        "approvalOptions": {
+          "requiredApproverCount": null,
+          "releaseCreatorCanBeApprover": false,
+          "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+          "enforceIdentityRevalidation": false,
+          "timeoutInMinutes": 0,
+          "executionOrder": 2
+        }
+      },
+      "deployPhases": [
+        {
+          "deploymentInput": {
+            "parallelExecution": {
+              "parallelExecutionType": 0
+            },
+            "skipArtifactsDownload": false,
+            "artifactsDownloadInput": {
+              "downloadInputs": []
+            },
+            "queueId": 3,
+            "demands": [],
+            "enableAccessToken": false,
+            "timeoutInMinutes": 0,
+            "jobCancelTimeoutInMinutes": 1,
+            "condition": "succeeded()",
+            "overrideInputs": {}
+          },
+          "rank": 1,
+          "phaseType": 1,
+          "name": "Agent job",
+          "refName": null,
+          "workflowTasks": []
+        }
+      ],
+      "environmentOptions": {
+        "emailNotificationType": "OnlyOnFailure",
+        "emailRecipients": "release.environment.owner;release.creator",
+        "skipArtifactsDownload": false,
+        "timeoutInMinutes": 0,
+        "enableAccessToken": false,
+        "publishDeploymentStatus": true,
+        "badgeEnabled": false,
+        "autoLinkWorkItems": false,
+        "pullRequestDeploymentEnabled": false
+      },
+      "demands": [],
+      "conditions": [
+        {
+          "name": "ReleaseStarted",
+          "conditionType": 1,
+          "value": ""
+        },
+        {
+          "name": "_[textX-LS-macOS] Build and test",
+          "conditionType": 4,
+          "value": "{\"sourceBranch\":\"refs/tags/core-*\",\"tags\":[],\"useBuildDefinitionBranch\":false,\"createReleaseOnBuildTagging\":false}"
+        }
+      ],
+      "executionPolicy": {
+        "concurrencyCount": 1,
+        "queueDepthCount": 0
+      },
+      "schedules": [],
+      "currentRelease": {
+        "id": 0,
+        "url": "https://vsrm.dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/Release/releases/0",
+        "_links": {}
+      },
+      "retentionPolicy": {
+        "daysToKeep": 30,
+        "releasesToKeep": 3,
+        "retainBuild": true
+      },
+      "processParameters": {},
+      "properties": {},
+      "preDeploymentGates": {
+        "id": 0,
+        "gatesOptions": null,
+        "gates": []
+      },
+      "postDeploymentGates": {
+        "id": 0,
+        "gatesOptions": null,
+        "gates": []
+      },
+      "environmentTriggers": [],
+      "badgeUrl": "https://vsrm.dev.azure.com/textX/_apis/public/Release/badge/eda60864-9145-4ba1-adc1-9d7ab7d7487e/1/1"
+    },
+    {
+      "id": 2,
+      "name": "[textX-LS-server] Deploy to PyPI",
+      "rank": 2,
+      "owner": {
+        "displayName": "Daniel Elero",
+        "url": "https://app.vssps.visualstudio.com/A57b67369-cc70-42b8-8966-84ad7135237f/_apis/Identities/2eb9a3c9-aaff-4182-9cf2-008673437d51",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/textX/_apis/GraphProfile/MemberAvatars/msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+          }
+        },
+        "id": "2eb9a3c9-aaff-4182-9cf2-008673437d51",
+        "uniqueName": "danixeee@gmail.com",
+        "imageUrl": "https://dev.azure.com/textX/_api/_common/identityImage?id=2eb9a3c9-aaff-4182-9cf2-008673437d51",
+        "descriptor": "msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+      },
+      "variables": {},
+      "variableGroups": [],
+      "preDeployApprovals": {
+        "approvals": [
+          {
+            "rank": 1,
+            "isAutomated": true,
+            "isNotificationOn": false,
+            "id": 2
+          }
+        ],
+        "approvalOptions": {
+          "requiredApproverCount": null,
+          "releaseCreatorCanBeApprover": false,
+          "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+          "enforceIdentityRevalidation": false,
+          "timeoutInMinutes": 0,
+          "executionOrder": 1
+        }
+      },
+      "deployStep": {
+        "id": 5
+      },
+      "postDeployApprovals": {
+        "approvals": [
+          {
+            "rank": 1,
+            "isAutomated": true,
+            "isNotificationOn": false,
+            "id": 8
+          }
+        ],
+        "approvalOptions": {
+          "requiredApproverCount": null,
+          "releaseCreatorCanBeApprover": false,
+          "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+          "enforceIdentityRevalidation": false,
+          "timeoutInMinutes": 0,
+          "executionOrder": 2
+        }
+      },
+      "deployPhases": [
+        {
+          "deploymentInput": {
+            "parallelExecution": {
+              "parallelExecutionType": 0
+            },
+            "skipArtifactsDownload": false,
+            "artifactsDownloadInput": {
+              "downloadInputs": []
+            },
+            "queueId": 3,
+            "demands": [],
+            "enableAccessToken": false,
+            "timeoutInMinutes": 0,
+            "jobCancelTimeoutInMinutes": 1,
+            "condition": "succeeded()",
+            "overrideInputs": {}
+          },
+          "rank": 1,
+          "phaseType": 1,
+          "name": "Agent job",
+          "refName": null,
+          "workflowTasks": []
+        }
+      ],
+      "environmentOptions": {
+        "emailNotificationType": "OnlyOnFailure",
+        "emailRecipients": "release.environment.owner;release.creator",
+        "skipArtifactsDownload": false,
+        "timeoutInMinutes": 0,
+        "enableAccessToken": false,
+        "publishDeploymentStatus": true,
+        "badgeEnabled": false,
+        "autoLinkWorkItems": false,
+        "pullRequestDeploymentEnabled": false
+      },
+      "demands": [],
+      "conditions": [
+        {
+          "name": "ReleaseStarted",
+          "conditionType": 1,
+          "value": ""
+        },
+        {
+          "name": "_[textX-LS-macOS] Build and test",
+          "conditionType": 4,
+          "value": "{\"sourceBranch\":\"refs/tags/server-*\",\"tags\":[],\"useBuildDefinitionBranch\":false,\"createReleaseOnBuildTagging\":false}"
+        }
+      ],
+      "executionPolicy": {
+        "concurrencyCount": 1,
+        "queueDepthCount": 0
+      },
+      "schedules": [],
+      "currentRelease": {
+        "id": 0,
+        "url": "https://vsrm.dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/Release/releases/0",
+        "_links": {}
+      },
+      "retentionPolicy": {
+        "daysToKeep": 30,
+        "releasesToKeep": 3,
+        "retainBuild": true
+      },
+      "processParameters": {},
+      "properties": {},
+      "preDeploymentGates": {
+        "id": 0,
+        "gatesOptions": null,
+        "gates": []
+      },
+      "postDeploymentGates": {
+        "id": 0,
+        "gatesOptions": null,
+        "gates": []
+      },
+      "environmentTriggers": [],
+      "badgeUrl": "https://vsrm.dev.azure.com/textX/_apis/public/Release/badge/eda60864-9145-4ba1-adc1-9d7ab7d7487e/1/2"
+    },
+    {
+      "id": 3,
+      "name": "[textX-vscode] Upload to marketplace",
+      "rank": 3,
+      "owner": {
+        "displayName": "Daniel Elero",
+        "url": "https://app.vssps.visualstudio.com/A57b67369-cc70-42b8-8966-84ad7135237f/_apis/Identities/2eb9a3c9-aaff-4182-9cf2-008673437d51",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/textX/_apis/GraphProfile/MemberAvatars/msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+          }
+        },
+        "id": "2eb9a3c9-aaff-4182-9cf2-008673437d51",
+        "uniqueName": "danixeee@gmail.com",
+        "imageUrl": "https://dev.azure.com/textX/_api/_common/identityImage?id=2eb9a3c9-aaff-4182-9cf2-008673437d51",
+        "descriptor": "msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
+      },
+      "variables": {},
+      "variableGroups": [],
+      "preDeployApprovals": {
+        "approvals": [
+          {
+            "rank": 1,
+            "isAutomated": true,
+            "isNotificationOn": false,
+            "id": 3
+          }
+        ],
+        "approvalOptions": {
+          "requiredApproverCount": null,
+          "releaseCreatorCanBeApprover": false,
+          "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+          "enforceIdentityRevalidation": false,
+          "timeoutInMinutes": 0,
+          "executionOrder": 1
+        }
+      },
+      "deployStep": {
+        "id": 4
+      },
+      "postDeployApprovals": {
+        "approvals": [
+          {
+            "rank": 1,
+            "isAutomated": true,
+            "isNotificationOn": false,
+            "id": 9
+          }
+        ],
+        "approvalOptions": {
+          "requiredApproverCount": null,
+          "releaseCreatorCanBeApprover": false,
+          "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+          "enforceIdentityRevalidation": false,
+          "timeoutInMinutes": 0,
+          "executionOrder": 2
+        }
+      },
+      "deployPhases": [
+        {
+          "deploymentInput": {
+            "parallelExecution": {
+              "parallelExecutionType": 0
+            },
+            "skipArtifactsDownload": false,
+            "artifactsDownloadInput": {
+              "downloadInputs": []
+            },
+            "queueId": 3,
+            "demands": [],
+            "enableAccessToken": false,
+            "timeoutInMinutes": 0,
+            "jobCancelTimeoutInMinutes": 1,
+            "condition": "succeeded()",
+            "overrideInputs": {}
+          },
+          "rank": 1,
+          "phaseType": 1,
+          "name": "Agent job",
+          "refName": null,
+          "workflowTasks": []
+        }
+      ],
+      "environmentOptions": {
+        "emailNotificationType": "OnlyOnFailure",
+        "emailRecipients": "release.environment.owner;release.creator",
+        "skipArtifactsDownload": false,
+        "timeoutInMinutes": 0,
+        "enableAccessToken": false,
+        "publishDeploymentStatus": true,
+        "badgeEnabled": false,
+        "autoLinkWorkItems": false,
+        "pullRequestDeploymentEnabled": false
+      },
+      "demands": [],
+      "conditions": [
+        {
+          "name": "ReleaseStarted",
+          "conditionType": 1,
+          "value": ""
+        },
+        {
+          "name": "_[textX-LS-macOS] Build and test",
+          "conditionType": 4,
+          "value": "{\"sourceBranch\":\"refs/tags/vscode-*\",\"tags\":[],\"useBuildDefinitionBranch\":false,\"createReleaseOnBuildTagging\":false}"
+        }
+      ],
+      "executionPolicy": {
+        "concurrencyCount": 1,
+        "queueDepthCount": 0
+      },
+      "schedules": [],
+      "currentRelease": {
+        "id": 0,
+        "url": "https://vsrm.dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/Release/releases/0",
+        "_links": {}
+      },
+      "retentionPolicy": {
+        "daysToKeep": 30,
+        "releasesToKeep": 3,
+        "retainBuild": true
+      },
+      "processParameters": {},
+      "properties": {},
+      "preDeploymentGates": {
+        "id": 0,
+        "gatesOptions": null,
+        "gates": []
+      },
+      "postDeploymentGates": {
+        "id": 0,
+        "gatesOptions": null,
+        "gates": []
+      },
+      "environmentTriggers": [],
+      "badgeUrl": "https://vsrm.dev.azure.com/textX/_apis/public/Release/badge/eda60864-9145-4ba1-adc1-9d7ab7d7487e/1/3"
+    }
+  ],
+  "artifacts": [
+    {
+      "sourceId": "eda60864-9145-4ba1-adc1-9d7ab7d7487e:2",
+      "type": "Build",
+      "alias": "_[textX-LS-macOS] Build and test",
+      "definitionReference": {
+        "artifactSourceDefinitionUrl": {
+          "id": "https://dev.azure.com/textX/_permalink/_build/index?collectionId=0c46f344-bf53-4766-9ec1-315de8ece9e2&projectId=eda60864-9145-4ba1-adc1-9d7ab7d7487e&definitionId=2",
+          "name": ""
+        },
+        "defaultVersionBranch": {
+          "id": "",
+          "name": ""
+        },
+        "defaultVersionSpecific": {
+          "id": "",
+          "name": ""
+        },
+        "defaultVersionTags": {
+          "id": "",
+          "name": ""
+        },
+        "defaultVersionType": {
+          "id": "latestType",
+          "name": "Latest"
+        },
+        "definition": {
+          "id": "2",
+          "name": "[textX-LS-macOS] Build and test"
+        },
+        "definitions": {
+          "id": "",
+          "name": ""
+        },
+        "IsMultiDefinitionType": {
+          "id": "False",
+          "name": "False"
+        },
+        "project": {
+          "id": "eda60864-9145-4ba1-adc1-9d7ab7d7487e",
+          "name": "textX-LS"
+        },
+        "repository": {
+          "id": "a7aafa12-7edb-4084-8d9f-cb5d01ef872b",
+          "name": "textX-LS"
+        }
+      },
+      "isPrimary": true,
+      "isRetained": false
+    }
+  ],
+  "triggers": [],
+  "releaseNameFormat": "Release-$(rev:r)",
+  "tags": [],
+  "pipelineProcess": {
+    "type": 1
+  },
+  "properties": {
+    "DefinitionCreationSource": {
+      "$type": "System.String",
+      "$value": "Other"
+    }
+  },
+  "id": 1,
+  "name": "[textX-LS-macOS] Release",
+  "path": "\\",
+  "projectReference": null,
+  "url": "https://vsrm.dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/Release/definitions/1",
+  "_links": {
+    "self": {
+      "href": "https://vsrm.dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/Release/definitions/1"
+    },
+    "web": {
+      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_release?definitionId=1"
+    }
+  }
+}
