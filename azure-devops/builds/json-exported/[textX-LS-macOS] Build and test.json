@@ -53,7 +53,7 @@
   "tags": [],
   "_links": {
     "self": {
-      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/2?revision=41"
+      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/2?revision=42"
     },
     "web": {
       "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_build/definition?definitionId=2"
@@ -331,7 +331,7 @@
               "targetType": "inline",
               "filePath": "",
               "arguments": "",
-              "script": "# Install dependencies to build packages\npip install wheel\nnpm i -g vsce\n\n# Append build id to versions\nget_setuppy_version() {\n    version=$(grep -o \"'\\d.\\d.\\d'\" $1)\n    echo \"${version//\\'}\"\n}\n\nreplace_setuppy_version() {\n    version=$(get_setuppy_version $1)\n    build_version=$version+$2\n    sed -i \"\" \"s|$version|$build_version|g\" $1\n}\n\nreplace_packagejson_version() {\n    version_line=$(grep -o '\"version\".*' $1)\n    version=$(python -m json.tool package.json | awk -F'\"' '/version/{print $4}')\n    build_version=$version+$2\n    build_version_line=${version_line/$version/$build_version}\n    sed -i \"\" \"s|$version_line|$build_version_line|g\" $1\n}\n\nbuild_suffix=${BUILD_SOURCEVERSION:0:8}\nreplace_setuppy_version ./textX-LS/core/setup.py $build_suffix\nreplace_setuppy_version ./textX-LS/server/setup.py $build_suffix\n\ncd client\nreplace_packagejson_version package.json $build_suffix\n",
+              "script": "# Append build id to versions\nget_setuppy_version() {\n    version=$(grep -o \"'\\d.\\d.\\d'\" $1)\n    echo \"${version//\\'}\"\n}\n\nreplace_setuppy_version() {\n    version=$(get_setuppy_version $1)\n    build_version=$version+$2\n    sed -i \"\" \"s|$version|$build_version|g\" $1\n}\n\nreplace_packagejson_version() {\n    version_line=$(grep -o '\"version\".*' $1)\n    version=$(python -m json.tool package.json | awk -F'\"' '/version/{print $4}')\n    build_version=$version+$2\n    build_version_line=${version_line/$version/$build_version}\n    sed -i \"\" \"s|$version_line|$build_version_line|g\" $1\n}\n\nbuild_suffix=${BUILD_SOURCEVERSION:0:8}\nreplace_setuppy_version ./textX-LS/core/setup.py $build_suffix\nreplace_setuppy_version ./textX-LS/server/setup.py $build_suffix\n\ncd client\nreplace_packagejson_version package.json $build_suffix\n",
               "workingDirectory": "",
               "failOnStderr": "false"
             }
@@ -353,7 +353,7 @@
               "targetType": "inline",
               "filePath": "",
               "arguments": "",
-              "script": "# Build .vsix file\nvsce package\n\n# Create output env vars\nthis_folder=$(dirname \"$(pwd)\")\n\nTEXTX_LS_CORE_ARTIFACT_NAME=$(ls ./wheels | grep core)\nTEXTX_LS_SERVER_ARTIFACT_NAME=$(ls ./wheels | grep server)\nTEXTX_LS_VSCODE_ARTIFACT_NAME=$(ls | grep vsix)\n\n# Create output variables\necho \"##vso[task.setvariable variable=TEXTX_LS_CORE_ARTIFACT_NAME]$TEXTX_LS_CORE_ARTIFACT_NAME\"\necho \"##vso[task.setvariable variable=TEXTX_LS_SERVER_ARTIFACT_NAME]$TEXTX_LS_SERVER_ARTIFACT_NAME\"\necho \"##vso[task.setvariable variable=TEXTX_LS_VSCODE_ARTIFACT_NAME]$TEXTX_LS_VSCODE_ARTIFACT_NAME\"",
+              "script": "# Install dependencies to build packages\npip install wheel\nnpm i -g vsce\n\n# Build .vsix file\nvsce package\n\n# Create output env vars\nthis_folder=$(dirname \"$(pwd)\")\n\nTEXTX_LS_CORE_ARTIFACT_NAME=$(ls ./wheels | grep core)\nTEXTX_LS_SERVER_ARTIFACT_NAME=$(ls ./wheels | grep server)\nTEXTX_LS_VSCODE_ARTIFACT_NAME=$(ls | grep vsix)\n\n# Create output variables\necho \"##vso[task.setvariable variable=TEXTX_LS_CORE_ARTIFACT_NAME]$TEXTX_LS_CORE_ARTIFACT_NAME\"\necho \"##vso[task.setvariable variable=TEXTX_LS_SERVER_ARTIFACT_NAME]$TEXTX_LS_SERVER_ARTIFACT_NAME\"\necho \"##vso[task.setvariable variable=TEXTX_LS_VSCODE_ARTIFACT_NAME]$TEXTX_LS_VSCODE_ARTIFACT_NAME\"",
               "workingDirectory": "client",
               "failOnStderr": "false"
             }
@@ -481,7 +481,7 @@
       "isPrivate": "False",
       "isFork": "False",
       "ownerAvatarUrl": "https://avatars3.githubusercontent.com/u/40911596?v=4",
-      "lastUpdated": "01/16/2019 10:08:18",
+      "lastUpdated": "01/20/2019 12:16:01",
       "nodeId": "MDEwOlJlcG9zaXRvcnkxNjM2MDk3ODY=",
       "hasAdminPermissions": "True",
       "safeOwnerId": "40911596",
@@ -495,9 +495,7 @@
       "reportBuildStatus": "true",
       "skipSyncSource": "false",
       "labelSourcesFormat": "$(build.buildNumber)",
-      "labelSources": "0",
-      "definitionId": "2",
-      "branch": "master"
+      "labelSources": "0"
     },
     "id": "textX/textX-LS",
     "type": "GitHub",
@@ -540,13 +538,13 @@
   },
   "id": 2,
   "name": "[textX-LS-macOS] Build and test",
-  "url": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/2?revision=41",
+  "url": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/2?revision=42",
   "uri": "vstfs:///Build/Definition/2",
   "path": "\\",
   "type": 2,
   "queueStatus": 0,
-  "revision": 41,
-  "createdDate": "2019-01-17T19:20:04.723Z",
+  "revision": 42,
+  "createdDate": "2019-01-20T12:23:16.503Z",
   "project": {
     "id": "eda60864-9145-4ba1-adc1-9d7ab7d7487e",
     "name": "textX-LS",

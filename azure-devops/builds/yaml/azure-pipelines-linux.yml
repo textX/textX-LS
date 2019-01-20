@@ -1,6 +1,5 @@
 resources:
 - repo: self
-#Multi-configuration and multi-agent job options are not exported to YAML. Configure these options using documentation guidance: https://docs.microsoft.com/vsts/pipelines/process/phases
 
 queue:
   name: Hosted Ubuntu 1604
@@ -86,4 +85,3 @@ steps:
 - bash: 'exit 1'
   displayName: 'Fail if one of the steps succeeded with issues '
   condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
-
