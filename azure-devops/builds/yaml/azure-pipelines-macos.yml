@@ -87,10 +87,6 @@ steps:
   condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
 
 - bash: |
-   # Install dependencies to build packages
-   pip install wheel
-   npm i -g vsce
-
    # Append build id to versions
    get_setuppy_version() {
        version=$(grep -o "'\d.\d.\d'" $1)
@@ -122,6 +118,10 @@ steps:
   condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/master'), ne(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), True))
 
 - bash: |
+   # Install dependencies to build packages
+   pip install wheel
+   npm i -g vsce
+
    # Build .vsix file
    vsce package
 
@@ -174,5 +174,3 @@ steps:
     PathtoPublish: '$(build.artifactstagingdirectory)/$(TEXTX_LS_VSCODE_ARTIFACT_NAME)'
 
     ArtifactName: '$(TEXTX_LS_VSCODE_ARTIFACT_NAME)'
-
-

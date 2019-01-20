@@ -84,4 +84,3 @@ steps:
 - bash: 'exit 1'
   displayName: 'Fail if one of the steps succeeded with issues '
   condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
-
