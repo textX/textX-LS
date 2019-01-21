@@ -17,7 +17,7 @@
     "textX"
   ],
   "activationEvents": [
-    "workspaceContains: Textxfile",
+    "workspaceContains:Textxfile",
     "onLanguage:textx",
     "onLanguage:textxfile"
   ],
@@ -42,6 +42,24 @@
           ".tx"
         ],
         "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "textx",
+        "scopeName": "source.textx",
+        "path": "./syntaxes/textx.json"
+      },
+      {
+        "language": "textxfile",
+        "scopeName": "source.textxfile",
+        "path": "./syntaxes/textxfile.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "textxfile",
+        "path": "./snippets/textxfile.json"
       }
     ]
   },
