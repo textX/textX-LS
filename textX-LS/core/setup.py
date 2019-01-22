@@ -2,6 +2,7 @@
 import codecs
 import os
 
+import textx_ls_core
 from setuptools import find_packages, setup
 
 PACKAGE_NAME = 'textx-ls-core'
@@ -33,7 +34,15 @@ setup(
     license=LICENSE,
     packages=packages,
     include_package_data=True,
-    install_requires=["textX==1.8.0"],
+    install_requires=["textX==1.8.0", "click==7.0"],
+    entry_points={
+        'console_scripts': [
+            'textx-ls = textx_ls_core.cli:textxls'
+        ],
+        'textxls_commands': [
+            'langs = textx_ls_core.cli.langs:langs',
+        ]
+    },
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
