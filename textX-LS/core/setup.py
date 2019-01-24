@@ -41,6 +41,9 @@ setup(
         ],
         'textxls_commands': [
             'langs = textx_ls_core.cli.langs:langs',
+        ],
+        'textx_commands': [
+            'langs = textx_ls_core.cli.langs:langs',
         ]
     },
     classifiers=[
