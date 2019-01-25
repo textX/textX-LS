@@ -1,8 +1,10 @@
-from .. import LanguageTemplate, register_language
+from textx import metamodel_from_file
+
+from .. import LanguageTemplate
 
 
-@register_language()
-class TextxfileTemplate(LanguageTemplate):
+class TextxfileLang(LanguageTemplate):
+
     @property
     def extensions(self):
         return ['textxfile']
@@ -10,7 +12,3 @@ class TextxfileTemplate(LanguageTemplate):
     @property
     def language_name(self):
         return 'Textxfile'
-
-    @property
-    def metamodel(self):
-        pass

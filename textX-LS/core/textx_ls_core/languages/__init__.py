@@ -1,8 +1,15 @@
+from inspect import getfile
+from os.path import dirname, join
+
 import pkg_resources as pkg
 from textx import metamodel_from_file
 
 
 class LanguageTemplate:
+
+    def __init__(self):
+        self._metamodel = metamodel_from_file(
+            join(dirname(getfile(self.__class__)), 'grammar.tx'))
 
     @property
     def extensions(self):
@@ -14,29 +21,26 @@ class LanguageTemplate:
 
     @property
     def metamodel(self):
-        raise NotImplementedError()
+        return self._metamodel
 
     def __repr__(self):
         return "{}".format(self.language_name)
 
 
 LANGUAGES = {}
+LANG_EXTENSIONS = ()
 
 
 def get_lang_template_by_ext(extension, reload_entry_points=False):
     return LANGUAGES.get(extension, None)
 
 
-def register_language():
-    def decorator(template_cls: LanguageTemplate):
-        inst = template_cls()
-        for ext in inst.extensions:
-            LANGUAGES[ext] = inst
-        return template_cls
-    return decorator
+def load_languages_from_entry_points():
+    for entry_point in pkg.iter_entry_points(group='textxls_langs'):
+        lang_template_cls = entry_point.load()
+        lang_template = lang_template_cls()
+        for ext in lang_template.extensions:
+            LANGUAGES[ext] = lang_template
 
-
-def reload_entry_points(self):
-    for entry_point in pkg.iter_entry_points(group='textx_lang'):
-        template_cls = entry_point.load()
-        self.register_language()(template_cls)
+    global LANG_EXTENSIONS
+    LANG_EXTENSIONS = LANGUAGES.keys()

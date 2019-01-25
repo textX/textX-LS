@@ -1,2 +1,4 @@
-# Load modules to register language templates
-from .languages import textxfile
+# Load languages
+from .languages import load_languages_from_entry_points
+
+load_languages_from_entry_points()
