@@ -10,10 +10,12 @@
     "prefix": "txcfg",
     "body": [
       "dsl ${1:name}[${2:extension}] {",
-      "publisher:\t\t\"${3:publisher}\"",
-      "author:\t\t\"${4:name}\"",
-      "url:\t\t\"${5:url}\"",
-      "version:\t\t\"${6:version}\"",
+      "\tpublisher:   \"${3:publisher}\"",
+      "\tauthor:      \"${4:author}\"",
+      "\trepository:  \"${5:repository}\"",
+      "\turl:         \"${6:url}\"",
+      "\tversion:     \"${7:version}\"",
+      "\tdescription: \"${8:description}\"",
       "}"
     ],
     "description": "Full textX configuration snippet."
