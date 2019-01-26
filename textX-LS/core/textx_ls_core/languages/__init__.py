@@ -40,7 +40,10 @@ def load_languages_from_entry_points():
         lang_template_cls = entry_point.load()
         lang_template = lang_template_cls()
         for ext in lang_template.extensions:
-            LANGUAGES[ext] = lang_template
+            LANGUAGES[ext.lower()] = lang_template
 
     global LANG_EXTENSIONS
-    LANG_EXTENSIONS = LANGUAGES.keys()
+    LANG_EXTENSIONS = list(LANGUAGES.keys())
+
+
+load_languages_from_entry_points()

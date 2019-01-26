@@ -36,11 +36,8 @@ setup(
     package_data={'': ['*.tx']},
     install_requires=["textX==1.8.0", "click==7.0"],
     entry_points={
-        'console_scripts': [
-            'textx-ls = textx_ls_core.cli:textxls'
-        ],
-        'textxls_commands': [
-            'langs = textx_ls_core.cli.langs:langs',
+        'textx_command_groups': [
+            'textxls = textx_ls_core.cli:create_textxls_cli'
         ],
         'textxls_langs': [
             'textxfile = textx_ls_core.languages.textxfile:TextxfileLang'
