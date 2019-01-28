@@ -1,9 +1,33 @@
+import functools
+
 import click
 
+from ..features.validate import validate as _validate
 from ..languages import LANGUAGES
+from ..utils import get_file_extension
+
+
+def get_lang_and_load_model(func):
+    """Decorator which gets language template depending on file extension and
+    to load model from path."""
+    @functools.wraps(func)
+    def decorator(model_file):
+        file_ext = get_file_extension(model_file).lower()
+        try:
+            lang_template = LANGUAGES[file_ext]
+            with open(model_file) as f:
+                return func(lang_template, f.read())
+        except KeyError:
+            click.secho('File with extension "{}" is not supported'
+                        .format(file_ext))
+        except IOError:
+            click.secho('File "{}" not found.'.format(model_file))
+    return decorator
 
 
 def create_textxls_cli(textx_cli):
+    model_arg = click.argument('model_file', type=click.Path(), required=True)
+
     @textx_cli.group()
     def textxls():
         """textxls group sub-commands."""
@@ -12,7 +36,7 @@ def create_textxls_cli(textx_cli):
     @textxls.command()
     def langs():    # pylint: disable=unused-variable
         """
-        Show registered languages.
+        Show supported languages.
         """
         data = []
 
@@ -31,3 +55,19 @@ def create_textxls_cli(textx_cli):
             click.secho('\t'.join((val.ljust(width)
                                    for val, width
                                    in zip(row, widths))), **style)
+
+    @textxls.command()
+    @model_arg
+    @get_lang_and_load_model
+    def validate(lang, model_str):  # pylint: disable=unused-variable
+        """Validates model if it is supported."""
+        lang_name = lang.language_name
+        errors = _validate(lang, model_str)
+        if not errors:
+            click.secho('[{}] Model OK.'
+                        .format(lang_name), fg='green')
+        else:
+            msg = '[{}] Model is not valid:'.format(lang_name)
+            click.secho(msg, fg='red')
+            for e in errors:
+                click.secho('- {}'.format(str(e)), fg='yellow')

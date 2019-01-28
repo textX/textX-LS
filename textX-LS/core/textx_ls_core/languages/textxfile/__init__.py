@@ -1,5 +1,3 @@
-from textx import metamodel_from_file
-
 from .. import LanguageTemplate
 
 

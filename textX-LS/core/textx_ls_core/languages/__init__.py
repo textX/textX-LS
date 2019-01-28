@@ -1,8 +1,10 @@
 from inspect import getfile
 from os.path import dirname, join
+from typing import List
 
 import pkg_resources as pkg
 from textx import metamodel_from_file
+from textx.metamodel import TextXMetaModel
 
 
 class LanguageTemplate:
@@ -12,27 +14,30 @@ class LanguageTemplate:
             join(dirname(getfile(self.__class__)), 'grammar.tx'))
 
     @property
-    def extensions(self):
+    def extensions(self) -> List[str]:
         raise NotImplementedError()
 
     @property
-    def language_name(self):
+    def language_name(self) -> str:
         raise NotImplementedError()
 
     @property
-    def metamodel(self):
+    def metamodel(self) -> TextXMetaModel:
         return self._metamodel
+
+    def rule_completions(self, rule):
+        """Not supported for now, but the idea is customize code completion for
+        given rule.
+        """
+        raise NotImplementedError()
 
     def __repr__(self):
         return "{}".format(self.language_name)
 
 
-LANGUAGES = {}
-LANG_EXTENSIONS = ()
-
-
-def get_lang_template_by_ext(extension, reload_entry_points=False):
-    return LANGUAGES.get(extension, None)
+# Contains all supported languages
+LANGUAGES = {}  # Dict[str, LanguageTemplate]
+LANG_EXTENSIONS = ()  # Tuple[str]
 
 
 def load_languages_from_entry_points():

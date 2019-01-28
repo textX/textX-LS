@@ -1,12 +1,47 @@
-from pygls.features import COMPLETION
+from pygls.features import COMPLETION, TEXT_DOCUMENT_DID_CHANGE
+from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
-from pygls.types import CompletionItem, CompletionList, CompletionParams
+from pygls.types import (CompletionItem, CompletionList, CompletionParams,
+                         DidChangeTextDocumentParams,
+                         DidCloseTextDocumentParams, DidOpenTextDocumentParams)
+from pygls.workspace import Document
 from textx_ls_core.features.completions import get_completions
+from textx_ls_core.languages import LanguageTemplate
+
+from .features.diagnostics import send_diagnostics
+from .utils import (call_with_lang_template, is_ext_supported,
+                    skip_not_supported_langs)
+
+
+class TextXProtocol(LanguageServerProtocol):
+    """This class overrides text synchronization methods as we don't want to
+    process languages that we don't support.
+    """
+
+    def bf_text_document__did_change(self,
+                                     params: DidChangeTextDocumentParams):
+        """Updates document's content if document is in the workspace."""
+        if is_ext_supported(params.textDocument.uri):
+            for change in params.contentChanges:
+                self.workspace.update_document(params.textDocument, change)
+
+    def bf_text_document__did_close(self,
+                                    params: DidCloseTextDocumentParams):
+        """Removes document from workspace."""
+        if is_ext_supported(params.textDocument.uri):
+            self.workspace.remove_document(params.textDocument.uri)
+
+    def bf_text_document__did_open(self,
+                                   params: DidOpenTextDocumentParams):
+        """Puts document to the workspace for supported files."""
+        if is_ext_supported(params.textDocument.uri):
+            self.workspace.put_document(params.textDocument)
 
 
 class TextXLanguageServer(LanguageServer):
     def __init__(self):
-        super().__init__()
+        # NOTE: Upstream bug in pygls - update to v0.7.3 when available!
+        super().__init__(protocol_cls=TextXProtocol)
 
 
 textx_server = TextXLanguageServer()
@@ -18,3 +53,12 @@ def completions(params: CompletionParams = None):
     return CompletionList(False, [
         CompletionItem(label) for label in get_completions()
     ])
+
+
+@textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)
+@skip_not_supported_langs
+@call_with_lang_template
+def doc_change(ls: TextXLanguageServer, params: DidChangeTextDocumentParams,
+               doc: Document, lang_temp: LanguageTemplate):
+    """Validates model on document text change."""
+    send_diagnostics(ls, lang_temp, doc)
