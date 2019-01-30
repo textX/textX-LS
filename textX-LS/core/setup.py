@@ -37,7 +37,7 @@ setup(
     install_requires=["textX==1.8.0", "click==7.0"],
     entry_points={
         'textx_command_groups': [
-            'textxls = textx_ls_core.cli:create_textxls_cli'
+            'ls = textx_ls_core.cli:create_textxls_cli'
         ],
         'textxls_langs': [
             'textxfile = textx_ls_core.languages.textxfile:TextxfileLang'

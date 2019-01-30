@@ -28,7 +28,7 @@ def get_lang_and_load_model(func):
 def create_textxls_cli(textx_cli):
     model_arg = click.argument('model_file', type=click.Path(), required=True)
 
-    @textx_cli.group()
+    @textx_cli.group('ls')
     def textxls():
         """textxls group sub-commands."""
         pass
