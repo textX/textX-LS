@@ -29,10 +29,11 @@ def skip_not_supported_langs(func):
     decorated function.
     """
     @functools.wraps(func)
-    def decorator(ls, params):
+    def decorator(ls, params, **kwargs):
         try:
             doc = ls.workspace.documents[params.textDocument.uri]
-            return func(ls, params, doc=doc)
+            kwargs['doc'] = doc
+            return func(ls, params, **kwargs)
         except KeyError:
             pass
     return decorator

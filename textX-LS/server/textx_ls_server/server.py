@@ -1,11 +1,9 @@
-from pygls.features import COMPLETION, TEXT_DOCUMENT_DID_CHANGE
+from pygls.features import TEXT_DOCUMENT_DID_CHANGE
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
-from pygls.types import (CompletionItem, CompletionList, CompletionParams,
-                         DidChangeTextDocumentParams,
+from pygls.types import (DidChangeTextDocumentParams,
                          DidCloseTextDocumentParams, DidOpenTextDocumentParams)
 from pygls.workspace import Document
-from textx_ls_core.features.completions import get_completions
 from textx_ls_core.languages import LanguageTemplate
 
 from .features.diagnostics import send_diagnostics
@@ -40,19 +38,10 @@ class TextXProtocol(LanguageServerProtocol):
 
 class TextXLanguageServer(LanguageServer):
     def __init__(self):
-        # NOTE: Upstream bug in pygls - update to v0.7.3 when available!
         super().__init__(protocol_cls=TextXProtocol)
 
 
 textx_server = TextXLanguageServer()
-
-
-@textx_server.feature(COMPLETION)
-def completions(params: CompletionParams = None):
-    """Returns completion items."""
-    return CompletionList(False, [
-        CompletionItem(label) for label in get_completions()
-    ])
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)

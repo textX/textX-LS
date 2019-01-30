@@ -35,9 +35,9 @@ class LanguageTemplate:
         return "{}".format(self.language_name)
 
 
-# Contains all supported languages
-LANGUAGES = {}  # Dict[str, LanguageTemplate]
-LANG_EXTENSIONS = ()  # Tuple[str]
+# Supported languages
+LANGUAGES = {}          # Dict[str, LanguageTemplate]
+LANG_EXTENSIONS = ()    # Tuple[str]
 
 
 def load_languages_from_entry_points():
