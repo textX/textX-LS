@@ -6,5 +6,5 @@ def get_file_extension(uri):
     try:
         ext = splitext(uri)[1]
         return ext[1:] if ext else basename(uri)
-    except TypeError:
+    except (AttributeError, IndexError, TypeError):
         return None
