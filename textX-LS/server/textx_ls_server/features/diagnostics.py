@@ -2,6 +2,14 @@ from pygls.types import Diagnostic, Position, Range
 from textx_ls_core.features.validate import validate
 
 
+def _create_diagnostics(lang_temp, doc):
+    """Creates diagnostics from TextXError objects."""
+    return [
+        Diagnostic(_get_diagnostic_range(err), _get_diagnostic_message(err))
+        for err in validate(lang_temp, doc.source)
+    ]
+
+
 def _get_diagnostic_message(err):
     msg = str(err)
     try:
@@ -20,10 +28,5 @@ def _get_diagnostic_range(err):
 
 
 def send_diagnostics(ls, lang_temp, doc):
-    """Create and publish diagnostics from TextXError objects."""
-    diagnostics = [
-        Diagnostic(_get_diagnostic_range(err), _get_diagnostic_message(err))
-        for err in validate(lang_temp, doc.source)
-    ]
-
-    ls.publish_diagnostics(doc.uri, diagnostics)
+    """Sends diagnostics to the client."""
+    ls.publish_diagnostics(doc.uri, _create_diagnostics(lang_temp, doc))
