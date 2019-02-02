@@ -1,4 +1,4 @@
-from pygls.features import TEXT_DOCUMENT_DID_CHANGE
+from pygls.features import TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_OPEN
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.types import (DidChangeTextDocumentParams,
@@ -49,5 +49,14 @@ textx_server = TextXLanguageServer()
 @call_with_lang_template
 def doc_change(ls: TextXLanguageServer, params: DidChangeTextDocumentParams,
                doc: Document, lang_temp: LanguageTemplate):
+    """Validates model on document text change."""
+    send_diagnostics(ls, lang_temp, doc)
+
+
+@textx_server.feature(TEXT_DOCUMENT_DID_OPEN)
+@skip_not_supported_langs
+@call_with_lang_template
+def doc_open(ls: TextXLanguageServer, params: DidOpenTextDocumentParams,
+             doc: Document, lang_temp: LanguageTemplate):
     """Validates model on document text change."""
     send_diagnostics(ls, lang_temp, doc)

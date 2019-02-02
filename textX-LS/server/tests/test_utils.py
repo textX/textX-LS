@@ -1,4 +1,3 @@
-import mock
 import pytest
 from pygls.types import DidOpenTextDocumentParams, TextDocumentItem
 
@@ -30,12 +29,12 @@ def params():
 
 
 def test_call_with_lang_template(languages, params):
-    to_wrap = mock.Mock(return_value=1)
+    def to_wrap(ls, params, **kwargs):
+        return kwargs
     wrapped = utils.call_with_lang_template(to_wrap, languages)
-    ret_val = wrapped(None, params)
+    ret_kwargs = wrapped(None, params)
 
-    assert ret_val == 1
-    # TODO: Check if it's called with 'lang_temp' in kwargs
+    assert 'lang_temp' in ret_kwargs
 
 
 @pytest.mark.parametrize("uri, expected", [
