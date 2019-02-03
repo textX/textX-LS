@@ -53,7 +53,7 @@
   "tags": [],
   "_links": {
     "self": {
-      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/2?revision=42"
+      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/2?revision=43"
     },
     "web": {
       "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_build/definition?definitionId=2"
@@ -66,6 +66,7 @@
     }
   },
   "buildNumberFormat": "$(BuildID)",
+  "comment": "Install deps macOS",
   "jobAuthorizationScope": 1,
   "jobTimeoutInMinutes": 60,
   "jobCancelTimeoutInMinutes": 5,
@@ -105,7 +106,7 @@
               "definitionType": "task"
             },
             "inputs": {
-              "script": "python -m pip install --upgrade pip\npip install flake8\npip install pytest\npip install bandit",
+              "script": "python -m pip install --upgrade pip\n\ncd ./textX-LS/core\npython -m pip install .[test]\npython -m pip install .[dev]\n\ncd ../server\npython -m pip install .[test]\npython -m pip install .[dev]",
               "workingDirectory": "",
               "failOnStderr": "false"
             }
@@ -266,6 +267,7 @@
               "customEndpoint": "",
               "publishRegistry": "useExternalRegistry",
               "publishFeed": "",
+              "publishPackageMetadata": "true",
               "publishEndpoint": ""
             }
           },
@@ -481,10 +483,11 @@
       "isPrivate": "False",
       "isFork": "False",
       "ownerAvatarUrl": "https://avatars3.githubusercontent.com/u/40911596?v=4",
-      "lastUpdated": "01/20/2019 12:16:01",
+      "lastUpdated": "01/20/2019 15:44:00",
       "nodeId": "MDEwOlJlcG9zaXRvcnkxNjM2MDk3ODY=",
       "hasAdminPermissions": "True",
       "safeOwnerId": "40911596",
+      "ownerId": "40911596",
       "safeOwnerName": "textX",
       "safeRepository": "textX/textX-LS",
       "ownerIsAUser": "False",
@@ -538,19 +541,20 @@
   },
   "id": 2,
   "name": "[textX-LS-macOS] Build and test",
-  "url": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/2?revision=42",
+  "url": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/2?revision=43",
   "uri": "vstfs:///Build/Definition/2",
   "path": "\\",
   "type": 2,
   "queueStatus": 0,
-  "revision": 42,
-  "createdDate": "2019-01-20T12:23:16.503Z",
+  "revision": 43,
+  "createdDate": "2019-02-03T18:20:50.823Z",
   "project": {
     "id": "eda60864-9145-4ba1-adc1-9d7ab7d7487e",
     "name": "textX-LS",
     "url": "https://dev.azure.com/textX/_apis/projects/eda60864-9145-4ba1-adc1-9d7ab7d7487e",
     "state": 1,
     "revision": 11,
-    "visibility": 2
+    "visibility": 2,
+    "lastUpdateTime": "2019-01-10T18:10:15.797Z"
   }
 }

@@ -1,24 +1,29 @@
 resources:
 - repo: self
 
-queue:
-  name: Hosted macOS
+pool:
+  vmImage: Hosted macOS
   demands: npm
 
 variables:
   python.version: '3.5, 3.6, 3.7'
+
 steps:
 - task: UsePythonVersion@0
   displayName: 'Use Python $(python.version)'
   inputs:
     versionSpec: '$(python.version)'
 
-
 - script: |
    python -m pip install --upgrade pip
-   pip install flake8
-   pip install pytest
-   pip install bandit
+
+   cd ./textX-LS/core
+   python -m pip install .[test]
+   python -m pip install .[dev]
+
+   cd ../server
+   python -m pip install .[test]
+   python -m pip install .[dev]
   displayName: 'Install dependencies'
 
 - script: |
@@ -27,43 +32,36 @@ steps:
    cd ../server
    python -m pip install .
   workingDirectory: 'textX-LS'
-
   displayName: 'Install packages from source'
   continueOnError: true
 
 - script: 'flake8 .'
   workingDirectory: 'textX-LS/core'
-
   displayName: '[textX-LS-core] Flake8'
   continueOnError: true
 
 - script: pytest
   workingDirectory: 'textX-LS/core'
-
   displayName: '[textX-LS-core] Tests'
   continueOnError: true
 
 - script: 'bandit -r textx_ls_core'
   workingDirectory: 'textX-LS/core'
-
   displayName: '[textX-LS-core] Bandit'
   continueOnError: true
 
 - script: 'flake8 .'
   workingDirectory: 'textX-LS/server'
-
   displayName: '[textX-LS-server] Flake8'
   continueOnError: true
 
 - script: pytest
   workingDirectory: 'textX-LS/server'
-
   displayName: '[textX-LS-server] Tests'
   continueOnError: true
 
 - script: 'bandit -r textx_ls_server'
   workingDirectory: 'textX-LS/server'
-
   displayName: '[textX-LS-server] Bandit'
   continueOnError: true
 
@@ -71,14 +69,11 @@ steps:
   displayName: '[textX-vscode] Install node modules'
   inputs:
     workingDir: client
-
     verbose: false
-
   continueOnError: true
 
 - bash: './node_modules/.bin/tslint src\*.ts'
   workingDirectory: client
-
   displayName: '[textX-vscode] tslint'
   continueOnError: true
 
@@ -137,40 +132,31 @@ steps:
    echo "##vso[task.setvariable variable=TEXTX_LS_SERVER_ARTIFACT_NAME]$TEXTX_LS_SERVER_ARTIFACT_NAME"
    echo "##vso[task.setvariable variable=TEXTX_LS_VSCODE_ARTIFACT_NAME]$TEXTX_LS_VSCODE_ARTIFACT_NAME"
   workingDirectory: client
-
   displayName: 'Create wheels and extension file'
 
 - task: CopyFiles@2
   displayName: 'Copy wheels and vsix to artifact staging dir'
   inputs:
     SourceFolder: client
-
     Contents: |
      wheels/*.whl
      *.vsix
-
     TargetFolder: '$(build.artifactstagingdirectory)'
-
 
 - task: PublishBuildArtifacts@1
   displayName: '[textX-LS-core] Publish Artifact'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)/wheels/$(TEXTX_LS_CORE_ARTIFACT_NAME)'
-
     ArtifactName: '$(TEXTX_LS_CORE_ARTIFACT_NAME)'
-
 
 - task: PublishBuildArtifacts@1
   displayName: '[textX-LS-server] Publish Artifact'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)/wheels/$(TEXTX_LS_SERVER_ARTIFACT_NAME)'
-
     ArtifactName: '$(TEXTX_LS_SERVER_ARTIFACT_NAME)'
-
 
 - task: PublishBuildArtifacts@1
   displayName: '[textX-vscode] Publish Artifact'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)/$(TEXTX_LS_VSCODE_ARTIFACT_NAME)'
-
     ArtifactName: '$(TEXTX_LS_VSCODE_ARTIFACT_NAME)'
