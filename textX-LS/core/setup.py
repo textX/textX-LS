@@ -20,6 +20,15 @@ print('packages:', packages)
 README = codecs.open(os.path.join(os.path.dirname(__file__), 'README.md'),
                      'r', encoding='utf-8').read()
 
+dev_require = [
+    "bandit==1.5.1",
+    "flake8==3.7.1"
+]
+
+tests_require = [
+    "pytest==4.0.2"
+]
+
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
@@ -35,6 +44,11 @@ setup(
     include_package_data=True,
     package_data={'': ['*.tx']},
     install_requires=["textX==1.8.0", "click==7.0"],
+    extras_require={
+        'dev': dev_require,
+        'test': tests_require,
+    },
+    tests_require=tests_require,
     entry_points={
         'textx_command_groups': [
             'ls = textx_ls_core.cli:create_textxls_cli'
