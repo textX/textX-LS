@@ -54,6 +54,7 @@ setup(
             'ls = textx_ls_core.cli:create_textxls_cli'
         ],
         'textxls_langs': [
+            'textx = textx_ls_core.languages.textx:TextXLang',
             'textxfile = textx_ls_core.languages.textxfile:TextxfileLang'
         ]
     },
