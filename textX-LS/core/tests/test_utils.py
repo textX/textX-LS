@@ -3,7 +3,7 @@ from textx_ls_core import utils
 
 
 @pytest.mark.parametrize("uri, expected_ext", [
-    (None, None),
+    (None, ''),
     ('', ''),
     ('/test/path/file.txt', 'txt'),
     ('Textxfile', 'Textxfile')
