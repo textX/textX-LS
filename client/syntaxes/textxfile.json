@@ -1,0 +1,92 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "textxfile",
+  "scopeName": "source.textxfile",
+  "fileTypes": [
+    ".textxfile"
+  ],
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#string"
+    },
+    {
+      "include": "#number"
+    },
+    {
+      "include": "#language_keyword"
+    },
+    {
+      "include": "#language_operation"
+    },
+    {
+      "include": "#regular_expression"
+    }
+  ],
+  "repository": {
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.single",
+          "begin": "'",
+          "end": "'"
+        },
+        {
+          "name": "string.quoted.double",
+          "begin": "\"",
+          "end": "\""
+        }
+      ]
+    },
+    "number": {
+      "patterns": [
+        {
+          "name": "constant.numeric",
+          "match": "\\b[0-9]+\\b\\.{0,1}"
+        }
+      ]
+    },
+    "language_keyword": {
+      "patterns": [
+        {
+          "name": "entity.name.class",
+          "match": "\\bdsl\\b"
+        },
+        {
+          "name": "keyword.control",
+          "match": "\\bpublisher\\b|\\bauthor\\b|\\burl\\b|\\bversion\\b"
+        }
+      ]
+    },
+    "language_operation": {
+      "patterns": [
+        {
+          "name": "variable",
+          "match": "\\[|,|\\]|:"
+        },
+        {
+          "name": "meta.cast",
+          "match": "{|}"
+        }
+      ]
+    },
+    "regular_expression": {
+      "patterns": []
+    }
+  }
+}

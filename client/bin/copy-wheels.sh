@@ -1,3 +1,4 @@
+#!/bin/bash
 echo Building and copying python wheels
 
 extension_dir="$(dirname "$(pwd)")"

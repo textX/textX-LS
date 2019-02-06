@@ -20,6 +20,16 @@ print('packages:', packages)
 README = codecs.open(os.path.join(os.path.dirname(__file__), 'README.md'),
                      'r', encoding='utf-8').read()
 
+dev_require = [
+    "bandit==1.5.1",
+    "flake8==3.7.1"
+]
+
+tests_require = [
+    "mock==2.0.0",
+    "pytest==4.0.2"
+]
+
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
@@ -33,7 +43,12 @@ setup(
     license=LICENSE,
     packages=packages,
     include_package_data=True,
-    install_requires=["pygls==0.7.2"],
+    install_requires=["pygls==0.7.3"],
+    extras_require={
+        'dev': dev_require,
+        'test': tests_require,
+    },
+    tests_require=tests_require,
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
