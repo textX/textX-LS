@@ -9,9 +9,10 @@ from textx.metamodel import TextXMetaModel
 
 class LanguageTemplate:
 
-    def __init__(self):
-        self._metamodel = metamodel_from_file(
-            join(dirname(getfile(self.__class__)), 'grammar.tx'))
+    def __init__(self, auto_load_mm=True):
+        if auto_load_mm:
+            self._metamodel = metamodel_from_file(
+                join(dirname(getfile(self.__class__)), 'grammar.tx'))
 
     @property
     def extensions(self) -> List[str]:
