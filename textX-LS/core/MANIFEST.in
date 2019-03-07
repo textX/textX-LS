@@ -1,0 +1,2 @@
+recursive-include textx_ls_core *.tx
+recursive-include textx_ls_core/templates *

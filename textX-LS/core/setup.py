@@ -42,8 +42,7 @@ setup(
     license=LICENSE,
     packages=packages,
     include_package_data=True,
-    package_data={'': ['*.tx']},
-    install_requires=["textX==1.8.0", "click==7.0"],
+    install_requires=["textX==1.8.0", "click==7.0", "jinja2==2.10"],
     extras_require={
         'dev': dev_require,
         'test': tests_require,

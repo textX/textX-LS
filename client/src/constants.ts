@@ -1,15 +1,8 @@
-import { resolve } from "path";
+export const IS_WIN = process.platform === "win32";
+export const LS_VENV_NAME = "textxls";
+export const LS_WHEELS_DIR = "wheels";
+export const TEXTX_LS_CORE = "textx_ls_core";
+export const TEXTX_LS_SERVER = "textx_ls_server";
 
-const IS_WIN = process.platform === "win32";
-const LS_VENV_NAME = "textxls";
-const LS_WHEELS_DIR = "wheels";
-const TEXTX_LS_CORE = "textx_ls_core";
-const TEXTX_LS_SERVER = "textx_ls_server";
-
-export {
-  IS_WIN,
-  LS_VENV_NAME,
-  LS_WHEELS_DIR,
-  TEXTX_LS_CORE,
-  TEXTX_LS_SERVER,
-};
+// Commands
+export const CMD_LANG_SCAFFOLD = "languageScaffold";

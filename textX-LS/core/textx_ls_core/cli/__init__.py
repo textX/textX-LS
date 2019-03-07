@@ -1,7 +1,9 @@
 import functools
+import os
 
 import click
 
+from ..features.scaffolding import scaffold_language
 from ..features.validate import validate as _validate
 from ..languages import LANGUAGES
 from ..utils import get_file_extension
@@ -27,6 +29,10 @@ def get_lang_and_load_model(func):
 
 def create_textxls_cli(textx_cli):
     model_arg = click.argument('model_file', type=click.Path(), required=True)
+    lang_name_arg = click.argument('lang_name', type=click.STRING,
+                                   required=True)
+    gen_path_arg = click.argument('gen_path', type=click.Path(exists=True),
+                                  required=False, default=os.getcwd())
 
     @textx_cli.group('ls')
     def textxls():
@@ -55,6 +61,13 @@ def create_textxls_cli(textx_cli):
             click.secho('\t'.join((val.ljust(width)
                                    for val, width
                                    in zip(row, widths))), **style)
+
+    @textxls.command()
+    @lang_name_arg
+    @gen_path_arg
+    def scaffold(lang_name, gen_path):  # pylint: disable=unused-variable
+        """Generates template for a new textx language support."""
+        scaffold_language(lang_name, gen_path)
 
     @textxls.command()
     @model_arg

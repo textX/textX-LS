@@ -22,6 +22,12 @@
     "onLanguage:textxfile"
   ],
   "contributes": {
+    "commands": [
+      {
+        "command": "textX.languageScaffold",
+        "title": "New textX language project"
+      }
+    ],
     "languages": [
       {
         "id": "textxfile",
