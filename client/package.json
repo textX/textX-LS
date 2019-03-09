@@ -24,8 +24,16 @@
   "contributes": {
     "commands": [
       {
+        "command": "textX.languageInstall",
+        "title": "Install textX language project"
+      },
+      {
         "command": "textX.languageScaffold",
-        "title": "New textX language project"
+        "title": "Scaffold textX language project"
+      },
+      {
+        "command": "textX.languageUninstall",
+        "title": "Uninstall textX language project"
       }
     ],
     "languages": [

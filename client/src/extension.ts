@@ -3,8 +3,8 @@ import { ExtensionContext, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
 
 import { TEXTX_LS_SERVER } from "./constants";
-import { LanguageScaffoldingWidgetController } from "./scaffolding/languageScaffolding";
 import { installLSWithProgress } from "./setup";
+import { LanguagesManagerWidgetController } from "./ui/status-bar/languagesManagerStatusBarWidget";
 
 let client: LanguageClient;
 
@@ -53,7 +53,7 @@ function startLangServer(
 export async function activate(context: ExtensionContext) {
 
   // Instantiate widgets
-  const langScaffoldWidgetController = new LanguageScaffoldingWidgetController(context);
+  const langScaffoldWidgetController = new LanguagesManagerWidgetController(context);
 
   // Register widgets
   context.subscriptions.push(langScaffoldWidgetController);
