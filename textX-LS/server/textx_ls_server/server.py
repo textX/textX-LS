@@ -4,6 +4,7 @@ from pygls.server import LanguageServer
 from pygls.types import (DidChangeTextDocumentParams,
                          DidCloseTextDocumentParams, DidOpenTextDocumentParams)
 from pygls.workspace import Document
+from textx_ls_core.exceptions import LanguageScaffoldingError
 from textx_ls_core.features.scaffolding import scaffold_language
 from textx_ls_core.languages import LanguageTemplate
 
@@ -55,8 +56,8 @@ def cmd_language_scaffolding(ls: TextXLanguageServer, params):
         cwd = params[1]
 
         scaffold_language(lang_name, cwd)
-    except IndexError:
-        ls.show_message("Language scaffolding command requires name.")
+    except (IndexError, LanguageScaffoldingError) as e:
+        ls.show_message(str(e))
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)
