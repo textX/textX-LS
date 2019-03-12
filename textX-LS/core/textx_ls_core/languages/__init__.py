@@ -39,14 +39,23 @@ class LanguageTemplate:
 # Supported languages
 LANGUAGES = {}          # Dict[str, LanguageTemplate]
 LANG_EXTENSIONS = ()    # Tuple[str]
+LANG_MODULES = {}  # lang_name: lang_name, lang_module, builtin
 
 
 def load_languages_from_entry_points():
-    for entry_point in pkg.iter_entry_points(group='textxls_langs'):
-        lang_template_cls = entry_point.load()
+    LANGUAGES.clear()
+    LANG_MODULES.clear()
+
+    for ep in pkg.WorkingSet().iter_entry_points(group='textxls_langs'):
+        lang_template_cls = ep.load()
         lang_template = lang_template_cls()
         for ext in lang_template.extensions:
             LANGUAGES[ext.lower()] = lang_template
+
+        lang_name = lang_template.language_name
+        lang_module = ep.module_name
+        is_builtin = lang_module.startswith('textx_ls_core')
+        LANG_MODULES[lang_name] = (lang_name, lang_module, is_builtin)
 
     global LANG_EXTENSIONS
     LANG_EXTENSIONS = list(LANGUAGES.keys())

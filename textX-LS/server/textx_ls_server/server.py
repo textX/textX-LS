@@ -8,7 +8,7 @@ from pygls.types import (DidChangeTextDocumentParams,
 from pygls.workspace import Document
 from textx_ls_core.exceptions import LanguageScaffoldingError
 from textx_ls_core.features.scaffolding import scaffold_language
-from textx_ls_core.languages import LANGUAGES, LanguageTemplate
+from textx_ls_core.languages import LANG_MODULES, LANGUAGES, LanguageTemplate
 
 from .features.diagnostics import send_diagnostics
 from .utils import (call_with_lang_template, is_ext_supported,
@@ -43,6 +43,7 @@ class TextXProtocol(LanguageServerProtocol):
 class TextXLanguageServer(LanguageServer):
     # Command constants
     CMD_LANGUAGE_INSTALL = "textX/languageInstall"
+    CMD_LANGUAGE_LIST = "textX/languageList"
     CMD_LANGUAGE_SCAFFOLD = "textX/languageScaffold"
     CMD_LANGUAGE_UNINSTALL = "textX/languageUninstall"
 
@@ -67,8 +68,14 @@ def cmd_language_install(ls: TextXLanguageServer, params):
         # - send stdout to output channel
         # - use async process
         # - notify user that plugin is installed
+        ls.show_message("Language package installed.")
     except Exception as e:
         ls.show_message(str(e))
+
+
+@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_LIST)
+def cmd_langauge_list(ls: TextXLanguageServer, params):
+    return list(LANG_MODULES.values())
 
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_SCAFFOLD)
@@ -84,10 +91,21 @@ def cmd_language_scaffold(ls: TextXLanguageServer, params):
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_UNINSTALL)
 def cmd_language_uninstall(ls: TextXLanguageServer, params):
+    import subprocess
+    from textx_ls_core.languages import load_languages_from_entry_points
     try:
-        lang_path = params[0]
-        # TODO: uninstall language
-    except (IndexError, LanguageScaffoldingError) as e:
+        lang_name = params[0]
+        lang_pkg = LANG_MODULES[lang_name][1]
+
+        subprocess.call([ls.python_path,
+                         "-m",
+                         "pip",
+                         "uninstall",
+                         lang_pkg,
+                         "-y"])
+        load_languages_from_entry_points()
+        ls.show_message("Language {} uninstalled.".format(lang_name))
+    except Exception as e:
         ls.show_message(str(e))
 
 

@@ -1,7 +1,9 @@
 import { existsSync } from "fs";
 import { join } from "path";
 import { commands, Disposable, ExtensionContext, StatusBarItem, window, workspace } from "vscode";
-import { CMD_LANG_INSTALL, CMD_LANG_SCAFFOLD, CMD_LANG_UNINSTALL } from "../../constants";
+import {
+  CMD_LANG_INSTALL, CMD_LANG_LIST, CMD_LANG_SCAFFOLD, CMD_LANG_UNINSTALL,
+} from "../../constants";
 import { createWidget } from "../../utils";
 
 export class LanguagesManagerWidgetController implements Disposable {
@@ -42,8 +44,7 @@ export class LanguagesManagerWidgetController implements Disposable {
   private async install() {
     const langPath = await window.showInputBox({
       ignoreFocusOut: true,
-      placeHolder: "",
-      prompt: "aaa",
+      placeHolder: "Enter path to the language package.",
       validateInput: (value: string) => {
         const exists = existsSync(join(value, "setup.py"));
         if (exists) {
@@ -71,19 +72,21 @@ export class LanguagesManagerWidgetController implements Disposable {
   private async scaffold() {
     const langName = await window.showInputBox({
       ignoreFocusOut: true,
-      placeHolder: "",
+      placeHolder: "Enter language name.",
     });
 
     commands.executeCommand(CMD_LANG_SCAFFOLD.external, langName, workspace.rootPath);
   }
 
   private async uninstall() {
-    const langPath = await window.showInputBox({
-      ignoreFocusOut: true,
-      placeHolder: "",
-    });
-
-    commands.executeCommand(CMD_LANG_UNINSTALL.external, langPath);
+    const languages = await commands.executeCommand<string[]>(CMD_LANG_LIST.external);
+    const langName = await window.showQuickPick(
+      languages.map((langInfo) => ({ label: langInfo[0], detail: langInfo[1] })),
+      {
+        placeHolder: "Pick language to uninstall it.",
+      },
+    );
+    commands.executeCommand(CMD_LANG_UNINSTALL.external, langName.label);
   }
 
 }
