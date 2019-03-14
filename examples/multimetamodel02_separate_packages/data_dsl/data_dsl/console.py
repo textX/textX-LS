@@ -1,10 +1,10 @@
 import argparse
-from types_dsl import get_metamodel_types
+from data_dsl import get_metamodel_data
 
 
 def validate():
-    mm = get_metamodel_types()
-    parser = argparse.ArgumentParser(description='validate types_dsl files.')
+    mm = get_metamodel_data()
+    parser = argparse.ArgumentParser(description='validate data_dsl files.')
     parser.add_argument('model_files', metavar='model_files', type=str,
                         nargs='+',
                         help='model filenames')

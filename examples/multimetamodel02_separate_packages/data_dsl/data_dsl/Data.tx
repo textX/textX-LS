@@ -1,0 +1,8 @@
+import Types
+Model: includes*=Include data+=Data;
+Data: 'data' name=ID '{'
+    attributes+=Attribute
+'}';
+Attribute: name=ID ':' type=[Type];
+Include: '#include' importURI=STRING;
+Comment: /\/\/.*$/;
