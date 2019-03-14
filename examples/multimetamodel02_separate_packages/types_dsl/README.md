@@ -6,7 +6,7 @@ In a virtualenv, install the package
 
 Or run tests:
 
-	py.test tests
+	python -m pytest tests
 
 Or check coding guidelines
 

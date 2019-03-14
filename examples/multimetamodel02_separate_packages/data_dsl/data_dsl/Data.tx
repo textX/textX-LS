@@ -1,4 +1,3 @@
-import Types
 Model: includes*=Include data+=Data;
 Data: 'data' name=ID '{'
     attributes+=Attribute

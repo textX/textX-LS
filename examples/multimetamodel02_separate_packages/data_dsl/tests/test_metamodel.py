@@ -3,8 +3,8 @@ import os
 
 
 def test_data_dsl():
-    import types_data_flow_dsls
-    mmD = types_data_flow_dsls.get_metamodel_data()
+    import data_dsl
+    mmD = data_dsl.get_metamodel_data()
     current_dir = os.path.dirname(__file__)
     model = mmD.model_from_file(os.path.join(current_dir,
                                              'models',

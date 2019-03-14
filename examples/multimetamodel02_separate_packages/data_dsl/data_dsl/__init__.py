@@ -13,11 +13,11 @@ def get_metamodel_data():
 
 
 def _library_init():
-    global _mm_types, _mm_data, _mm_flow
+    global _mm_data
     global_repo = True
     current_dir = os.path.dirname(__file__)
-
-    _mm_data = metamodel_from_file(os.path.join(current_dir, 'Data.tx'),
+    p = os.path.join(current_dir, 'Data.tx')
+    _mm_data = metamodel_from_file(p,
                                    global_repository=global_repo,
                                    referenced_metamodels=[
                                        types_dsl.get_metamodel_types()])

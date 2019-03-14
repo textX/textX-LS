@@ -9,14 +9,14 @@ setup(name='data_dsl',
       license='TODO',
       packages=find_packages(),
       package_data={'': ['*.tx']},
-      install_requires=["textx", "arpeggio"],
+      install_requires=["textx", "arpeggio", "types_dsl"],
       tests_require=[
           'pytest',
       ],
       keywords="parser meta-language meta-model language DSL",
       entry_points={
           'console_scripts': [
-              'data_dsl_validate=types_dsl.console:validate',
+              'data_dsl_validate=data_dsl.console:validate',
           ]
       },
       )

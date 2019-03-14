@@ -5,8 +5,8 @@ import textx.exceptions
 
 
 def test_types_dsl():
-    import types_data_flow_dsls
-    mmT = types_data_flow_dsls.get_metamodel_types()
+    import types_dsl
+    mmT = types_dsl.get_metamodel_types()
     current_dir = os.path.dirname(__file__)
     model = mmT.model_from_file(os.path.join(current_dir,
                                              'models',
