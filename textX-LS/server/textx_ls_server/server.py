@@ -6,8 +6,12 @@ from pygls.server import LanguageServer
 from pygls.types import (DidChangeTextDocumentParams,
                          DidCloseTextDocumentParams, DidOpenTextDocumentParams)
 from pygls.workspace import Document
-from textx_ls_core.exceptions import LanguageScaffoldingError
-from textx_ls_core.features.scaffolding import scaffold_language
+from textx_ls_core.exceptions import (LanguageInstallError,
+                                      LanguageScaffoldError,
+                                      LanguageUninstallError)
+from textx_ls_core.features.lang_manager import (install_language,
+                                                 scaffold_language,
+                                                 uninstall_language)
 from textx_ls_core.languages import LANG_MODULES, LANGUAGES, LanguageTemplate
 
 from .features.diagnostics import send_diagnostics
@@ -58,18 +62,12 @@ textx_server = TextXLanguageServer()
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_INSTALL)
 def cmd_language_install(ls: TextXLanguageServer, params):
-    import subprocess
-    from textx_ls_core.languages import load_languages_from_entry_points
     try:
         lang_path = params[0]
-        subprocess.call([ls.python_path, "-m", "pip", "install", lang_path])
-        load_languages_from_entry_points()
-        # TODO:
-        # - send stdout to output channel
-        # - use async process
-        # - notify user that plugin is installed
+        stdout = install_language(lang_path, ls.python_path, True)
+        ls.show_message_log(stdout)
         ls.show_message("Language package installed.")
-    except Exception as e:
+    except (IndexError, LanguageInstallError) as e:
         ls.show_message(str(e))
 
 
@@ -83,29 +81,20 @@ def cmd_language_scaffold(ls: TextXLanguageServer, params):
     try:
         lang_name = params[0]
         cwd = params[1]
-
-        scaffold_language(lang_name, cwd)
-    except (IndexError, LanguageScaffoldingError) as e:
+        dest = scaffold_language(lang_name, cwd)
+        ls.show_message("Language package scaffolded at {}".format(dest))
+    except (IndexError, LanguageScaffoldError) as e:
         ls.show_message(str(e))
 
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_UNINSTALL)
 def cmd_language_uninstall(ls: TextXLanguageServer, params):
-    import subprocess
-    from textx_ls_core.languages import load_languages_from_entry_points
     try:
         lang_name = params[0]
-        lang_pkg = LANG_MODULES[lang_name][1]
-
-        subprocess.call([ls.python_path,
-                         "-m",
-                         "pip",
-                         "uninstall",
-                         lang_pkg,
-                         "-y"])
-        load_languages_from_entry_points()
+        stdout = uninstall_language(lang_name, ls.python_path, True)
+        ls.show_message_log(stdout)
         ls.show_message("Language {} uninstalled.".format(lang_name))
-    except Exception as e:
+    except (IndexError, LanguageUninstallError) as e:
         ls.show_message(str(e))
 
 
