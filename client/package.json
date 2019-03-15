@@ -19,7 +19,8 @@
   "activationEvents": [
     "workspaceContains:Textxfile",
     "onLanguage:textx",
-    "onLanguage:textxfile"
+    "onLanguage:textxfile",
+    "onCommand:textX.languageScaffold"
   ],
   "contributes": {
     "commands": [

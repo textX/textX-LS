@@ -50,42 +50,55 @@ export class LanguagesManagerWidgetController implements Disposable {
         if (exists) {
           return null;
         } else {
-          return "Specified directory does not contain setup.py";
+          return "Specified directory does not contain setup.py.";
         }
       },
     });
+    if (!langPath) { return; }
 
-    commands.executeCommand(CMD_LANG_INSTALL.external, langPath);
+    commands.executeCommand(CMD_LANG_INSTALL.external, langPath.trim());
   }
 
   private registerCommands() {
     this.context.subscriptions.push(
-      commands.registerTextEditorCommand(CMD_LANG_INSTALL.internal, this.install, this));
+      commands.registerCommand(CMD_LANG_INSTALL.internal, this.install, this));
 
     this.context.subscriptions.push(
-      commands.registerTextEditorCommand(CMD_LANG_SCAFFOLD.internal, this.scaffold, this));
+      commands.registerCommand(CMD_LANG_SCAFFOLD.internal, this.scaffold, this));
 
     this.context.subscriptions.push(
-      commands.registerTextEditorCommand(CMD_LANG_UNINSTALL.internal, this.uninstall, this));
+      commands.registerCommand(CMD_LANG_UNINSTALL.internal, this.uninstall, this));
   }
 
   private async scaffold() {
     const langName = await window.showInputBox({
       ignoreFocusOut: true,
       placeHolder: "Enter language name.",
+      validateInput: (value: string) => {
+        if (value && value.trim().length > 0) {
+          return null;
+        } else {
+          return "Language package name is required.";
+        }
+      },
     });
+    if (!langName) { return; }
 
-    commands.executeCommand(CMD_LANG_SCAFFOLD.external, langName, workspace.rootPath);
+    commands.executeCommand(CMD_LANG_SCAFFOLD.external, langName.trim(), workspace.rootPath);
   }
 
   private async uninstall() {
     const languages = await commands.executeCommand<string[]>(CMD_LANG_LIST.external);
     const langName = await window.showQuickPick(
-      languages.map((langInfo) => ({ label: langInfo[0], detail: langInfo[1] })),
+      languages
+        .filter((langInfo) => !langInfo[2])
+        .map((langInfo) => ({ label: langInfo[0], detail: langInfo[1] })),
       {
-        placeHolder: "Pick language to uninstall it.",
+        placeHolder: "Pick a language to uninstall it.",
       },
     );
+    if (!langName) { return; }
+
     commands.executeCommand(CMD_LANG_UNINSTALL.external, langName.label);
   }
 
