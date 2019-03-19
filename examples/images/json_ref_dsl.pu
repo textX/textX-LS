@@ -1,0 +1,11 @@
+@startuml
+component JsonRef.tx <<grammar>> as JsonRefG
+
+component JsonRef <<metamodel>> as JsonRef
+
+component Json <<python_module>> as Json
+
+JsonRef --> "uses" JsonRefG
+JsonRef -> "references" Json
+@enduml
+

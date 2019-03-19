@@ -1,0 +1,17 @@
+@startuml
+component Types.tx <<grammar>> as TypesG
+component Data.tx <<grammar>> as DataG
+component Flow.tx <<grammar>> as FlowG
+
+DataG --> "includes" TypesG
+FlowG --> "includes" DataG
+
+component Types <<metamodel>> as Types
+component Data <<metamodel>> as Data
+component Flow <<metamodel>> as Flow
+
+Types -> "uses" TypesG
+Data -> "uses" DataG
+Flow -> "uses" FlowG
+@enduml
+
