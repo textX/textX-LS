@@ -63,7 +63,7 @@ grammars. The metamodels reference each other.
    metamodels reference each other).
  * Multiple meta models ar used
  * Model validation for *.flow and *.types is defined.
- * A code generator os defined.
+ * A code generator is defined.
 
 
 ### [multimetamodel03_non_textx_models](multimetamodel03_non_textx_models)
