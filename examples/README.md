@@ -10,6 +10,14 @@
 	pip install -e multimetamodel02_separate_packages/data_dsl/
 	pip install -e multimetamodel02_separate_packages/flow_dsl/
 
-
-
 ## Run the tests 
+
+	py.test multimetamodel01_shared_grammar/tests/
+	py.test multimetamodel02_separate_packages/types_dsl/
+	py.test multimetamodel02_separate_packages/data_dsl/
+	py.test multimetamodel02_separate_packages/flow_dsl/
+
+## Run the executables
+
+
+
