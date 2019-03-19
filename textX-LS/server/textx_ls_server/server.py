@@ -1,6 +1,7 @@
 import sys
 
-from pygls.features import TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_OPEN
+from pygls.features import (TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE,
+                            TEXT_DOCUMENT_DID_OPEN)
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.types import (DidChangeTextDocumentParams,
@@ -103,8 +104,14 @@ def cmd_language_uninstall(ls: TextXLanguageServer, params):
 @call_with_lang_template
 def doc_change(ls: TextXLanguageServer, params: DidChangeTextDocumentParams,
                doc: Document, lang_temp: LanguageTemplate):
-    """Validates model on document text change."""
+    """Validates model on document text change event."""
     send_diagnostics(ls, lang_temp, doc)
+
+
+@textx_server.feature(TEXT_DOCUMENT_DID_CLOSE)
+def doc_close(ls: TextXLanguageServer, params: DidCloseTextDocumentParams):
+    """Clear diagnostics on document close event."""
+    ls.publish_diagnostics(params.textDocument.uri, [])
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_OPEN)
@@ -112,5 +119,5 @@ def doc_change(ls: TextXLanguageServer, params: DidChangeTextDocumentParams,
 @call_with_lang_template
 def doc_open(ls: TextXLanguageServer, params: DidOpenTextDocumentParams,
              doc: Document, lang_temp: LanguageTemplate):
-    """Validates model on document text change."""
+    """Validates model on document open event."""
     send_diagnostics(ls, lang_temp, doc)
