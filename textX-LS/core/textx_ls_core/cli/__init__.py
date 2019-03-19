@@ -3,7 +3,7 @@ import os
 
 import click
 
-from ..features.scaffolding import scaffold_language
+from ..features.lang_manager import scaffold_language
 from ..features.validate import validate as _validate
 from ..languages import LANGUAGES
 from ..utils import get_file_extension
