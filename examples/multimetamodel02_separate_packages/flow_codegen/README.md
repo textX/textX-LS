@@ -7,6 +7,7 @@ Prepare:
 	pip install -r requirements_dev.txt
 	pip install -e ../types_dsl
 	pip install -e ../data_dsl
+	pip install -e ../flow_dsl
 	pip install -e .
 
 Run tests
@@ -17,10 +18,8 @@ Run tests
 Try interactively (after installation):
 
 	cd tests/models
-	types_dsl_validate *.type
-	data_dsl_validate *.data
-	flow_dsl_validate *.flow
+	flow_dsl_codegen data_flow.flow
 
 Expected output:
 
-	(see parent README.md)
+	some *.pu file
