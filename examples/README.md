@@ -79,6 +79,9 @@ A textx model references a json object.
 
 	virtualenv venv -p $(which python3)
 	source ./venv/bin/activate
+
+### Install all example projects
+
 	pip install -r requirements_dev.txt
 	pip install multimetamodel01_shared_grammar/
 	pip install multimetamodel02_separate_packages/types_dsl/
