@@ -62,5 +62,16 @@ def _library_init():
     _mm_flow.register_scope_providers(
         {"*.*": scoping_providers.FQNImportURI()})
 
+    def check_flow(f):
+        if f.algo1.outp != f.algo2.inp:
+            raise textx.exceptions.TextXSemanticError(
+                "algo data types must match",
+                **tools.get_location(f)
+            )
+
+    _mm_flow.register_obj_processors({
+        'Flow': check_flow
+    })
+
 
 _library_init()

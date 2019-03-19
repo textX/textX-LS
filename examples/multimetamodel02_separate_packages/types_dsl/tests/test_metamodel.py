@@ -14,6 +14,11 @@ def test_types_dsl():
     assert(model is not None)
     assert(len(model.types) == 2)
 
+
+def test_types_dsl_valid():
+    import types_dsl
+    mmT = types_dsl.get_metamodel_types()
+    current_dir = os.path.dirname(__file__)
     with raises(textx.exceptions.TextXSyntaxError,
                 match=r'.*lowercase.*'):
         mmT.model_from_file(os.path.join(current_dir,
