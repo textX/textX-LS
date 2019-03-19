@@ -9,13 +9,15 @@
 	pip install multimetamodel02_separate_packages/types_dsl/
 	pip install multimetamodel02_separate_packages/data_dsl/
 	pip install multimetamodel02_separate_packages/flow_dsl/
+	pip install multimetamodel02_separate_packages/flow_codegen/
 
 ## Run the tests 
 
 	py.test multimetamodel01_shared_grammar/tests/
-	py.test multimetamodel02_separate_packages/types_dsl/
-	py.test multimetamodel02_separate_packages/data_dsl/
-	py.test multimetamodel02_separate_packages/flow_dsl/
+	py.test multimetamodel02_separate_packages/types_dsl/tests
+	py.test multimetamodel02_separate_packages/data_dsl/tests
+	py.test multimetamodel02_separate_packages/flow_dsl/tests
+	py.test multimetamodel02_separate_packages/flow_codegen/tests
 
 ## Run the executables
 
@@ -27,6 +29,20 @@ Here, we have three separate validators, one for each DSL (one is used here).
 
 	cd multimetamodel02_separate_packages/flow_dsl/tests/models/
 	flow_dsl_validate *.flow
+
+Expected outcome
+
+	validating data_flow.flow
+	validating data_flow_including_error.flow
+	  WARNING/ERROR: /home/pierre/checkouts/textX-LS/examples/multimetamodel01_shared_grammar/tests/models/types_with_error.type:1:1: error: types must be lowercase
+	validating data_flow_with_error.flow
+	  WARNING/ERROR: data_flow_with_error.flow:5:1: error: algo data types must match
+
+### flow_dsl code generator
+
+	cd multimetamodel02_separate_packages/flow_codegen/tests/models/
+	flow_dsl_codegen data_flow.flow
+	plantuml data_flow.flow.pu # optional
 
 Expected outcome
 
