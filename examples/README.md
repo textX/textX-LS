@@ -42,8 +42,8 @@ An example model file "data_flow.flow":
 
 #### Challenges for an Editor
 
- * multiple files are included (allow to navigate across files).
-   (shared grammars).
+ * multiple files are included (allow to navigate across files;
+   shared grammars).
  * multiple meta models ar used
 
 ### [multimetamodel02_separate_packages](multimetamodel02_separate_packages)
@@ -57,8 +57,8 @@ The same semantics as in the previous section are defined.
 
 #### Challenges for an Editor
 
- * multiple files are included (allow to navigate across files).
-   (metamodels reference each other).
+ * multiple files are included (allow to navigate across files;
+   metamodels reference each other).
  * multiple meta models ar used
 
 
