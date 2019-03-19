@@ -1,0 +1,3 @@
+import "filenotfound.json" as data
+access A1 data.name
+access A2 data.gender

@@ -1,0 +1,10 @@
+Model:
+    imports+=Json
+    access+=Access
+;
+Access:
+    'access' name=ID pyobj=[Json] '.' pyattr=[OBJECT]?
+;
+
+Json: 'import' filename=STRING 'as' name=ID;
+Comment: /\/\/.*$/;
