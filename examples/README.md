@@ -42,36 +42,42 @@ An example model file "data_flow.flow":
 
 #### Challenges for an Editor
 
- * multiple files are included (allow to navigate across files;
+ * Multiple files are included (allow to navigate across files;
    shared grammars).
- * multiple meta models ar used
+ * Multiple meta models are used.
+ * Model validation for *.flow and *.types is defined.
 
 ### [multimetamodel02_separate_packages](multimetamodel02_separate_packages)
 
 **Three python projects** define three metamodels based on three
 grammars. The metamodels reference each other.
 
-The same semantics as in the previous section are defined.
+ * The same semantics as in the previous section are defined.
+ * A code generator is defined.
 
 ![images/types_data_flow2.pu](images/types_data_flow2.png)
 
 #### Challenges for an Editor
 
- * multiple files are included (allow to navigate across files;
+ * Multiple files are included (allow to navigate across files;
    metamodels reference each other).
- * multiple meta models ar used
+ * Multiple meta models ar used
+ * Model validation for *.flow and *.types is defined.
+ * A code generator os defined.
 
 
 ### [multimetamodel03_non_textx_models](multimetamodel03_non_textx_models)
 
-A textx model references a json object.
+A textx model references a JSON object.
  
 ![images/json_ref_dsl.pu](images/json_ref_dsl.png)
 
 #### Challenges for an Editor
 
- * non-textx files are included (json file).
- * non-textx elements are references (OBJECT) from the json file.
+ * Non-textx files are included (json file).
+ * Non-textx elements are references (OBJECT) from the json file.
+ * Model validation is defined.
+
 
 ## Installation and usage of the DSLs
 

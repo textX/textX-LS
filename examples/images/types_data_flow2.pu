@@ -6,6 +6,7 @@ component Flow.tx <<grammar>> as FlowG
 component Types <<metamodel>> as Types
 component Data <<metamodel>> as Data
 component Flow <<metamodel>> as Flow
+component FlowCodeGen <<tool>> as FlowCodeGen
 
 Data --> "references" Types
 Flow --> "references" Data
@@ -13,5 +14,7 @@ Flow --> "references" Data
 Types -> "uses" TypesG
 Data -> "uses" DataG
 Flow -> "uses" FlowG
+FlowCodeGen --> "uses" Flow
+
 @enduml
 
