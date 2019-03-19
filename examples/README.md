@@ -10,6 +10,7 @@
 	pip install multimetamodel02_separate_packages/data_dsl/
 	pip install multimetamodel02_separate_packages/flow_dsl/
 	pip install multimetamodel02_separate_packages/flow_codegen/
+	pip install multimetamodel03_non_textx_models/
 
 ## Run the tests 
 
@@ -18,6 +19,7 @@
 	py.test multimetamodel02_separate_packages/data_dsl/tests
 	py.test multimetamodel02_separate_packages/flow_dsl/tests
 	py.test multimetamodel02_separate_packages/flow_codegen/tests
+	py.test multimetamodel03_non_textx_models/tests
 
 ## Run the executables
 
@@ -72,4 +74,20 @@ Expected outcome
 	validating types.type
 	validating types_with_error.type
 	  WARNING/ERROR: types_with_error.type:1:1: error: types must be lowercase
+
+### json_ref_dsl
+
+We can validate if all references to a json file from a textx model are ok:
+
+	cd multimetamodel03_non_textx_models/tests/models
+	json_ref_dsl_validate ok.jref 
+
+Expected output:
+
+	validating ok.jref
+	A1 --> pierre: ok
+	A2 --> male: ok
+
+
+
 
