@@ -85,12 +85,15 @@ A textx model references a JSON object.
 
 ## Installation and usage of the DSLs
 
-After setting up the virtual env you can do the following: TODO
+After setting up the virtual env you can do the following: 
+
+    egrep "# build\s*$" README.md | sed -r 's/# build/|| exit 1/' > temp.sh
+    bash temp.sh
 
 
 ### Setup the virtual environment
 
-	virtualenv -q venv -p $(which python3) # build
+	virtualenv venv -p $(which python3) # build
 	source ./venv/bin/activate # build
 
 ### Install all example projects
