@@ -7,7 +7,7 @@ component types_dsl <<project>> {
 note as TypesNote
 **API**: get_metamodel_types()
 **Responsibility**: parse and validate
-**Executable**: flow_dsl_validate
+**Executable**: types_dsl_validate
 end note
 
 component data_dsl <<project>> {
