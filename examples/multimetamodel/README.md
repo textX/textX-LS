@@ -101,13 +101,13 @@ To install the metamodels and run the tests (on unix-like system), you can do th
 
 ### Install all example projects
 
-	pip install -r requirements_dev.txt               # build 
-	pip install 01_separate_projects/types_dsl/     # build
-	pip install 01_separate_projects/data_dsl/      # build
-	pip install 01_separate_projects/flow_dsl/      # build
-	pip install 01_separate_projects/flow_codegen/  # build
-	pip install 02_shared_grammar/                  # build
-	pip install 03_non_textx_models/                # build
+	pip install -r requirements_dev.txt                # build 
+	pip install 01_separate_projects/types_dsl/        # build
+	pip install 01_separate_projects/data_dsl/         # build
+	pip install 01_separate_projects/flow_dsl/         # build
+	pip install 01_separate_projects/flow_codegen/     # build
+	pip install 02_shared_grammar/                     # build
+	pip install 03_non_textx_models/                   # build
 
 ### Run the tests 
 
