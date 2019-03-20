@@ -6,6 +6,6 @@ component JsonRef <<metamodel>> as JsonRef
 component Json <<python_module>> as Json
 
 JsonRef --> "uses" JsonRefG
-JsonRef -> "references" Json
+JsonRef -> "uses" Json
 @enduml
 
