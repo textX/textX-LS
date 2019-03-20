@@ -46,10 +46,13 @@ An example model file "data_flow.flow":
 
 #### Challenges for an Editor
 
+ * A simple metamodel ```types_dsl``` (including validation) is defined to show how to integrate such a project
+   into the textX-LS framework.
  * Multiple files are included (allow to navigate across files;
    shared grammars).
  * Multiple meta models are used.
  * Model validation for *.flow and *.types is defined.
+ * A code generator is defined.
 
 ### [02_shared_grammar](02_shared_grammar)
 
@@ -67,7 +70,6 @@ grammars (including each other).
    metamodels reference each other).
  * Multiple meta models ar used
  * Model validation for *.flow and *.types is defined.
- * A code generator is defined.
 
 
 ### [03_non_textx_models](03_non_textx_models)
