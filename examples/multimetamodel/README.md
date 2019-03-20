@@ -3,9 +3,13 @@
 ## Overview
 
 Here, we present some DSLs consisting of multiple metamodels.
- * [01_separate_projects](01_separate_projects) - textx metamodels refencing each other.
- * [02_shared_grammar](02_shared_grammar) - textx metamodels based on grammars including each other.
- * [03_non_textx_models](03_non_textx_models) - text metamodel referencing a JSON file.
+ * [01_separate_projects](01_separate_projects) - textX metamodels referencing each other.
+ * [02_shared_grammar](02_shared_grammar) - textX metamodels based on grammars including each other.
+ * [03_non_textx_models](03_non_textx_models) - textX metamodel referencing a JSON file.
+
+The goal is
+ * to show how to **setup textX DSL projects** (focus: multi metamodels), and
+ * to show how to **integrate textX DSLs into textX-LS**.
 
 ### [01_separate_projects](01_separate_projects)
 
@@ -15,11 +19,11 @@ grammars and one code generator project. The metamodels reference each other.
 ![images/types_data_flow_01.pu](images/types_data_flow_01.png)
 
 The **Types DSL** defines types (like an int). This is a 
-trivial DSL with no depencies to other DSLs.
+trivial DSL with no dependencies to other DSLs.
 The **Data DSL** defines data structures 
-(containing attributes based on the Types DSL).
-The **Flow DSL** defines Algorithms with inputs/outputs
-based on the Data DSL. It also allows to connect 
+(containing attributes based on the "Types DSL").
+The **Flow DSL** defines algorithms with inputs/outputs
+based on the "Data DSL". It also allows to connect 
 algorithms (matching structure types are checked).
 
 
@@ -46,11 +50,12 @@ An example model file "data_flow.flow":
 
 #### Challenges for an Editor
 
- * A simple metamodel ```types_dsl``` (including validation) is defined to show how to integrate such a project
+ * A simple metamodel ```types_dsl``` (including validation) is defined 
+   to show how to integrate such a project
    into the textX-LS framework.
  * Multiple files are included (allow to navigate across files;
-   shared grammars).
- * Multiple meta models are used.
+   metamodels reference each other).
+ * Multiple metamodels are used.
  * Model validation for *.flow and *.types is defined.
  * A code generator is defined.
 
@@ -67,21 +72,21 @@ grammars (including each other).
 #### Challenges for an Editor
 
  * Multiple files are included (allow to navigate across files;
-   metamodels reference each other).
+   shared grammars).
  * Multiple meta models ar used
  * Model validation for *.flow and *.types is defined.
 
 
 ### [03_non_textx_models](03_non_textx_models)
 
-A textx model references a JSON object.
+A textX model references a JSON object.
  
 ![images/json_ref_dsl.pu](images/json_ref_dsl.png)
 
 #### Challenges for an Editor
 
- * Non-textx files are included (json file).
- * Non-textx elements are references (OBJECT) from the json file.
+ * Non-textX files are included (json file).
+ * Non-textX elements are references (OBJECT) from the json file.
  * Model validation is defined.
 
 
@@ -174,7 +179,7 @@ Expected outcome
 
 #### json_ref_dsl
 
-We can validate if all references to a json file from a textx model are ok:
+We can validate if all references to a json file from a textX model are ok:
 
 	cd 03_non_textx_models/tests/models
 	json_ref_dsl_validate ok.jref 
