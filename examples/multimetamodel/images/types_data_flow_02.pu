@@ -1,0 +1,33 @@
+@startuml
+component types_data_flow_dsls <<project>> {
+	component Types.tx <<grammar>> as TypesG
+	component Data.tx <<grammar>> as DataG
+	component Flow.tx <<grammar>> as FlowG
+
+	component Types <<metamodel>> as Types
+	component Data <<metamodel>> as Data
+	component Flow <<metamodel>> as Flow
+}
+
+note as Note
+**API**:
+ get_metamodel_types()
+ get_metamodel_data()
+ get_metamodel_flow()
+**Responsibility**:
+ parse and validate
+**Executable**: 
+ types_data_flow_dsls_validate
+end note
+
+types_data_flow_dsls . Note
+
+DataG --> "includes" TypesG
+FlowG --> "includes" DataG
+
+Types -> "uses" TypesG
+Data -> "uses" DataG
+Flow -> "uses" FlowG
+
+@enduml
+

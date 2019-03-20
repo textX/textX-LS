@@ -1,0 +1,57 @@
+@startuml
+
+component types_dsl <<project>> {
+	component Types <<metamodel>> as Types
+	component Types.tx <<grammar>> as TypesG
+}
+note as TypesNote
+**API**: get_metamodel_types()
+**Responsibility**: parse and validate
+**Executable**: flow_dsl_validate
+end note
+
+component data_dsl <<project>> {
+	component Data <<metamodel>> as Data
+	component Data.tx <<grammar>> as DataG
+}
+note as DataNote
+**API**: get_metamodel_data()
+**Responsibility**: parse
+**Executable**: data_dsl_validate
+end note
+
+component flow_dsl <<project>> {
+	component Flow <<metamodel>> as Flow
+	component Flow.tx <<grammar>> as FlowG
+}
+note as FlowNote
+**API**: get_metamodel_flow()
+**Responsibility**: parse and validate
+**Executable**: flow_dsl_validate
+end note
+
+component flow_codegen <<project>> {
+	component FlowCodeGen <<tool>> as FlowCodeGen
+}
+note as FlowCodeGenNote
+**API**: codegen()
+**Responsibility**: generate code
+**Executable**: flow_dsl_codegen
+end note
+
+
+types_dsl . TypesNote
+data_dsl . DataNote
+flow_dsl . FlowNote
+flow_codegen . FlowCodeGenNote
+
+Data --> "references" Types
+Flow --> "references" Data
+
+Types -> "uses" TypesG
+Data -> "uses" DataG
+Flow -> "uses" FlowG
+FlowCodeGen --> "uses" Flow
+
+@enduml
+

@@ -85,29 +85,32 @@ A textx model references a JSON object.
 
 ## Installation and usage of the DSLs
 
+After setting up the virtual env you can do the following: TODO
+
+
 ### Setup the virtual environment
 
-	virtualenv venv -p $(which python3)
-	source ./venv/bin/activate
+	virtualenv -q venv -p $(which python3) # build
+	source ./venv/bin/activate # build
 
 ### Install all example projects
 
-	pip install -r requirements_dev.txt
-	pip install multimetamodel01_shared_grammar/
-	pip install multimetamodel02_separate_packages/types_dsl/
-	pip install multimetamodel02_separate_packages/data_dsl/
-	pip install multimetamodel02_separate_packages/flow_dsl/
-	pip install multimetamodel02_separate_packages/flow_codegen/
-	pip install multimetamodel03_non_textx_models/
+	pip install -r requirements_dev.txt               # build 
+	pip install 01_separate_projects/types_dsl/     # build
+	pip install 01_separate_projects/data_dsl/      # build
+	pip install 01_separate_projects/flow_dsl/      # build
+	pip install 01_separate_projects/flow_codegen/  # build
+	pip install 02_shared_grammar/                  # build
+	pip install 03_non_textx_models/                # build
 
 ### Run the tests 
 
-	py.test multimetamodel01_shared_grammar/tests/
-	py.test multimetamodel02_separate_packages/types_dsl/tests
-	py.test multimetamodel02_separate_packages/data_dsl/tests
-	py.test multimetamodel02_separate_packages/flow_dsl/tests
-	py.test multimetamodel02_separate_packages/flow_codegen/tests
-	py.test multimetamodel03_non_textx_models/tests
+	py.test 01_separate_projects/types_dsl/tests       # build
+	py.test 01_separate_projects/data_dsl/tests        # build
+	py.test 01_separate_projects/flow_dsl/tests        # build
+	py.test 01_separate_projects/flow_codegen/tests    # build
+	py.test 02_shared_grammar/tests/                   # build
+	py.test 03_non_textx_models/tests                  # build
 
 ### Run the executables
 
@@ -117,20 +120,20 @@ Here, you can validate the model used by the tests files interactively.
 
 Here, we have three separate validators, one for each DSL (one is used here).
 
-	cd multimetamodel02_separate_packages/flow_dsl/tests/models/
+	cd 01_separate_projects/flow_dsl/tests/models/
 	flow_dsl_validate *.flow
 
 Expected outcome
 
 	validating data_flow.flow
 	validating data_flow_including_error.flow
-	  WARNING/ERROR: /home/pierre/checkouts/textX-LS/examples/multimetamodel01_shared_grammar/tests/models/types_with_error.type:1:1: error: types must be lowercase
+	  WARNING/ERROR: /home/pierre/checkouts/textX-LS/examples/02_shared_grammar/tests/models/types_with_error.type:1:1: error: types must be lowercase
 	validating data_flow_with_error.flow
 	  WARNING/ERROR: data_flow_with_error.flow:5:1: error: algo data types must match
 
 #### flow_dsl code generator
 
-	cd multimetamodel02_separate_packages/flow_codegen/tests/models/
+	cd 01_separate_projects/flow_codegen/tests/models/
 	flow_dsl_codegen data_flow.flow
 	plantuml data_flow.flow.pu # optional
 
@@ -138,7 +141,7 @@ Expected outcome
 
 	validating data_flow.flow
 	validating data_flow_including_error.flow
-	  WARNING/ERROR: /home/pierre/checkouts/textX-LS/examples/multimetamodel01_shared_grammar/tests/models/types_with_error.type:1:1: error: types must be lowercase
+	  WARNING/ERROR: /home/pierre/checkouts/textX-LS/examples/02_shared_grammar/tests/models/types_with_error.type:1:1: error: types must be lowercase
 	validating data_flow_with_error.flow
 	  WARNING/ERROR: data_flow_with_error.flow:5:1: error: algo data types must match
 	
@@ -146,19 +149,19 @@ Expected outcome
 
 Here, we have one validator for all DSLs (metamodel selected by filename suffix).
 
-	cd multimetamodel01_shared_grammar/tests/models/
+	cd 02_shared_grammar/tests/models/
 	types_data_flow_dsls_validate *.*
 
 Expected outcome
 
 	validating data_flow.flow
 	validating data_flow_including_error.flow
-	  WARNING/ERROR: /home/pierre/checkouts/textX-LS/examples/multimetamodel01_shared_grammar/tests/models/types_with_error.type:1:1: error: types must be lowercase
+	  WARNING/ERROR: /home/pierre/checkouts/textX-LS/examples/02_shared_grammar/tests/models/types_with_error.type:1:1: error: types must be lowercase
 	validating data_flow_with_error.flow
 	  WARNING/ERROR: data_flow_with_error.flow:5:1: error: algo data types must match
 	validating data_structures.data
 	validating data_structures_including_error.data
-	  WARNING/ERROR: /home/pierre/checkouts/textX-LS/examples/multimetamodel01_shared_grammar/tests/models/types_with_error.type:1:1: error: types must be lowercase
+	  WARNING/ERROR: /home/pierre/checkouts/textX-LS/examples/02_shared_grammar/tests/models/types_with_error.type:1:1: error: types must be lowercase
 	validating types.type
 	validating types_with_error.type
 	  WARNING/ERROR: types_with_error.type:1:1: error: types must be lowercase
@@ -167,7 +170,7 @@ Expected outcome
 
 We can validate if all references to a json file from a textx model are ok:
 
-	cd multimetamodel03_non_textx_models/tests/models
+	cd 03_non_textx_models/tests/models
 	json_ref_dsl_validate ok.jref 
 
 Expected output:
