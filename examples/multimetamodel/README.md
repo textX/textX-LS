@@ -88,6 +88,7 @@ A textx model references a JSON object.
 After setting up the virtual env you can do the following: 
 
     egrep "# build\s*$" README.md | sed -r 's/# build/|| exit 1/' > temp.sh
+    # Have a look at temp.sh before executing...
     bash temp.sh
 
 
