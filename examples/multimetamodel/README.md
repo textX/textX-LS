@@ -4,6 +4,10 @@
 
 Here, we present some DSLs consisting of multiple metamodels.
  * [01_separate_projects](01_separate_projects) - textX metamodels referencing each other.
+   * [types_dsl](01_separate_projects/types_dsl) - separate project (see below).
+   * [data_dsl](01_separate_projects/data_dsl) - separate project (see below).
+   * [flow_dsl](01_separate_projects/flow_dsl) - separate project (see below).
+   * [flow_codegen](01_separate_projects/flow_codegen) - separate project (see below).
  * [02_shared_grammar](02_shared_grammar) - textX metamodels based on grammars including each other.
  * [03_non_textx_models](03_non_textx_models) - textX metamodel referencing a JSON file.
 
