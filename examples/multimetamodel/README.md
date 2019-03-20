@@ -85,8 +85,9 @@ A textX model references a JSON object.
 
 #### Challenges for an Editor
 
- * Non-textX files are included (json file).
- * Non-textX elements are references (OBJECT) from the json file.
+ * Non-textX files are included (JSON file).
+ * Non-textX elements from the JSON file (textX type "OBJECT") are referenced from the textX grammar using
+   a custom scope provider.
  * Model validation is defined.
 
 
