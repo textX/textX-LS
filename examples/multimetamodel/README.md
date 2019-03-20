@@ -87,7 +87,7 @@ A textx model references a JSON object.
 
 ## Installation and usage of the DSLs
 
-After setting up the virtual env you can do the following: 
+To install the metamodels and run the tests (on unix-like system), you can do the following: 
 
     egrep "# build\s*$" README.md | sed -r 's/# build/|| exit 1/' > temp.sh
     # Have a look at temp.sh before executing...
