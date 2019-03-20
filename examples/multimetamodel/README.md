@@ -3,15 +3,19 @@
 ## Overview
 
 Here, we present some DSLs consisting of multiple metamodels.
+ * [01_separate_projects](01_separate_projects) - textx metamodels refencing each other.
+ * [02_shared_grammar](02_shared_grammar) - textx metamodels based on grammars including each other.
+ * [03_non_textx_models](03_non_textx_models) - text metamodel referencing a JSON file.
 
-### [multimetamodel01_shared_grammar](multimetamodel01_shared_grammar)
+### [01_separate_projects](01_separate_projects)
 
-**One python project** defines three metamodels based on three
-grammars (including each other).
+**Four separate python projects** define three metamodels based on three
+grammars and one code generator project. The metamodels reference each other.
 
-![images/types_data_flow.pu](images/types_data_flow.png)
+![images/types_data_flow_01.pu](images/types_data_flow_01.png)
 
-The **Types DSL** defines types (like an int). 
+The **Types DSL** defines types (like an int). This is a 
+trivial DSL with no depencies to other DSLs.
 The **Data DSL** defines data structures 
 (containing attributes based on the Types DSL).
 The **Flow DSL** defines Algorithms with inputs/outputs
@@ -47,15 +51,15 @@ An example model file "data_flow.flow":
  * Multiple meta models are used.
  * Model validation for *.flow and *.types is defined.
 
-### [multimetamodel02_separate_packages](multimetamodel02_separate_packages)
+### [02_shared_grammar](02_shared_grammar)
 
-**Three python projects** define three metamodels based on three
-grammars. The metamodels reference each other.
+**One python project** defines three metamodels based on three
+grammars (including each other).
 
  * The same semantics as in the previous section are defined.
  * A code generator is defined.
 
-![images/types_data_flow2.pu](images/types_data_flow2.png)
+![images/types_data_flow_02.pu](images/types_data_flow_02.png)
 
 #### Challenges for an Editor
 
@@ -66,7 +70,7 @@ grammars. The metamodels reference each other.
  * A code generator is defined.
 
 
-### [multimetamodel03_non_textx_models](multimetamodel03_non_textx_models)
+### [03_non_textx_models](03_non_textx_models)
 
 A textx model references a JSON object.
  
