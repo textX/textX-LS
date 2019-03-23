@@ -26,7 +26,9 @@ dev_require = [
 ]
 
 tests_require = [
-    "pytest==4.0.2"
+    "coverage==4.5.2",
+    "pytest==4.0.2",
+    "pytest-cov==2.6.1"
 ]
 
 setup(
