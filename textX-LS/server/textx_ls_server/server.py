@@ -1,4 +1,5 @@
-from pygls.features import TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_OPEN
+from pygls.features import (TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE,
+                            TEXT_DOCUMENT_DID_OPEN)
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.types import (DidChangeTextDocumentParams,
@@ -51,6 +52,12 @@ def doc_change(ls: TextXLanguageServer, params: DidChangeTextDocumentParams,
                doc: Document, lang_temp: LanguageTemplate):
     """Validates model on document text change."""
     send_diagnostics(ls, lang_temp, doc)
+
+
+@textx_server.feature(TEXT_DOCUMENT_DID_CLOSE)
+def doc_close(ls: TextXLanguageServer, params: DidCloseTextDocumentParams):
+    """Clear diagnostics on document close event."""
+    ls.publish_diagnostics(params.textDocument.uri, [])
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_OPEN)
