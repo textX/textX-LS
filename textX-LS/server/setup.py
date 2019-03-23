@@ -22,13 +22,13 @@ README = codecs.open(os.path.join(os.path.dirname(__file__), 'README.md'),
 
 dev_require = [
     "bandit==1.5.1",
-    "flake8==3.7.1"
+    "flake8==3.7.7"
 ]
 
 tests_require = [
-    "coverage==4.5.2",
+    "coverage==4.5.3",
     "mock==2.0.0",
-    "pytest==4.0.2"
+    "pytest==4.3.1",
     "pytest-cov==2.6.1"
 ]
 
