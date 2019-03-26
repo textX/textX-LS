@@ -4,9 +4,28 @@ from pygls.types import (Position, Range, TextDocumentContentChangeEvent,
 from .. import CALL_TIMEOUT
 from ..conftest import builtin_notifications
 from ..lsp import (send_text_doc_did_change_request,
+                   send_text_doc_did_close_request,
                    send_text_doc_did_open_request)
 from ..test_workspace import (TEXTXFILE_PATH, TEXTXFILE_WITH_ERROR_PATH,
                               doc_from_path)
+
+
+def test_empty_diagnostics_on_doc_close(client_server):
+    client, server = client_server
+
+    doc = doc_from_path(TEXTXFILE_PATH, 'textxfile')
+    # Add doc to server's workspace directly
+    server.workspace.put_document(doc)
+
+    send_text_doc_did_close_request(client, doc)
+
+    params = builtin_notifications.get(timeout=CALL_TIMEOUT)
+
+    assert params.uri == doc.uri
+    assert params.diagnostics == []
+
+    # Remove all docs from the workspace
+    server.workspace._docs = {}
 
 
 def test_valid_textxfile_diagnostics_on_doc_open(client_server):

@@ -19,6 +19,7 @@
         "allowSecrets": false
       },
       "pathFilters": [],
+      "requireCommentsForNonTeamMembersOnly": false,
       "isCommentRequiredForPullRequest": false,
       "triggerType": 64
     }
@@ -52,7 +53,7 @@
   "tags": [],
   "_links": {
     "self": {
-      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/3?revision=7"
+      "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/3?revision=8"
     },
     "web": {
       "href": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_build/definition?definitionId=3"
@@ -65,7 +66,7 @@
     }
   },
   "buildNumberFormat": "$(BuildID)",
-  "comment": "Install deps win",
+  "comment": "Add coverage report",
   "jobAuthorizationScope": 1,
   "jobTimeoutInMinutes": 60,
   "jobCancelTimeoutInMinutes": 5,
@@ -81,6 +82,7 @@
             "alwaysRun": false,
             "displayName": "Use Python $(python.version)",
             "timeoutInMinutes": 0,
+            "condition": "succeeded()",
             "task": {
               "id": "33c63b11-352b-45a2-ba1b-54cb568a29ca",
               "versionSpec": "0.*",
@@ -99,6 +101,7 @@
             "alwaysRun": false,
             "displayName": "Install dependencies",
             "timeoutInMinutes": 0,
+            "condition": "succeeded()",
             "task": {
               "id": "d9bafed4-0b18-4f58-968d-86655b4d2ce9",
               "versionSpec": "2.*",
@@ -162,7 +165,7 @@
               "definitionType": "task"
             },
             "inputs": {
-              "script": "pytest",
+              "script": "pytest --cov-report term-missing --cov=textx_ls_core tests/ --cov-fail-under 100",
               "workingDirectory": "textX-LS/core",
               "failOnStderr": "false"
             }
@@ -219,7 +222,7 @@
               "definitionType": "task"
             },
             "inputs": {
-              "script": "pytest",
+              "script": "pytest --cov-report term-missing --cov=textx_ls_server tests/ --cov-fail-under 100",
               "workingDirectory": "textX-LS/server",
               "failOnStderr": "false"
             }
@@ -289,7 +292,9 @@
               "arguments": "",
               "script": "./node_modules/.bin/tslint src\\*.ts",
               "workingDirectory": "client",
-              "failOnStderr": "false"
+              "failOnStderr": "false",
+              "noProfile": "true",
+              "noRc": "true"
             }
           },
           {
@@ -311,7 +316,9 @@
               "arguments": "",
               "script": "exit 1",
               "workingDirectory": "",
-              "failOnStderr": "false"
+              "failOnStderr": "false",
+              "noProfile": "true",
+              "noRc": "true"
             }
           }
         ],
@@ -341,19 +348,23 @@
       "apiUrl": "https://api.github.com/repos/textX/textX-LS",
       "branchesUrl": "https://api.github.com/repos/textX/textX-LS/branches",
       "cloneUrl": "https://github.com/textX/textX-LS.git",
-      "fullName": "textX/textX-LS",
-      "manageUrl": "https://github.com/textX/textX-LS",
-      "refsUrl": "https://api.github.com/repos/textX/textX-LS/git/refs",
-      "defaultBranch": "master",
       "connectedServiceId": "d365b9d0-e402-450a-a2ea-d47fb5250f8b",
-      "isPrivate": "False",
-      "isFork": "False",
-      "ownerAvatarUrl": "https://avatars3.githubusercontent.com/u/40911596?v=4",
-      "lastUpdated": "01/20/2019 15:44:00",
-      "nodeId": "MDEwOlJlcG9zaXRvcnkxNjM2MDk3ODY=",
+      "defaultBranch": "master",
+      "fullName": "textX/textX-LS",
       "hasAdminPermissions": "True",
-      "safeOwnerId": "40911596",
+      "isFork": "False",
+      "isPrivate": "False",
+      "lastUpdated": "03/14/2019 09:57:14",
+      "manageUrl": "https://github.com/textX/textX-LS",
+      "nodeId": "MDEwOlJlcG9zaXRvcnkxNjM2MDk3ODY=",
       "ownerId": "40911596",
+      "orgName": "textX",
+      "refsUrl": "https://api.github.com/repos/textX/textX-LS/git/refs",
+      "shortName": "textX-LS",
+      "ownerAvatarUrl": "https://avatars3.githubusercontent.com/u/40911596?v=4",
+      "archived": "False",
+      "safeId": "textX/textX-LS",
+      "safeOwnerId": "40911596",
       "safeOwnerName": "textX",
       "safeRepository": "textX/textX-LS",
       "ownerIsAUser": "False",
@@ -378,7 +389,7 @@
   "quality": 1,
   "authoredBy": {
     "displayName": "Daniel Elero",
-    "url": "https://app.vssps.visualstudio.com/A57b67369-cc70-42b8-8966-84ad7135237f/_apis/Identities/2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "url": "https://spsprodweu3.vssps.visualstudio.com/A57b67369-cc70-42b8-8966-84ad7135237f/_apis/Identities/2eb9a3c9-aaff-4182-9cf2-008673437d51",
     "_links": {
       "avatar": {
         "href": "https://dev.azure.com/textX/_apis/GraphProfile/MemberAvatars/msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
@@ -386,7 +397,7 @@
     },
     "id": "2eb9a3c9-aaff-4182-9cf2-008673437d51",
     "uniqueName": "danixeee@gmail.com",
-    "imageUrl": "https://dev.azure.com/textX/_api/_common/identityImage?id=2eb9a3c9-aaff-4182-9cf2-008673437d51",
+    "imageUrl": "https://dev.azure.com/textX/_apis/GraphProfile/MemberAvatars/msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw",
     "descriptor": "msa.NjBmYTk2ZjUtYjk2ZS03NzY2LThkNmQtY2Y0ZWI2Mjc3MDYw"
   },
   "drafts": [],
@@ -407,13 +418,13 @@
   },
   "id": 3,
   "name": "[textX-LS-Windows] Build and test",
-  "url": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/3?revision=7",
+  "url": "https://dev.azure.com/textX/eda60864-9145-4ba1-adc1-9d7ab7d7487e/_apis/build/Definitions/3?revision=8",
   "uri": "vstfs:///Build/Definition/3",
   "path": "\\",
   "type": 2,
   "queueStatus": 0,
-  "revision": 7,
-  "createdDate": "2019-02-03T18:20:34.840Z",
+  "revision": 8,
+  "createdDate": "2019-03-23T20:12:21.720Z",
   "project": {
     "id": "eda60864-9145-4ba1-adc1-9d7ab7d7487e",
     "name": "textX-LS",

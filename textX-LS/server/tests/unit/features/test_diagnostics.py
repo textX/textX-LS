@@ -47,6 +47,13 @@ def test_create_diagnostics(doc, err, msg, st_line, st_col, end_line, end_col):
             assert diags[0].range.end.character == end_col
 
 
+def test_get_diagnostic_message():
+    err = TextXSyntaxError('test', 2, 2)
+    err.args = ()
+    msg = diag._get_diagnostic_message(err)
+    assert msg == str(err)
+
+
 @pytest.mark.parametrize("diags, ", [
     ([]),
     ([Diagnostic(Range(Position(5, 5), Position(5, 5)), 'test')])
