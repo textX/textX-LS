@@ -1,8 +1,5 @@
-resources:
-- repo: self
-
 pool:
-  vmImage: Hosted VS2017
+  name: Hosted VS2017
   demands: npm
 
 variables:
@@ -40,7 +37,7 @@ steps:
   displayName: '[textX-LS-core] Flake8'
   continueOnError: true
 
-- script: pytest
+- script: 'pytest --cov-report term-missing --cov=textx_ls_core tests/ --cov-fail-under 100'
   workingDirectory: 'textX-LS/core'
   displayName: '[textX-LS-core] Tests'
   continueOnError: true
@@ -55,7 +52,7 @@ steps:
   displayName: '[textX-LS-server] Flake8'
   continueOnError: true
 
-- script: pytest
+- script: 'pytest --cov-report term-missing --cov=textx_ls_server tests/ --cov-fail-under 100'
   workingDirectory: 'textX-LS/server'
   displayName: '[textX-LS-server] Tests'
   continueOnError: true
