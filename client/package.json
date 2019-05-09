@@ -6,16 +6,17 @@
   "license": "MIT",
   "version": "0.1.0",
   "publisher": "textX",
-  "icon": "art/textX-logo.png",
+  "icon": "media/textX-logo.png",
   "engines": {
     "vscode": "^1.33.1"
   },
   "main": "./dist/extension",
   "categories": [
     "Programming Languages",
-    "Domain Specific Languages",
-    "DSL",
-    "textX"
+    "Formatters",
+    "Snippets",
+    "Themes",
+    "Linters"
   ],
   "activationEvents": [
     "workspaceContains:Textxfile",
@@ -23,6 +24,35 @@
     "onLanguage:textxfile"
   ],
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Docker configuration options",
+      "properties": {
+        "textx.showExplorer": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show or hide the textX Explorer"
+        }
+      }
+    },
+    "views": {
+      "textxView": [
+        {
+          "id": "textxExplorer",
+          "name": "Explorer",
+          "when": "config.textx.showExplorer == true"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "icon": "media/textX-menu.svg",
+          "id": "textxView",
+          "title": "textX"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "textxfile",
