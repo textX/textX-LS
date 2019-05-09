@@ -21,9 +21,39 @@
   "activationEvents": [
     "workspaceContains:Textxfile",
     "onLanguage:textx",
-    "onLanguage:textxfile"
+    "onLanguage:textxfile",
+    "onView:textxView"
   ],
   "contributes": {
+    "commands": [
+      {
+        "command": "textx.installLanguage",
+        "title": "Install language",
+        "icon": {
+          "light": "resources/light/add.svg",
+          "dark": "resources/dark/add.svg"
+        },
+        "category": "textX"
+      },
+      {
+        "command": "textx.uninstallLanguage",
+        "title": "Uninstall language",
+        "icon": {
+          "light": "resources/light/bin.svg",
+          "dark": "resources/dark/bin.svg"
+        },
+        "category": "textX"
+      },
+      {
+        "command": "textx.scaffoldLanguage",
+        "title": "Scaffold language",
+        "icon": {
+          "light": "resources/light/thunder.svg",
+          "dark": "resources/dark/thunder.svg"
+        },
+        "category": "textX"
+      }
+    ],
     "configuration": {
       "type": "object",
       "title": "Docker configuration options",
@@ -35,24 +65,18 @@
         }
       }
     },
-    "views": {
-      "textxView": [
-        {
-          "id": "textxExplorer",
-          "name": "Explorer",
-          "when": "config.textx.showExplorer == true"
-        }
-      ]
-    },
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "icon": "media/textX-menu.svg",
-          "id": "textxView",
-          "title": "textX"
-        }
-      ]
-    },
+    "grammars": [
+      {
+        "language": "textx",
+        "scopeName": "source.textx",
+        "path": "./syntaxes/textx.json"
+      },
+      {
+        "language": "textxfile",
+        "scopeName": "source.textxfile",
+        "path": "./syntaxes/textxfile.json"
+      }
+    ],
     "languages": [
       {
         "id": "textxfile",
@@ -75,24 +99,51 @@
         "configuration": "./language-configuration.json"
       }
     ],
-    "grammars": [
-      {
-        "language": "textx",
-        "scopeName": "source.textx",
-        "path": "./syntaxes/textx.json"
-      },
-      {
-        "language": "textxfile",
-        "scopeName": "source.textxfile",
-        "path": "./syntaxes/textxfile.json"
-      }
-    ],
+    "menus": {
+      "commandPalette": [],
+      "view/title": [
+        {
+          "command": "textx.scaffoldLanguage",
+          "when": "view == textxExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "textx.installLanguage",
+          "when": "view == textxExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "textx.uninstallLanguage",
+          "when": "view == textxExplorer",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": []
+    },
     "snippets": [
       {
         "language": "textxfile",
         "path": "./snippets/textxfile.json"
       }
-    ]
+    ],
+    "views": {
+      "textxView": [
+        {
+          "id": "textxExplorer",
+          "name": "Explorer",
+          "when": "config.textx.showExplorer == true"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "icon": "media/textX-menu.svg",
+          "id": "textxView",
+          "title": "textX"
+        }
+      ]
+    }
   },
   "scripts": {
     "postinstall": "node ./node_modules/vscode/bin/install",
