@@ -22,13 +22,13 @@
     "workspaceContains:Textxfile",
     "onLanguage:textx",
     "onLanguage:textxfile",
-    "onView:textxView"
+    "onView:textxExplorer"
   ],
   "contributes": {
     "commands": [
       {
         "command": "textx.installLanguage",
-        "title": "Install language",
+        "title": "Install textX language",
         "icon": {
           "light": "resources/light/add.svg",
           "dark": "resources/dark/add.svg"
@@ -37,7 +37,7 @@
       },
       {
         "command": "textx.uninstallLanguage",
-        "title": "Uninstall language",
+        "title": "Uninstall textX language",
         "icon": {
           "light": "resources/light/bin.svg",
           "dark": "resources/dark/bin.svg"
@@ -46,7 +46,7 @@
       },
       {
         "command": "textx.scaffoldLanguage",
-        "title": "Scaffold language",
+        "title": "Scaffold textX language",
         "icon": {
           "light": "resources/light/thunder.svg",
           "dark": "resources/dark/thunder.svg"
@@ -100,22 +100,33 @@
       }
     ],
     "menus": {
-      "commandPalette": [],
+      "explorer/context": [
+        {
+          "command": "textx.installLanguage",
+          "group": "textX@1",
+          "when": "resourceLangId == python && resourceFilename == setup.py"
+        },
+        {
+          "command": "textx.uninstallLanguage",
+          "group": "textX@2",
+          "when": "resourceLangId == python && resourceFilename == setup.py"
+        }
+      ],
       "view/title": [
         {
-          "command": "textx.scaffoldLanguage",
+          "command": "textx.uninstallLanguage",
           "when": "view == textxExplorer",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
           "command": "textx.installLanguage",
           "when": "view == textxExplorer",
-          "group": "navigation"
+          "group": "navigation@2"
         },
         {
-          "command": "textx.uninstallLanguage",
+          "command": "textx.scaffoldLanguage",
           "when": "view == textxExplorer",
-          "group": "navigation"
+          "group": "navigation@3"
         }
       ],
       "view/item/context": []
