@@ -1,8 +1,10 @@
-.vscode/**
-typings/**
-out/test/**
-test/**
+.vscode
+node_modules
 src/**
-**/*.map
+out/**
+package-json.lock
 tsconfig.json
 tslint.json
+webpack.config.js
+*.vsix
+*.log

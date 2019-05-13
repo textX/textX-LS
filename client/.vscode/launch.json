@@ -3,19 +3,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch Client",
             "type": "extensionHost",
             "request": "launch",
-            "name": "Launch Client",
             "runtimeExecutable": "${execPath}",
-            "sourceMaps": true,
             "args": [
-                "--disable-extensions",
-                "--extensionDevelopmentPath=${workspaceRoot}",
+                // "--disable-extensions",
+                "--extensionDevelopmentPath=${workspaceFolder}"
             ],
+            "sourceMaps": true,
             "outFiles": [
-                "${workspaceRoot}/out/**/*.js"
+                "${workspaceFolder}/dist/**/*.js"
             ],
-            "preLaunchTask": "textx-extension-watch:client",
+            "preLaunchTask": "compile:client",
             "env": {
                 "SERVER_PORT": "2087",
                 "VSCODE_DEBUG_MODE": "true"
@@ -25,13 +25,13 @@
             "name": "Launch Server",
             "type": "python",
             "request": "launch",
-            "console": "none",
+            "console": "integratedTerminal",
             "module": "textx_ls_server",
             "args": [
                 "--tcp",
                 "--port=2087"
             ],
-            "debugStdLib": true,
+            "justMyCode": false,
             "pythonPath": "${config:python.pythonPath}",
             "cwd": "${workspaceFolder}/../textX-LS/server",
             "env": {
