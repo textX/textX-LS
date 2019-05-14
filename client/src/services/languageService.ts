@@ -95,7 +95,15 @@ export class LanguageService implements ILanguageService {
       }
 
       if (languageName) {
-        this.uninstall(languageName.toString().trim());
+        const decision = await window.showQuickPick(["Yes", "No"], {
+          canPickMany: false,
+          ignoreFocusOut: true,
+          placeHolder: `Are you sure you want to delete ${languageName}?`,
+        });
+
+        if (decision === "Yes") {
+          this.uninstall(languageName.toString().trim());
+        }
       }
     });
   }
