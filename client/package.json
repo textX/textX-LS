@@ -22,7 +22,12 @@
     "workspaceContains:Textxfile",
     "onLanguage:textx",
     "onLanguage:textxfile",
-    "onView:textxExplorer"
+    "onView:textxLanguages",
+    "onView:textxGenerators",
+    "onCommand:textx.installLanguage",
+    "onCommand:textx.installLanguageEditable",
+    "onCommand:textx.uninstallLanguage",
+    "onCommand:textx.scaffoldLanguage"
   ],
   "contributes": {
     "commands": [
@@ -165,8 +170,8 @@
           "when": "config.textx.showExplorer == true"
         },
         {
-          "id": "textxCommands",
-          "name": "Commands",
+          "id": "textxGenerators",
+          "name": "Generators",
           "when": "config.textx.showExplorer == true"
         }
       ]

@@ -6,7 +6,7 @@ import { TEXTX_LS_SERVER } from "./constants";
 import container from "./inversify.config";
 import { installLSWithProgress } from "./setup";
 import TYPES from "./types";
-import { ILanguageProvider, IGeneratorProvider } from "./ui/explorer";
+import { IGeneratorProvider, ILanguageProvider } from "./ui/explorer";
 
 let client: LanguageClient;
 
@@ -72,7 +72,7 @@ export async function activate(context: ExtensionContext) {
   const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
 
   // Tree Providers
-  window.registerTreeDataProvider("textxCommands", generatorProvider);
+  window.registerTreeDataProvider("textxGenerators", generatorProvider);
   window.registerTreeDataProvider("textxLanguages", languageProvider);
 
   context.subscriptions.push(client.start());

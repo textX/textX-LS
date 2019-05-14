@@ -39,11 +39,11 @@ class TextXProtocol(LanguageServerProtocol):
 
 
 class TextXLanguageServer(LanguageServer):
-    CMD_GET_GENERATORS = "textx/getGenerators"
-    CMD_GET_LANGUAGES = "textx/getLanguages"
-    CMD_INSTALL_LANGUAGE = "textx/installLanguage"
-    CMD_SCAFFOLD_LANGUAGE = "textx/scaffoldLanguage"
-    CMD_UNINSTALL_LANGUAGE = "textx/uninstallLanguage"
+    CMD_GENERATOR_LIST = "textx/getGenerators"
+    CMD_LANGUAGE_LIST = "textx/getLanguages"
+    CMD_LANGUAGE_INSTALL = "textx/installLanguage"
+    CMD_LANGUAGE_SCAFFOLD = "textx/scaffoldLanguage"
+    CMD_LANGUAGE_UNINSTALL = "textx/uninstallLanguage"
 
     def __init__(self):
         super().__init__(protocol_cls=TextXProtocol)
@@ -52,29 +52,29 @@ class TextXLanguageServer(LanguageServer):
 textx_server = TextXLanguageServer()
 
 
-@textx_server.command(TextXLanguageServer.CMD_GET_GENERATORS)
+@textx_server.command(TextXLanguageServer.CMD_GENERATOR_LIST)
 @textx_server.thread()
 def cmd_get_generators(ls: TextXLanguageServer, params):
     return get_generators()
 
 
-@textx_server.command(TextXLanguageServer.CMD_GET_LANGUAGES)
+@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_LIST)
 @textx_server.thread()
 def cmd_get_languages(ls: TextXLanguageServer, params):
     return get_languages()
 
 
-@textx_server.command(TextXLanguageServer.CMD_INSTALL_LANGUAGE)
+@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_INSTALL)
 def cmd_install_language(ls: TextXLanguageServer, params):
     pass
 
 
-@textx_server.command(TextXLanguageServer.CMD_SCAFFOLD_LANGUAGE)
+@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_SCAFFOLD)
 def cmd_scaffold_language(ls: TextXLanguageServer, params):
     pass
 
 
-@textx_server.command(TextXLanguageServer.CMD_UNINSTALL_LANGUAGE)
+@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_UNINSTALL)
 def cmd_uninstall_language(ls: TextXLanguageServer, params):
     pass
 

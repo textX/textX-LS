@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { commands, window } from "vscode";
-import { CMD_GET_GENERATORS } from "../constants";
+import { CMD_GENERATOR_LIST } from "../constants";
 import { ITextXGenerator } from "../interfaces";
 
 export interface IGeneratorService {
@@ -12,7 +12,7 @@ export interface IGeneratorService {
 export class GeneratorService implements IGeneratorService {
 
   public async getAll(): Promise<ITextXGenerator[]> {
-    const gens = await commands.executeCommand<ITextXGenerator[]>(CMD_GET_GENERATORS.external);
+    const gens = await commands.executeCommand<ITextXGenerator[]>(CMD_GENERATOR_LIST.external);
     return gens || [];
   }
 

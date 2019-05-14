@@ -3,8 +3,8 @@ import { injectable } from "inversify";
 import { basename, dirname, join } from "path";
 import { commands, window } from "vscode";
 import {
-  CMD_GET_LANGUAGES, CMD_INSTALL_LANGUAGE, CMD_INSTALL_LANGUAGE_EDITABLE, CMD_SCAFFOLD_LANGUAGE,
-  CMD_UNINSTALL_LANGUAGE,
+  CMD_LANGUAGE_INSTALL, CMD_LANGUAGE_INSTALL_EDITABLE, CMD_LANGUAGE_LIST, CMD_LANGUAGE_SCAFFOLD,
+  CMD_LANGUAGE_UNINSTALL,
 } from "../constants";
 import { ITextXLanguage } from "../interfaces";
 import { getPython } from "../setup";
@@ -25,24 +25,24 @@ export class LanguageService implements ILanguageService {
   }
 
   public async getInstalled(): Promise<ITextXLanguage[]> {
-    const langs = await commands.executeCommand<ITextXLanguage[]>(CMD_GET_LANGUAGES.external);
+    const langs = await commands.executeCommand<ITextXLanguage[]>(CMD_LANGUAGE_LIST.external);
     return langs || [];
   }
 
   public install(pyModulePath: string, editableMode: boolean = false): void {
-    commands.executeCommand(CMD_INSTALL_LANGUAGE.external, pyModulePath, editableMode);
+    commands.executeCommand(CMD_LANGUAGE_INSTALL.external, pyModulePath, editableMode);
   }
 
   public scaffold(languageName: string): void {
-    commands.executeCommand(CMD_SCAFFOLD_LANGUAGE.external, languageName);
+    commands.executeCommand(CMD_LANGUAGE_SCAFFOLD.external, languageName);
   }
 
   public uninstall(languageName: string): void {
-    commands.executeCommand(CMD_UNINSTALL_LANGUAGE.external, languageName);
+    commands.executeCommand(CMD_LANGUAGE_UNINSTALL.external, languageName);
   }
 
   private registerCommands() {
-    commands.registerCommand(CMD_INSTALL_LANGUAGE.internal, async () => {
+    commands.registerCommand(CMD_LANGUAGE_INSTALL.internal, async () => {
       const pyWheel = await window.showOpenDialog({
         canSelectMany: false,
         filters: {
@@ -55,7 +55,7 @@ export class LanguageService implements ILanguageService {
       }
     });
 
-    commands.registerCommand(CMD_INSTALL_LANGUAGE_EDITABLE.internal, async (fileOrFolder) => {
+    commands.registerCommand(CMD_LANGUAGE_INSTALL_EDITABLE.internal, async (fileOrFolder) => {
       if (fileOrFolder) {
         const path = fileOrFolder.path;
         const pyModulePath = basename(path) === "setup.py" ? dirname(path) : path;
@@ -65,7 +65,7 @@ export class LanguageService implements ILanguageService {
       }
     });
 
-    commands.registerCommand(CMD_SCAFFOLD_LANGUAGE.internal, async () => {
+    commands.registerCommand(CMD_LANGUAGE_SCAFFOLD.internal, async () => {
       const languageName = await window.showInputBox({
         ignoreFocusOut: true,
         placeHolder: "Enter a language name.",
@@ -83,9 +83,10 @@ export class LanguageService implements ILanguageService {
        }
     });
 
-    commands.registerCommand(CMD_UNINSTALL_LANGUAGE.internal, async (fileOrFolderOrTreeItem) => {
+    commands.registerCommand(CMD_LANGUAGE_UNINSTALL.internal, async (fileOrFolderOrTreeItem) => {
       let languageName = null;
       if (fileOrFolderOrTreeItem instanceof LanguageNode) {
+        // Language name is not same as package name - REVISIT
         languageName = fileOrFolderOrTreeItem.label;
       } else {
         // Get language name from setup.py - REVISIT
