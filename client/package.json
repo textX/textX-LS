@@ -135,12 +135,12 @@
         {
           "command": "textx.installLanguage",
           "when": "view == textxLanguages",
-          "group": "navigation@2"
+          "group": "navigation@1"
         },
         {
           "command": "textx.scaffoldLanguage",
           "when": "view == textxLanguages",
-          "group": "navigation@3"
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
