@@ -36,6 +36,15 @@
         "category": "textX"
       },
       {
+        "command": "textx.installLanguageEditable",
+        "title": "Install textX language",
+        "icon": {
+          "light": "resources/light/add.svg",
+          "dark": "resources/dark/add.svg"
+        },
+        "category": "textX"
+      },
+      {
         "command": "textx.uninstallLanguage",
         "title": "Uninstall textX language",
         "icon": {
@@ -107,6 +116,11 @@
           "when": "resourceLangId == python && resourceFilename == setup.py"
         },
         {
+          "command": "textx.installLanguageEditable",
+          "group": "textX@",
+          "when": "resourceLangId == python && resourceFilename == setup.py"
+        },
+        {
           "command": "textx.uninstallLanguage",
           "group": "textX@2",
           "when": "resourceLangId == python && resourceFilename == setup.py"
@@ -115,17 +129,17 @@
       "view/title": [
         {
           "command": "textx.uninstallLanguage",
-          "when": "view == textxExplorer",
+          "when": "view == textxLanguages",
           "group": "navigation@1"
         },
         {
           "command": "textx.installLanguage",
-          "when": "view == textxExplorer",
+          "when": "view == textxLanguages",
           "group": "navigation@2"
         },
         {
           "command": "textx.scaffoldLanguage",
-          "when": "view == textxExplorer",
+          "when": "view == textxLanguages",
           "group": "navigation@3"
         }
       ],
@@ -140,8 +154,13 @@
     "views": {
       "textxView": [
         {
-          "id": "textxExplorer",
-          "name": "Explorer",
+          "id": "textxLanguages",
+          "name": "Languages",
+          "when": "config.textx.showExplorer == true"
+        },
+        {
+          "id": "textxCommands",
+          "name": "Commands",
           "when": "config.textx.showExplorer == true"
         }
       ]

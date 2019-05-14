@@ -4,6 +4,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-lan
 
 import { TEXTX_LS_SERVER } from "./constants";
 import { installLSWithProgress } from "./setup";
+import { TextXGeneratorsProvider, TextXLanguagesProvider } from "./ui/explorer";
 
 let client: LanguageClient;
 
@@ -63,6 +64,9 @@ export async function activate(context: ExtensionContext) {
       window.showErrorMessage(err);
     }
   }
+
+  window.registerTreeDataProvider("textxLanguages", new TextXLanguagesProvider());
+  window.registerTreeDataProvider("textxCommands", new TextXGeneratorsProvider());
 
   context.subscriptions.push(client.start());
 }

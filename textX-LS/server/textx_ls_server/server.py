@@ -5,6 +5,7 @@ from pygls.server import LanguageServer
 from pygls.types import (DidChangeTextDocumentParams,
                          DidCloseTextDocumentParams, DidOpenTextDocumentParams)
 from pygls.workspace import Document
+from textx_ls_core.features.languages import get_generators, get_languages
 from textx_ls_core.languages import LanguageTemplate
 
 from .features.diagnostics import send_diagnostics
@@ -38,11 +39,26 @@ class TextXProtocol(LanguageServerProtocol):
 
 
 class TextXLanguageServer(LanguageServer):
+    CMD_GET_GENERATORS = "textx/getGenerators"
+    CMD_GET_LANGUAGES = "textx/getLanguages"
+
     def __init__(self):
         super().__init__(protocol_cls=TextXProtocol)
 
 
 textx_server = TextXLanguageServer()
+
+
+@textx_server.command(TextXLanguageServer.CMD_GET_GENERATORS)
+@textx_server.thread()
+def cmd_get_generators(ls: TextXLanguageServer, params):
+    return get_generators()
+
+
+@textx_server.command(TextXLanguageServer.CMD_GET_LANGUAGES)
+@textx_server.thread()
+def cmd_get_languages(ls: TextXLanguageServer, params):
+    return get_languages()
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)
