@@ -7,7 +7,7 @@ import { GeneratorNode } from "./generatorNode";
 export interface IGeneratorProvider extends TreeDataProvider<GeneratorNode> {}
 
 @injectable()
-export class TextXGeneratorsProvider implements IGeneratorProvider {
+export class TextXGeneratorProvider implements IGeneratorProvider {
 
   constructor(
     @inject(TYPES.IGeneratorService) private readonly generatorService: IGeneratorService,

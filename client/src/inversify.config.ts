@@ -5,7 +5,7 @@ import { GeneratorService, IGeneratorService } from "./services/generatorService
 import { ILanguageService, LanguageService } from "./services/languageService";
 import TYPES from "./types";
 import {
-  IGeneratorProvider, ILanguageProvider, TextXGeneratorsProvider, TextXLanguageProvider,
+  IGeneratorProvider, ILanguageProvider, TextXGeneratorProvider, TextXLanguageProvider,
 } from "./ui/explorer";
 
 const container = new Container();
@@ -14,7 +14,7 @@ container.bind<IGeneratorService>(TYPES.IGeneratorService).to(GeneratorService);
 container.bind<ILanguageService>(TYPES.ILanguageService).to(LanguageService);
 
 // Tree data providers
-container.bind<IGeneratorProvider>(TYPES.IGeneratorProvider).to(TextXGeneratorsProvider);
+container.bind<IGeneratorProvider>(TYPES.IGeneratorProvider).to(TextXGeneratorProvider);
 container.bind<ILanguageProvider>(TYPES.ILanguageProvider).to(TextXLanguageProvider);
 
 export default container;

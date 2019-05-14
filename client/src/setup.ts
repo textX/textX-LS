@@ -13,7 +13,7 @@ function createVirtualEnvironment(python: string, name: string, cwd: string): st
   return path;
 }
 
-function getPython(): string {
+export function getPython(): string {
   return workspace.getConfiguration("python").get<string>("pythonPath", getPythonCrossPlatform());
 }
 

@@ -41,6 +41,9 @@ class TextXProtocol(LanguageServerProtocol):
 class TextXLanguageServer(LanguageServer):
     CMD_GET_GENERATORS = "textx/getGenerators"
     CMD_GET_LANGUAGES = "textx/getLanguages"
+    CMD_INSTALL_LANGUAGE = "textx/installLanguage"
+    CMD_SCAFFOLD_LANGUAGE = "textx/scaffoldLanguage"
+    CMD_UNINSTALL_LANGUAGE = "textx/uninstallLanguage"
 
     def __init__(self):
         super().__init__(protocol_cls=TextXProtocol)
@@ -59,6 +62,21 @@ def cmd_get_generators(ls: TextXLanguageServer, params):
 @textx_server.thread()
 def cmd_get_languages(ls: TextXLanguageServer, params):
     return get_languages()
+
+
+@textx_server.command(TextXLanguageServer.CMD_INSTALL_LANGUAGE)
+def cmd_install_language(ls: TextXLanguageServer, params):
+    pass
+
+
+@textx_server.command(TextXLanguageServer.CMD_SCAFFOLD_LANGUAGE)
+def cmd_scaffold_language(ls: TextXLanguageServer, params):
+    pass
+
+
+@textx_server.command(TextXLanguageServer.CMD_UNINSTALL_LANGUAGE)
+def cmd_uninstall_language(ls: TextXLanguageServer, params):
+    pass
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)

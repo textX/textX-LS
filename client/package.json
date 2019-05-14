@@ -111,27 +111,27 @@
     "menus": {
       "explorer/context": [
         {
-          "command": "textx.installLanguage",
+          "command": "textx.installLanguageEditable",
           "group": "textX@1",
           "when": "resourceLangId == python && resourceFilename == setup.py"
         },
         {
           "command": "textx.installLanguageEditable",
-          "group": "textX@",
-          "when": "resourceLangId == python && resourceFilename == setup.py"
+          "group": "textX@1",
+          "when": "explorerResourceIsFolder"
         },
         {
           "command": "textx.uninstallLanguage",
           "group": "textX@2",
           "when": "resourceLangId == python && resourceFilename == setup.py"
+        },
+        {
+          "command": "textx.uninstallLanguage",
+          "group": "textX@2",
+          "when": "explorerResourceIsFolder"
         }
       ],
       "view/title": [
-        {
-          "command": "textx.uninstallLanguage",
-          "when": "view == textxLanguages",
-          "group": "navigation@1"
-        },
         {
           "command": "textx.installLanguage",
           "when": "view == textxLanguages",
@@ -143,7 +143,13 @@
           "group": "navigation@3"
         }
       ],
-      "view/item/context": []
+      "view/item/context": [
+        {
+          "command": "textx.uninstallLanguage",
+          "when": "view == textxLanguages && viewItem == language",
+          "group": "inline"
+        }
+      ]
     },
     "snippets": [
       {

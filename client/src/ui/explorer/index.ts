@@ -1,2 +1,2 @@
-export { IGeneratorProvider, TextXGeneratorsProvider } from "./textxGeneratorsProvider";
-export { ILanguageProvider, TextXLanguageProvider } from "./textxLanguagesProvider";
+export { IGeneratorProvider, TextXGeneratorProvider } from "./generatorProvider";
+export { ILanguageProvider, TextXLanguageProvider } from "./languageProvider";

@@ -12,7 +12,7 @@ export interface IGeneratorService {
 export class GeneratorService implements IGeneratorService {
 
   public async getAll(): Promise<ITextXGenerator[]> {
-    const gens = await commands.executeCommand<ITextXGenerator[]>(CMD_GET_GENERATORS);
+    const gens = await commands.executeCommand<ITextXGenerator[]>(CMD_GET_GENERATORS.external);
     return gens || [];
   }
 
