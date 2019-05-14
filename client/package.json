@@ -193,6 +193,8 @@
     "webpack-cli": "^3.3.2"
   },
   "dependencies": {
+    "inversify": "^5.0.1",
+    "reflect-metadata": "^0.1.13",
     "vscode-languageclient": "^5.2.1"
   }
 }

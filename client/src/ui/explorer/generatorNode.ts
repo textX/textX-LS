@@ -2,7 +2,7 @@ import { join } from "path";
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { RESOURCES_PATH } from "../../constants";
 
-export class TextXGeneratorNode extends TreeItem {
+export class GeneratorNode extends TreeItem {
 
   public readonly contextValue = "generator";
   public readonly iconPath = {
@@ -18,11 +18,11 @@ export class TextXGeneratorNode extends TreeItem {
     super(`${language}-${target}`, TreeItemCollapsibleState.None);
   }
 
-  public get tooltip(): string {
+  public get tooltip(): string | undefined {
     return this.desc;
   }
 
-  public get description(): string {
+  public get description(): string | undefined {
     return this.desc;
   }
 

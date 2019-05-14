@@ -3,8 +3,10 @@ import { ExtensionContext, window, workspace } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
 
 import { TEXTX_LS_SERVER } from "./constants";
+import container from "./inversify.config";
 import { installLSWithProgress } from "./setup";
-import { TextXGeneratorsProvider, TextXLanguagesProvider } from "./ui/explorer";
+import TYPES from "./types";
+import { ILanguageProvider, IGeneratorProvider } from "./ui/explorer";
 
 let client: LanguageClient;
 
@@ -54,7 +56,7 @@ export async function activate(context: ExtensionContext) {
 
   if (isStartedInDebugMode()) {
     // Development - Run the server manually
-    client = startLangServerTCP(parseInt(process.env.SERVER_PORT));
+    client = startLangServerTCP(parseInt(process.env.SERVER_PORT || "2087"));
   } else {
     // Production - Client is going to run the server (for use within `.vsix` package)
     try {
@@ -65,15 +67,20 @@ export async function activate(context: ExtensionContext) {
     }
   }
 
-  window.registerTreeDataProvider("textxLanguages", new TextXLanguagesProvider());
-  window.registerTreeDataProvider("textxCommands", new TextXGeneratorsProvider());
+  // inversifyjs - get instances
+  const generatorProvider = container.get<IGeneratorProvider>(TYPES.IGeneratorProvider);
+  const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
+
+  // Tree Providers
+  window.registerTreeDataProvider("textxCommands", generatorProvider);
+  window.registerTreeDataProvider("textxLanguages", languageProvider);
 
   context.subscriptions.push(client.start());
 }
 
 export function deactivate(): Thenable<void> {
   if (!client) {
-    return undefined;
+    return Promise.resolve();
   }
   return client.stop();
 }

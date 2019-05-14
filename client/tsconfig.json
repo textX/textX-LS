@@ -6,9 +6,15 @@
         "lib": [
             "es6"
         ],
-        "sourceMap": true
+        "types": [
+            "reflect-metadata"
+        ],
+        "sourceMap": true,
+        "rootDir": "src",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
     ]
 }

@@ -1,21 +1,29 @@
-import { commands, TreeDataProvider, TreeItem } from "vscode";
-import { CMD_GET_LANGUAGES } from "../../constants";
-import { ITextXLanguage } from "../../interfaces";
-import { TextXLanguageNode } from "./languageNode";
+import { inject, injectable } from "inversify";
+import { TreeDataProvider, TreeItem } from "vscode";
+import { ILanguageService } from "../../services/languageService";
+import TYPES from "../../types";
+import { LanguageNode } from "./languageNode";
 
-export class TextXLanguagesProvider implements TreeDataProvider<TextXLanguageNode> {
+export interface ILanguageProvider extends TreeDataProvider<LanguageNode> {}
 
-  public getChildren(element?: TextXLanguageNode): Thenable<TextXLanguageNode[]> {
+@injectable()
+export class TextXLanguageProvider implements ILanguageProvider {
+
+  constructor(
+    @inject(TYPES.ILanguageService) private readonly languageService: ILanguageService,
+  ) {}
+
+  public getChildren(element?: LanguageNode): Thenable<LanguageNode[]> {
     return new Promise(async (resolve) => {
-        const languages = await commands.executeCommand<ITextXLanguage[]>(CMD_GET_LANGUAGES);
-        resolve(
-          languages.map(
-            (lang) => new TextXLanguageNode(lang.name, lang.description, lang.metamodel_path)),
-        );
-      });
+      const languages = await this.languageService.getInstalled();
+      const nodes = languages.map((lang) => new LanguageNode(lang.name,
+                                                                  lang.description,
+                                                                  lang.metamodel_path));
+      resolve(nodes);
+    });
   }
 
-  public getTreeItem(element: TextXLanguageNode): TreeItem {
+  public getTreeItem(element: LanguageNode): TreeItem {
     return element;
   }
 }
