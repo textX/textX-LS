@@ -1,10 +1,10 @@
 import mock
 import pytest
 from pygls.types import Diagnostic, Position, Range
-from pygls.workspace import Document
 from textx.exceptions import TextXSyntaxError
 
 from textx_ls_server.features import diagnostics as diag
+from textx_ls_server.protocol import TextXDocument
 
 VALIDATE_FUNC_TARGET = 'textx_ls_server.features.diagnostics.validate'
 SERVER_CREATE_DIAGNOSTICS_TARGET = ('textx_ls_server.features.diagnostics.'
@@ -13,7 +13,7 @@ SERVER_CREATE_DIAGNOSTICS_TARGET = ('textx_ls_server.features.diagnostics.'
 
 @pytest.fixture(scope='module')
 def doc():
-    return Document('uri', 'source')
+    return TextXDocument('uri', 'mydsl', None, 'source')
 
 
 @pytest.fixture(scope='module')
@@ -34,7 +34,7 @@ def server():
 ])
 def test_create_diagnostics(doc, err, msg, st_line, st_col, end_line, end_col):
     with mock.patch(VALIDATE_FUNC_TARGET, return_value=err):
-        diags = diag._create_diagnostics(None, doc)
+        diags = diag._create_diagnostics(doc)
 
         # Case when model is valid
         if err == []:
@@ -60,5 +60,5 @@ def test_get_diagnostic_message():
 ])
 def test_send_diagnostics(server, doc, diags):
     with mock.patch(SERVER_CREATE_DIAGNOSTICS_TARGET, return_value=diags):
-        diag.send_diagnostics(server, None, doc)
+        diag.send_diagnostics(server, doc)
         server.publish_diagnostics.assert_called_with(doc.uri, diags)
