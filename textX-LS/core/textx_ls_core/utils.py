@@ -11,20 +11,22 @@ def get_file_extension(uri):
         return ''
 
 
-async def run_proc_async(cmd, msg_handler=None, on_exit=None, cwd=None):
+async def run_proc_async(cmd, msg_handler=None, cwd=None):
     process = await asyncio.create_subprocess_exec(
         *cmd,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
         cwd=cwd
     )
+    await process.communicate()
 
     if msg_handler:
-        async def _listener(process, msg_handler, on_exit):
+        async def _listener(process, msg_handler):
             while not process.stdout.at_eof():
                 line = await process.stdout.readline()
-                msg_handler(line)
-            if on_exit:
-                on_exit()
+                if line is not None:
+                    msg_handler(line.decode().rstrip())
 
-        asyncio.ensure_future(_listener(process, msg_handler, on_exit))
+        asyncio.ensure_future(_listener(process, msg_handler))
+
+    return process.returncode

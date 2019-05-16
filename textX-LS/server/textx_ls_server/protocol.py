@@ -1,9 +1,12 @@
+from os.path import basename
+
 from pygls.protocol import LanguageServerProtocol
 from pygls.types import (DidChangeTextDocumentParams,
                          DidCloseTextDocumentParams, DidOpenTextDocumentParams,
                          MessageType)
 from pygls.workspace import Document
-from textx.exceptions import TextXRegistrationError
+from textx_ls_core.exceptions import (LanguageNotRegistered,
+                                      MultipleLanguagesError)
 from textx_ls_core.features.languages import get_language_metamodel
 
 
@@ -45,7 +48,7 @@ class TextXProtocol(LanguageServerProtocol):
         doc_name = doc.languageId
 
         try:
-            metamodel = get_language_metamodel(doc_name)
+            metamodel = get_language_metamodel(doc_name, basename(doc_uri))
             # Should not happen...
             if metamodel is None:
                 self.show_message(
@@ -58,6 +61,8 @@ class TextXProtocol(LanguageServerProtocol):
                                                           metamodel,
                                                           doc.text,
                                                           doc.version)
-        except TextXRegistrationError:
+        except MultipleLanguagesError as e:
+            self.show_message(str(e), MessageType.Warning)
+        except LanguageNotRegistered:
             # Skip adding document to the workspace
             pass

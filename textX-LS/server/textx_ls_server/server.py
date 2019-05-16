@@ -39,9 +39,11 @@ def cmd_generator_list(ls: TextXLanguageServer, params):
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_INSTALL)
 async def cmd_language_install(ls: TextXLanguageServer, params):
-    setuppy_or_wheel = params[0]
-    await install_language_async(setuppy_or_wheel, ls.python_path,
-                                 lambda msg: ls.show_message_log(msg))
+    folder_or_wheel = params[0]
+    editable = params[1]
+    ls.show_message("Installing language from {}".format(folder_or_wheel))
+    await install_language_async(folder_or_wheel, ls.python_path, editable,
+                                 msg_handler=ls.show_message_log)
 
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_LIST)
