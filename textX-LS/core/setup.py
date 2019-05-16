@@ -51,15 +51,6 @@ setup(
         'test': tests_require,
     },
     tests_require=tests_require,
-    entry_points={
-        'textx_command_groups': [
-            'ls = textx_ls_core.cli:create_textxls_cli'
-        ],
-        'textxls_langs': [
-            'textx = textx_ls_core.languages.textx:TextXLang',
-            'textxfile = textx_ls_core.languages.textxfile:TextxfileLang'
-        ]
-    },
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

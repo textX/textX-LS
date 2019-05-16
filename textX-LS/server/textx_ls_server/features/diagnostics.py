@@ -2,15 +2,16 @@ from pygls.types import Diagnostic, Position, Range
 from textx_ls_core.features.validate import validate
 
 
-def _create_diagnostics(lang_temp, doc):
+def _create_diagnostics(doc):
     """Creates diagnostics from TextXError objects."""
     return [
         Diagnostic(_get_diagnostic_range(err), _get_diagnostic_message(err))
-        for err in validate(lang_temp, doc.source)
+        for err in validate(doc.metamodel, doc.source)
     ]
 
 
 def _get_diagnostic_message(err):
+    """Prettifies error message"""
     msg = str(err)
     try:
         # Try to parse textX error message
@@ -27,6 +28,6 @@ def _get_diagnostic_range(err):
     return Range(Position(line, 0), Position(line, 500))
 
 
-def send_diagnostics(ls, lang_temp, doc):
+def send_diagnostics(ls, doc):
     """Sends diagnostics to the client."""
-    ls.publish_diagnostics(doc.uri, _create_diagnostics(lang_temp, doc))
+    ls.publish_diagnostics(doc.uri, _create_diagnostics(doc))

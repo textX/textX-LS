@@ -1,41 +1,18 @@
+import sys
+
 from pygls.features import (TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE,
                             TEXT_DOCUMENT_DID_OPEN)
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.types import (DidChangeTextDocumentParams,
                          DidCloseTextDocumentParams, DidOpenTextDocumentParams)
-from pygls.workspace import Document
-from textx_ls_core.features.languages import get_generators, get_languages
-from textx_ls_core.languages import LanguageTemplate
+from textx_ls_core.features.generators import get_generators
+from textx_ls_core.features.languages import (get_languages,
+                                              install_language_async)
 
 from .features.diagnostics import send_diagnostics
-from .utils import (call_with_lang_template, is_ext_supported,
-                    skip_not_supported_langs)
-
-
-class TextXProtocol(LanguageServerProtocol):
-    """This class overrides text synchronization methods as we don't want to
-    process languages that we don't support.
-    """
-
-    def bf_text_document__did_change(self,
-                                     params: DidChangeTextDocumentParams):
-        """Updates document's content if document is in the workspace."""
-        if is_ext_supported(params.textDocument.uri):
-            for change in params.contentChanges:
-                self.workspace.update_document(params.textDocument, change)
-
-    def bf_text_document__did_close(self,
-                                    params: DidCloseTextDocumentParams):
-        """Removes document from workspace."""
-        if is_ext_supported(params.textDocument.uri):
-            self.workspace.remove_document(params.textDocument.uri)
-
-    def bf_text_document__did_open(self,
-                                   params: DidOpenTextDocumentParams):
-        """Puts document to the workspace for supported files."""
-        if is_ext_supported(params.textDocument.uri):
-            self.workspace.put_document(params.textDocument)
+from .protocol import TextXDocument, TextXProtocol
+from .utils import skip_not_supported_langs
 
 
 class TextXLanguageServer(LanguageServer):
@@ -48,56 +25,59 @@ class TextXLanguageServer(LanguageServer):
     def __init__(self):
         super().__init__(protocol_cls=TextXProtocol)
 
+        self.python_path = sys.executable
+
 
 textx_server = TextXLanguageServer()
 
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATOR_LIST)
 @textx_server.thread()
-def cmd_get_generators(ls: TextXLanguageServer, params):
+def cmd_generator_list(ls: TextXLanguageServer, params):
     return get_generators()
+
+
+@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_INSTALL)
+async def cmd_language_install(ls: TextXLanguageServer, params):
+    setuppy_or_wheel = params[0]
+    await install_language_async(setuppy_or_wheel, ls.python_path,
+                                 lambda msg: ls.show_message_log(msg))
 
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_LIST)
 @textx_server.thread()
-def cmd_get_languages(ls: TextXLanguageServer, params):
+def cmd_language_list(ls: TextXLanguageServer, params):
     return get_languages()
 
 
-@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_INSTALL)
-def cmd_install_language(ls: TextXLanguageServer, params):
-    pass
-
-
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_SCAFFOLD)
-def cmd_scaffold_language(ls: TextXLanguageServer, params):
+def cmd_language_scaffold(ls: TextXLanguageServer, params):
     pass
 
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_UNINSTALL)
-def cmd_uninstall_language(ls: TextXLanguageServer, params):
+def cmd_language_uninstall(ls: TextXLanguageServer, params):
     pass
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)
 @skip_not_supported_langs
-@call_with_lang_template
 def doc_change(ls: TextXLanguageServer, params: DidChangeTextDocumentParams,
-               doc: Document, lang_temp: LanguageTemplate):
+               doc: TextXDocument):
     """Validates model on document text change."""
-    send_diagnostics(ls, lang_temp, doc)
+    send_diagnostics(ls, doc)
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CLOSE)
 def doc_close(ls: TextXLanguageServer, params: DidCloseTextDocumentParams):
     """Clear diagnostics on document close event."""
+
     ls.publish_diagnostics(params.textDocument.uri, [])
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_OPEN)
 @skip_not_supported_langs
-@call_with_lang_template
 def doc_open(ls: TextXLanguageServer, params: DidOpenTextDocumentParams,
-             doc: Document, lang_temp: LanguageTemplate):
+             doc: TextXDocument):
     """Validates model on document text change."""
-    send_diagnostics(ls, lang_temp, doc)
+    send_diagnostics(ls, doc)
