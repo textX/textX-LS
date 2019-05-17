@@ -7,6 +7,17 @@ from ..models import TextXLanguage
 from ..utils import run_proc_async
 
 
+def _last_installed_lang_name():
+    # Not working when language is updated
+    old_langs = set(language_descriptions().keys())
+    clear_language_registrations()
+    new_langs = set(language_descriptions().keys())
+    try:
+        return list(new_langs - old_langs)[0]
+    except IndexError:
+        return None
+
+
 def get_languages():
     return [
         TextXLanguage(lang) for lang in language_descriptions().values()
@@ -18,7 +29,7 @@ def get_language(language_name):
     return language_description(language_name)
 
 
-def get_language_metamodel(language_name, file_name):
+def get_language_metamodel(language_name, file_name=None):
     lang_desc = None
     try:
         lang_desc = language_description(language_name)
@@ -49,11 +60,14 @@ async def install_language_async(folder_or_wheel, python_path, editable=False,
 
     retcode = await run_proc_async(cmd, msg_handler)
 
+    lang_name = None
+
     if retcode == 0:
         # Manually add package to sys.path if installed with -e flag
         if editable:
             import sys
             sys.path.append(folder_or_wheel)
 
-        clear_language_registrations()
-        # TODO: Notify client . . .
+        lang_name = _last_installed_lang_name()
+
+    return lang_name

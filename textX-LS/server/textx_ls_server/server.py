@@ -4,9 +4,11 @@ from pygls.features import (TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE,
                             TEXT_DOCUMENT_DID_OPEN)
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
-from pygls.types import (DidChangeTextDocumentParams,
-                         DidCloseTextDocumentParams, DidOpenTextDocumentParams)
-from textx_ls_core.features.generators import get_generators
+from pygls.types import (
+    DidChangeTextDocumentParams, DidCloseTextDocumentParams,
+    DidOpenTextDocumentParams, MessageType)
+from textx_ls_core.features.generators import (generate_extension,
+                                               get_generators)
 from textx_ls_core.features.languages import (get_languages,
                                               install_language_async)
 
@@ -16,6 +18,7 @@ from .utils import skip_not_supported_langs
 
 
 class TextXLanguageServer(LanguageServer):
+    CMD_GENERATE_EXTENSION = "textx/generateExtension"
     CMD_GENERATOR_LIST = "textx/getGenerators"
     CMD_LANGUAGE_LIST = "textx/getLanguages"
     CMD_LANGUAGE_INSTALL = "textx/installLanguage"
@@ -31,6 +34,14 @@ class TextXLanguageServer(LanguageServer):
 textx_server = TextXLanguageServer()
 
 
+@textx_server.command(TextXLanguageServer.CMD_GENERATE_EXTENSION)
+def cmd_generate_extension(ls: TextXLanguageServer, params):
+    lang_name = params[0]
+    target = params[1]
+    dest_dir = params[2]
+    return generate_extension(lang_name, target, dest_dir)
+
+
 @textx_server.command(TextXLanguageServer.CMD_GENERATOR_LIST)
 @textx_server.thread()
 def cmd_generator_list(ls: TextXLanguageServer, params):
@@ -39,11 +50,26 @@ def cmd_generator_list(ls: TextXLanguageServer, params):
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_INSTALL)
 async def cmd_language_install(ls: TextXLanguageServer, params):
+    # pip args
     folder_or_wheel = params[0]
     editable = params[1]
+    # extension generator args
+
     ls.show_message("Installing language from {}".format(folder_or_wheel))
-    await install_language_async(folder_or_wheel, ls.python_path, editable,
-                                 msg_handler=ls.show_message_log)
+    # True if language is installed successfully
+    lang_name = await install_language_async(folder_or_wheel,
+                                             ls.python_path,
+                                             editable,
+                                             msg_handler=ls.show_message_log)
+
+    if lang_name:
+        ls.show_message("Successfully installed language: {}"
+                        .format(lang_name))
+    else:
+        ls.show_message("Failed to install language from {}"
+                        .format(folder_or_wheel), MessageType.Error)
+
+    return lang_name
 
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_LIST)

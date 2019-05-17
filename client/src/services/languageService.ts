@@ -1,18 +1,20 @@
 import { execSync } from "child_process";
 import { injectable } from "inversify";
 import { basename, dirname, join } from "path";
-import { commands, window } from "vscode";
+import { commands, languages, Uri, window } from "vscode";
 import {
-  CMD_LANGUAGE_INSTALL, CMD_LANGUAGE_INSTALL_EDITABLE, CMD_LANGUAGE_LIST, CMD_LANGUAGE_SCAFFOLD,
-  CMD_LANGUAGE_UNINSTALL,
+  CMD_GENERATE_EXTENSION, CMD_LANGUAGE_INSTALL, CMD_LANGUAGE_INSTALL_EDITABLE, CMD_LANGUAGE_LIST,
+  CMD_LANGUAGE_SCAFFOLD, CMD_LANGUAGE_UNINSTALL, EXTENSION_GENERATOR_TARGET,
+  VS_CMD_INSTALL_EXTENSION,
 } from "../constants";
 import { ITextXLanguage } from "../interfaces";
 import { getPython } from "../setup";
 import { LanguageNode } from "../ui/explorer/languageNode";
+import { mkdtempWrapper } from "../utils";
 
 export interface ILanguageService {
   getInstalled(): Promise<ITextXLanguage[]>;
-  install(pyModulePath: string, editableMode?: boolean): void;
+  install(pyModulePath: string, editableMode?: boolean): Promise<void>;
   scaffold(languageName: string): void;
   uninstall(languageName: string): void;
 }
@@ -29,8 +31,20 @@ export class LanguageService implements ILanguageService {
     return langs || [];
   }
 
-  public install(pyModulePath: string, editableMode: boolean = false): void {
-    commands.executeCommand(CMD_LANGUAGE_INSTALL.external, pyModulePath, editableMode);
+  public async install(pyModulePath: string, editableMode: boolean = false): Promise<void> {
+    const langName = await commands.executeCommand<string>(CMD_LANGUAGE_INSTALL.external,
+                                                           pyModulePath, editableMode);
+
+    if (langName) {
+      mkdtempWrapper(async (folder) => {
+        const extensionPath = await commands.executeCommand<string>(
+          CMD_GENERATE_EXTENSION.external, langName, EXTENSION_GENERATOR_TARGET, folder);
+
+        if (extensionPath) {
+          await commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
+        }
+      });
+    }
   }
 
   public scaffold(languageName: string): void {
