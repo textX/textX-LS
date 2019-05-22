@@ -13,10 +13,6 @@ KEYWORDS = 'textX DSL python domain specific languages workflow'
 LICENSE = 'MIT'
 URL = 'https://github.com/textX/textX-LS/examples/workflow'
 
-packages = find_packages()
-
-print('packages:', packages)
-
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
@@ -26,7 +22,7 @@ setup(
     author_email=AUTHOR_EMAIL,
     keywords=KEYWORDS,
     license=LICENSE,
-    packages=packages,
+    packages=find_packages(),
     include_package_data=True,
     package_data={'': ['*.tx']},
     install_requires=["textx_ls_core"],

@@ -1,3 +1,6 @@
+import sys
+
+from pkg_resources import get_distribution
 from textx import (clear_language_registrations, language_description,
                    language_descriptions, languages_for_file)
 from textx.exceptions import TextXRegistrationError
@@ -64,10 +67,26 @@ async def install_language_async(folder_or_wheel, python_path, editable=False,
 
     if retcode == 0:
         # Manually add package to sys.path if installed with -e flag
-        if editable:
-            import sys
+        if editable and folder_or_wheel not in sys.path:
             sys.path.append(folder_or_wheel)
 
         lang_name = _last_installed_lang_name()
 
     return lang_name
+
+
+async def uninstall_language_async(project_name, python_path,
+                                   msg_handler=None):
+    cmd = [python_path, '-m', 'pip', 'uninstall', project_name, '-y']
+    retcode = await run_proc_async(cmd, msg_handler)
+
+    if retcode != 0:
+        return False
+
+    # Manually remove package from sys.path if it is installed in editable mode
+    dist = get_distribution(project_name)
+    if dist and dist.location in sys.path:
+        sys.path.remove(dist.location)
+
+    clear_language_registrations()
+    return True

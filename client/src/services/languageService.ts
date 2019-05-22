@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import { injectable } from "inversify";
 import { basename, dirname, join } from "path";
-import { commands, languages, Uri, window } from "vscode";
+import { commands, Uri, window } from "vscode";
 import {
   CMD_GENERATE_EXTENSION, CMD_LANGUAGE_INSTALL, CMD_LANGUAGE_INSTALL_EDITABLE, CMD_LANGUAGE_LIST,
   CMD_LANGUAGE_SCAFFOLD, CMD_LANGUAGE_UNINSTALL, EXTENSION_GENERATOR_TARGET,
@@ -51,8 +51,8 @@ export class LanguageService implements ILanguageService {
     commands.executeCommand(CMD_LANGUAGE_SCAFFOLD.external, languageName);
   }
 
-  public uninstall(languageName: string): void {
-    commands.executeCommand(CMD_LANGUAGE_UNINSTALL.external, languageName);
+  public uninstall(projectName: string): void {
+    commands.executeCommand(CMD_LANGUAGE_UNINSTALL.external, projectName);
   }
 
   private registerCommands() {
@@ -98,28 +98,27 @@ export class LanguageService implements ILanguageService {
     });
 
     commands.registerCommand(CMD_LANGUAGE_UNINSTALL.internal, async (fileOrFolderOrTreeItem) => {
-      let languageName = null;
+      let projectName = null;
       if (fileOrFolderOrTreeItem instanceof LanguageNode) {
-        // Language name is not same as package name - REVISIT
-        languageName = fileOrFolderOrTreeItem.label;
+        projectName = fileOrFolderOrTreeItem.projectName;
       } else {
-        // Get language name from setup.py - REVISIT
         const path = fileOrFolderOrTreeItem.path;
         const setuppyPath = basename(path) === "setup.py" ? path : join(path, "setup.py");
-        languageName = execSync(`${getPython()} ${setuppyPath} --name`);
+        projectName = execSync(`${getPython()} ${setuppyPath} --name`);
       }
 
-      if (languageName) {
+      if (projectName) {
         const decision = await window.showQuickPick(["Yes", "No"], {
           canPickMany: false,
           ignoreFocusOut: true,
-          placeHolder: `Are you sure you want to delete ${languageName}?`,
+          placeHolder: `Are you sure you want to delete ${projectName}?`,
         });
 
         if (decision === "Yes") {
-          this.uninstall(languageName.toString().trim());
+          this.uninstall(projectName.toString().trim());
         }
       }
     });
   }
+
 }

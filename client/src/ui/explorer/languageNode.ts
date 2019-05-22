@@ -12,8 +12,8 @@ export class LanguageNode extends TreeItem {
 
   constructor(
     public readonly label: string,
+    public readonly projectName: string,
     private readonly desc?: string,
-    private readonly metamodelPath?: string,
   ) {
     super(label, TreeItemCollapsibleState.None);
   }

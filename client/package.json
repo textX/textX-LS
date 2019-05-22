@@ -59,6 +59,15 @@
         "category": "textX"
       },
       {
+        "command": "textx.refreshLanguages",
+        "title": "Refresh textX language list",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        },
+        "category": "textX"
+      },
+      {
         "command": "textx.scaffoldLanguage",
         "title": "Scaffold textX language",
         "icon": {
@@ -146,6 +155,11 @@
           "command": "textx.scaffoldLanguage",
           "when": "view == textxLanguages",
           "group": "navigation@2"
+        },
+        {
+          "command": "textx.refreshLanguages",
+          "when": "view == textxLanguages",
+          "group": "navigation@3"
         }
       ],
       "view/item/context": [

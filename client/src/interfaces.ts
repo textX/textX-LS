@@ -13,6 +13,6 @@ export interface ITextXGenerator {
 
 export interface ITextXLanguage {
   name: string;
+  projectName: string;
   description?: string;
-  metamodel_path?: string;
 }

@@ -21,9 +21,11 @@ export const TEXTX_LS_SERVER = "textx_ls_server";
 // TextX-LS
 export const CMD_GENERATE_EXTENSION: ICommand = getCommands("generateExtension");
 export const CMD_GENERATOR_LIST: ICommand =  getCommands("getGenerators");
+export const CMD_GENERATOR_LIST_REFRESH: ICommand = getCommands("refreshGenerators");
 export const CMD_LANGUAGE_INSTALL: ICommand = getCommands("installLanguage");
 export const CMD_LANGUAGE_INSTALL_EDITABLE: ICommand = getCommands("installLanguageEditable");
 export const CMD_LANGUAGE_LIST: ICommand = getCommands("getLanguages");
+export const CMD_LANGUAGE_LIST_REFRESH: ICommand = getCommands("refreshLanguages");
 export const CMD_LANGUAGE_SCAFFOLD: ICommand = getCommands("scaffoldLanguage");
 export const CMD_LANGUAGE_UNINSTALL: ICommand = getCommands("uninstallLanguage");
 // VS Code
