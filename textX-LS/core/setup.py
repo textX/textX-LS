@@ -45,7 +45,7 @@ setup(
     packages=packages,
     include_package_data=True,
     package_data={'': ['*.tx']},
-    install_requires=["textX==1.8.0", "click==7.0"],
+    install_requires=["textX>=2", "click==7.0"],
     extras_require={
         'dev': dev_require,
         'test': tests_require,
