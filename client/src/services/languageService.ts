@@ -1,16 +1,18 @@
 import { execSync } from "child_process";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
 import { commands, Uri, window } from "vscode";
 import {
   CMD_GENERATE_EXTENSION, CMD_LANGUAGE_INSTALL, CMD_LANGUAGE_INSTALL_EDITABLE, CMD_LANGUAGE_LIST,
-  CMD_LANGUAGE_SCAFFOLD, CMD_LANGUAGE_UNINSTALL, EXTENSION_GENERATOR_TARGET,
-  VS_CMD_INSTALL_EXTENSION,
+  CMD_LANGUAGE_LIST_REFRESH, CMD_LANGUAGE_SCAFFOLD, CMD_LANGUAGE_UNINSTALL,
+  EXTENSION_GENERATOR_TARGET, VS_CMD_INSTALL_EXTENSION,
 } from "../constants";
 import { ITextXLanguage } from "../interfaces";
 import { getPython } from "../setup";
+import TYPES from "../types";
 import { LanguageNode } from "../ui/explorer/languageNode";
 import { mkdtempWrapper } from "../utils";
+import { IEventService } from "./eventService";
 
 export interface ILanguageService {
   getInstalled(): Promise<ITextXLanguage[]>;
@@ -22,7 +24,9 @@ export interface ILanguageService {
 @injectable()
 export class LanguageService implements ILanguageService {
 
-  constructor() {
+  constructor(
+    @inject(TYPES.IEventService) private readonly eventService: IEventService,
+  ) {
     this.registerCommands();
   }
 
@@ -45,6 +49,9 @@ export class LanguageService implements ILanguageService {
         }
       });
     }
+
+    // Refresh textX languages view
+    this.eventService.fireLanguagesChanged();
   }
 
   public scaffold(languageName: string): void {
@@ -53,6 +60,8 @@ export class LanguageService implements ILanguageService {
 
   public uninstall(projectName: string): void {
     commands.executeCommand(CMD_LANGUAGE_UNINSTALL.external, projectName);
+    // Refresh textX languages view
+    this.eventService.fireLanguagesChanged();
   }
 
   private registerCommands() {
@@ -78,6 +87,9 @@ export class LanguageService implements ILanguageService {
         window.showErrorMessage("Cannot get python module path.");
       }
     });
+
+    commands.registerCommand(CMD_LANGUAGE_LIST_REFRESH.internal,
+                             () => this.eventService.fireLanguagesChanged());
 
     commands.registerCommand(CMD_LANGUAGE_SCAFFOLD.internal, async () => {
       const languageName = await window.showInputBox({

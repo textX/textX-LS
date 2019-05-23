@@ -78,15 +78,18 @@ async def install_language_async(folder_or_wheel, python_path, editable=False,
 async def uninstall_language_async(project_name, python_path,
                                    msg_handler=None):
     cmd = [python_path, '-m', 'pip', 'uninstall', project_name, '-y']
+
+    # Get dist location before uninstalling with pip
+    dist_location = get_distribution(project_name).location
+
     retcode = await run_proc_async(cmd, msg_handler)
 
     if retcode != 0:
         return False
 
-    # Manually remove package from sys.path if it is installed in editable mode
-    dist = get_distribution(project_name)
-    if dist and dist.location in sys.path:
-        sys.path.remove(dist.location)
+    # Manually remove package from sys.path if needed
+    if dist_location in sys.path:
+        sys.path.remove(dist_location)
 
     clear_language_registrations()
     return True
