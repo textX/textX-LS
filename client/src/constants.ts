@@ -30,3 +30,4 @@ export const CMD_LANGUAGE_SCAFFOLD: ICommand = getCommands("scaffoldLanguage");
 export const CMD_LANGUAGE_UNINSTALL: ICommand = getCommands("uninstallLanguage");
 // VS Code
 export const VS_CMD_INSTALL_EXTENSION = "workbench.extensions.installExtension";
+export const VS_CMD_UNINSTALL_EXTENSION = "workbench.extensions.uninstallExtension";

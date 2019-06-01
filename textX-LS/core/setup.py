@@ -31,6 +31,14 @@ tests_require = [
     "pytest-cov==2.6.1"
 ]
 
+# TODO: Split extras for different clients
+# E.G.
+# pip install textx_ls_core[vscode]
+# vscode_require = [
+#   'textx_vscode_gen': ...
+# ]
+
+
 setup(
     name=PACKAGE_NAME,
     version=VERSION,

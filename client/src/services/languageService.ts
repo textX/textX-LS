@@ -5,7 +5,7 @@ import { commands, Uri, window } from "vscode";
 import {
   CMD_GENERATE_EXTENSION, CMD_LANGUAGE_INSTALL, CMD_LANGUAGE_INSTALL_EDITABLE, CMD_LANGUAGE_LIST,
   CMD_LANGUAGE_LIST_REFRESH, CMD_LANGUAGE_SCAFFOLD, CMD_LANGUAGE_UNINSTALL,
-  EXTENSION_GENERATOR_TARGET, VS_CMD_INSTALL_EXTENSION,
+  EXTENSION_GENERATOR_TARGET, VS_CMD_INSTALL_EXTENSION, VS_CMD_UNINSTALL_EXTENSION,
 } from "../constants";
 import { ITextXLanguage } from "../interfaces";
 import { getPython } from "../setup";
@@ -18,7 +18,7 @@ export interface ILanguageService {
   getInstalled(): Promise<ITextXLanguage[]>;
   install(pyModulePath: string, editableMode?: boolean): Promise<void>;
   scaffold(languageName: string): void;
-  uninstall(languageName: string): void;
+  uninstall(languageName: string): Promise<void>;
 }
 
 @injectable()
@@ -58,8 +58,13 @@ export class LanguageService implements ILanguageService {
     commands.executeCommand(CMD_LANGUAGE_SCAFFOLD.external, languageName);
   }
 
-  public uninstall(projectName: string): void {
-    commands.executeCommand(CMD_LANGUAGE_UNINSTALL.external, projectName);
+  public async uninstall(projectName: string): Promise<void> {
+    const langName = await commands.executeCommand<string>(CMD_LANGUAGE_UNINSTALL.external,
+                                                           projectName);
+    if (langName) {
+      await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION, `textx.${langName.toLowerCase()}`);
+    }
+
     // Refresh textX languages view
     this.eventService.fireLanguagesChanged();
   }

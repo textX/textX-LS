@@ -86,9 +86,9 @@ async def cmd_language_uninstall(ls: TextXLanguageServer, params):
     project_name = params[0]
 
     ls.show_message("Uninstalling language project {}".format(project_name))
-    is_uninstalled = await uninstall_language_async(project_name,
-                                                    ls.python_path,
-                                                    ls.show_message_log)
+    is_uninstalled, lang_name = await uninstall_language_async(project_name,
+                                                               ls.python_path,
+                                                               ls.show_message_log)
 
     if is_uninstalled:
         ls.show_message("Uninstalled language project: {}"
@@ -97,7 +97,7 @@ async def cmd_language_uninstall(ls: TextXLanguageServer, params):
         ls.show_message("Failed to uninstall language project {}"
                         .format(project_name), MessageType.Error)
 
-    return is_uninstalled
+    return lang_name
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)

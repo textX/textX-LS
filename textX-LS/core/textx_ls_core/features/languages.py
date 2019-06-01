@@ -32,6 +32,14 @@ def get_language(language_name):
     return language_description(language_name)
 
 
+def get_language_by_project_name(project_name):
+    langs = get_languages()
+    for lang in langs:
+        if lang.projectName == project_name:
+            return lang
+    return None
+
+
 def get_language_metamodel(language_name, file_name=None):
     lang_desc = None
     try:
@@ -82,14 +90,19 @@ async def uninstall_language_async(project_name, python_path,
     # Get dist location before uninstalling with pip
     dist_location = get_distribution(project_name).location
 
+    lang_name = None
+    lang = get_language_by_project_name(project_name)
+    if lang:
+        lang_name = lang.name
+
     retcode = await run_proc_async(cmd, msg_handler)
 
     if retcode != 0:
-        return False
+        return False, lang_name
 
     # Manually remove package from sys.path if needed
     if dist_location in sys.path:
         sys.path.remove(dist_location)
 
     clear_language_registrations()
-    return True
+    return True, lang_name
