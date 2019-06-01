@@ -67,13 +67,15 @@ export async function activate(context: ExtensionContext) {
     }
   }
 
-  // inversifyjs - get instances
-  const generatorProvider = container.get<IGeneratorProvider>(TYPES.IGeneratorProvider);
-  const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
+  client.onReady().then(() => {
+    // inversifyjs - get instances
+    const generatorProvider = container.get<IGeneratorProvider>(TYPES.IGeneratorProvider);
+    const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
 
-  // Tree Providers
-  window.registerTreeDataProvider("textxGenerators", generatorProvider);
-  window.registerTreeDataProvider("textxLanguages", languageProvider);
+    // Tree Providers
+    window.registerTreeDataProvider("textxGenerators", generatorProvider);
+    window.registerTreeDataProvider("textxLanguages", languageProvider);
+  });
 
   context.subscriptions.push(client.start());
 }
