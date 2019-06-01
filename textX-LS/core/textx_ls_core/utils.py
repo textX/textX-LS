@@ -18,7 +18,6 @@ async def run_proc_async(cmd, msg_handler=None, cwd=None):
         stderr=asyncio.subprocess.STDOUT,
         cwd=cwd
     )
-    await process.communicate()
 
     if msg_handler:
         async def _listener(process, msg_handler):
@@ -26,7 +25,10 @@ async def run_proc_async(cmd, msg_handler=None, cwd=None):
                 line = await process.stdout.readline()
                 if line is not None:
                     msg_handler(line.decode().rstrip())
+            return process
 
-        asyncio.ensure_future(_listener(process, msg_handler))
+        process = await asyncio.ensure_future(_listener(process, msg_handler))
+    else:
+        await process.communicate()
 
     return process.returncode
