@@ -20,6 +20,8 @@ export class TextXLanguageProvider implements ILanguageProvider {
   }
 
   public getChildren(element?: LanguageNode): Thenable<LanguageNode[]> {
+    // TODO: Make project name parent for languages
+
     return new Promise(async (resolve) => {
       const languages = await this.languageService.getInstalled();
       const nodes = languages.map((lang) => new LanguageNode(lang.name,

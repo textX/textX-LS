@@ -10,8 +10,8 @@ from pygls.types import (
 from textx_ls_core.features.generators import (generate_extension,
                                                get_generators)
 from textx_ls_core.features.languages import (get_languages,
-                                              install_language_async,
-                                              uninstall_language_async)
+                                              install_project_async,
+                                              uninstall_project_async)
 
 from .features.diagnostics import send_diagnostics
 from .protocol import TextXDocument, TextXProtocol
@@ -22,9 +22,9 @@ class TextXLanguageServer(LanguageServer):
     CMD_GENERATE_EXTENSION = "textx/generateExtension"
     CMD_GENERATOR_LIST = "textx/getGenerators"
     CMD_LANGUAGE_LIST = "textx/getLanguages"
-    CMD_LANGUAGE_INSTALL = "textx/installLanguage"
-    CMD_LANGUAGE_SCAFFOLD = "textx/scaffoldLanguage"
-    CMD_LANGUAGE_UNINSTALL = "textx/uninstallLanguage"
+    CMD_PROJECT_INSTALL = "textx/installProject"
+    CMD_PROJECT_SCAFFOLD = "textx/scaffoldProject"
+    CMD_PROJECT_UNINSTALL = "textx/uninstallProject"
 
     def __init__(self):
         super().__init__(protocol_cls=TextXProtocol)
@@ -37,10 +37,10 @@ textx_server = TextXLanguageServer()
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATE_EXTENSION)
 def cmd_generate_extension(ls: TextXLanguageServer, params):
-    lang_name = params[0]
+    project_name = params[0]
     target = params[1]
     dest_dir = params[2]
-    return generate_extension(lang_name, target, dest_dir)
+    return generate_extension(project_name, target, dest_dir)
 
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATOR_LIST)
@@ -49,25 +49,25 @@ def cmd_generator_list(ls: TextXLanguageServer, params):
     return get_generators()
 
 
-@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_INSTALL)
+@textx_server.command(TextXLanguageServer.CMD_PROJECT_INSTALL)
 async def cmd_language_install(ls: TextXLanguageServer, params):
     folder_or_wheel = params[0]
     editable = params[1]
 
     ls.show_message("Installing language from {}".format(folder_or_wheel))
-    lang_name = await install_language_async(folder_or_wheel,
-                                             ls.python_path,
-                                             editable,
-                                             msg_handler=ls.show_message_log)
+    is_installed, project_name = await install_project_async(folder_or_wheel,
+                                                             ls.python_path,
+                                                             editable,
+                                                             msg_handler=ls.show_message_log)
 
-    if lang_name:
-        ls.show_message("Installed language: {}"
-                        .format(lang_name))
+    if is_installed:
+        ls.show_message("Project {} is successfully installed."
+                        .format(project_name))
     else:
-        ls.show_message("Failed to install language from {}"
-                        .format(folder_or_wheel), MessageType.Error)
+        ls.show_message("Failed to install project {}."
+                        .format(project_name), MessageType.Error)
 
-    return lang_name
+    return project_name if is_installed else None
 
 
 @textx_server.command(TextXLanguageServer.CMD_LANGUAGE_LIST)
@@ -76,19 +76,19 @@ def cmd_language_list(ls: TextXLanguageServer, params):
     return get_languages()
 
 
-@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_SCAFFOLD)
+@textx_server.command(TextXLanguageServer.CMD_PROJECT_SCAFFOLD)
 def cmd_language_scaffold(ls: TextXLanguageServer, params):
     pass
 
 
-@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_UNINSTALL)
+@textx_server.command(TextXLanguageServer.CMD_PROJECT_UNINSTALL)
 async def cmd_language_uninstall(ls: TextXLanguageServer, params):
     project_name = params[0]
 
     ls.show_message("Uninstalling language project {}".format(project_name))
-    is_uninstalled, lang_name = await uninstall_language_async(project_name,
-                                                               ls.python_path,
-                                                               ls.show_message_log)
+    is_uninstalled, lang_name = await uninstall_project_async(project_name,
+                                                              ls.python_path,
+                                                              ls.show_message_log)
 
     if is_uninstalled:
         ls.show_message("Uninstalled language project: {}"

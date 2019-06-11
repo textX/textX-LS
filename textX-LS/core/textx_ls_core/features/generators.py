@@ -10,7 +10,7 @@ from .languages import get_language
 extension_gen = None
 
 
-def generate_extension(lang_name, target, dest_dir):
+def generate_extension(project_name, target, dest_dir):
     global extension_gen
     if extension_gen is None:
         try:
@@ -19,15 +19,12 @@ def generate_extension(lang_name, target, dest_dir):
             raise GeneratorNotExist("Extension generator not exist for {}"
                                     .format(target))
 
-    lang = get_language(lang_name)
-
-    extension_gen(None, lang.metamodel, dest_dir, **{
-        'lang-name': lang.name,
-        'pattern': lang.pattern,
+    extension_gen(None, None, dest_dir, **{
+        'project': project_name,
         'vsix': 1
     })
 
-    return join(dest_dir, lang.name + '.vsix')
+    return join(dest_dir, project_name + '.vsix')
 
 
 def get_generators():

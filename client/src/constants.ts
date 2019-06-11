@@ -22,12 +22,12 @@ export const TEXTX_LS_SERVER = "textx_ls_server";
 export const CMD_GENERATE_EXTENSION: ICommand = getCommands("generateExtension");
 export const CMD_GENERATOR_LIST: ICommand =  getCommands("getGenerators");
 export const CMD_GENERATOR_LIST_REFRESH: ICommand = getCommands("refreshGenerators");
-export const CMD_LANGUAGE_INSTALL: ICommand = getCommands("installLanguage");
-export const CMD_LANGUAGE_INSTALL_EDITABLE: ICommand = getCommands("installLanguageEditable");
+export const CMD_PROJECT_INSTALL: ICommand = getCommands("installProject");
+export const CMD_PROJECT_INSTALL_EDITABLE: ICommand = getCommands("installProjectEditable");
 export const CMD_LANGUAGE_LIST: ICommand = getCommands("getLanguages");
 export const CMD_LANGUAGE_LIST_REFRESH: ICommand = getCommands("refreshLanguages");
-export const CMD_LANGUAGE_SCAFFOLD: ICommand = getCommands("scaffoldLanguage");
-export const CMD_LANGUAGE_UNINSTALL: ICommand = getCommands("uninstallLanguage");
+export const CMD_PROJECT_SCAFFOLD: ICommand = getCommands("scaffoldProject");
+export const CMD_PROJECT_UNINSTALL: ICommand = getCommands("uninstallProject");
 // VS Code
 export const VS_CMD_INSTALL_EXTENSION = "workbench.extensions.installExtension";
 export const VS_CMD_UNINSTALL_EXTENSION = "workbench.extensions.uninstallExtension";

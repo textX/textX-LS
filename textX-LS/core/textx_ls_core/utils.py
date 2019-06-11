@@ -1,5 +1,12 @@
 import asyncio
-from os.path import basename, splitext
+from os.path import basename, isdir, isfile, join, splitext
+
+
+def compare_project_names(p1, p2):
+    """Compare project names replacing `-` and `_` with empty char."""
+    def replace(name):
+        return name.replace('-', '_').lower()
+    return replace(p1) == replace(p2)
 
 
 def get_file_extension(uri):
@@ -9,6 +16,32 @@ def get_file_extension(uri):
         return ext[1:] if ext else basename(uri)
     except (AttributeError, IndexError, TypeError):
         return ''
+
+
+def get_project_name_and_version(folder_or_wheel):
+    """Returns project name for given project folder (with setup.py)
+    or wheel file.
+    """
+    project_name = None
+    version = None
+    # Folder with setup.py inside (project)
+    setuppy = join(folder_or_wheel, 'setup.py')
+    if isfile(setuppy):
+        from unittest import mock
+        import setuptools
+        with mock.patch.object(setuptools, 'setup') as mock_setup:
+            with open(setuppy, 'r') as f:
+                exec(f.read())
+            _, kwargs = mock_setup.call_args
+        project_name = kwargs.get('name', None)
+        version = kwargs.get('version', None)
+    elif isfile(folder_or_wheel) and folder_or_wheel.endswith('.whl'):  # wheel file
+        from wheel_inspect import inspect_wheel
+        project_info = inspect_wheel(folder_or_wheel)
+        project_name = project_info.get('project', None)
+        version = project_info.get('version', None)
+
+    return project_name, version
 
 
 async def run_proc_async(cmd, msg_handler=None, cwd=None):
