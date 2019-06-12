@@ -9,9 +9,9 @@ from pygls.types import (
     DidOpenTextDocumentParams, MessageType)
 from textx_ls_core.features.generators import (generate_extension,
                                                get_generators)
-from textx_ls_core.features.languages import (get_languages,
-                                              install_project_async,
-                                              uninstall_project_async)
+from textx_ls_core.features.projects import (get_projects,
+                                             install_project_async,
+                                             uninstall_project_async)
 
 from .features.diagnostics import send_diagnostics
 from .protocol import TextXDocument, TextXProtocol
@@ -21,8 +21,8 @@ from .utils import skip_not_supported_langs
 class TextXLanguageServer(LanguageServer):
     CMD_GENERATE_EXTENSION = "textx/generateExtension"
     CMD_GENERATOR_LIST = "textx/getGenerators"
-    CMD_LANGUAGE_LIST = "textx/getLanguages"
     CMD_PROJECT_INSTALL = "textx/installProject"
+    CMD_PROJECT_LIST = "textx/getProjects"
     CMD_PROJECT_SCAFFOLD = "textx/scaffoldProject"
     CMD_PROJECT_UNINSTALL = "textx/uninstallProject"
 
@@ -50,15 +50,15 @@ def cmd_generator_list(ls: TextXLanguageServer, params):
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_INSTALL)
-async def cmd_language_install(ls: TextXLanguageServer, params):
+async def cmd_project_install(ls: TextXLanguageServer, params):
     folder_or_wheel = params[0]
     editable = params[1]
 
-    ls.show_message("Installing language from {}".format(folder_or_wheel))
+    ls.show_message("Installing project from {}".format(folder_or_wheel))
     is_installed, project_name = await install_project_async(folder_or_wheel,
                                                              ls.python_path,
                                                              editable,
-                                                             msg_handler=ls.show_message_log)
+                                                             ls.show_message_log)
 
     if is_installed:
         ls.show_message("Project {} is successfully installed."
@@ -70,34 +70,35 @@ async def cmd_language_install(ls: TextXLanguageServer, params):
     return project_name if is_installed else None
 
 
-@textx_server.command(TextXLanguageServer.CMD_LANGUAGE_LIST)
+@textx_server.command(TextXLanguageServer.CMD_PROJECT_LIST)
 @textx_server.thread()
-def cmd_language_list(ls: TextXLanguageServer, params):
-    return get_languages()
+def cmd_project_list(ls: TextXLanguageServer, params):
+    load_langs = params[0] if len(params) == 1 else True
+    return get_projects(load_langs)
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_SCAFFOLD)
-def cmd_language_scaffold(ls: TextXLanguageServer, params):
-    pass
+def cmd_project_scaffold(ls: TextXLanguageServer, params):
+    ls.show_message("Not implemented")
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_UNINSTALL)
-async def cmd_language_uninstall(ls: TextXLanguageServer, params):
+async def cmd_project_uninstall(ls: TextXLanguageServer, params):
     project_name = params[0]
 
-    ls.show_message("Uninstalling language project {}".format(project_name))
-    is_uninstalled, lang_name = await uninstall_project_async(project_name,
-                                                              ls.python_path,
-                                                              ls.show_message_log)
+    ls.show_message("Uninstalling project {}".format(project_name))
+    is_uninstalled = await uninstall_project_async(project_name,
+                                                   ls.python_path,
+                                                   ls.show_message_log)
 
     if is_uninstalled:
-        ls.show_message("Uninstalled language project: {}"
+        ls.show_message("Project {} is successfully uninstalled."
                         .format(project_name))
     else:
-        ls.show_message("Failed to uninstall language project {}"
+        ls.show_message("Failed to uninstall project {}."
                         .format(project_name), MessageType.Error)
 
-    return lang_name
+    return is_uninstalled
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)

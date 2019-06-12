@@ -4,7 +4,7 @@ const TYPES = {
   IGeneratorProvider: Symbol("IGeneratorProvider"),
   IGeneratorService: Symbol("IGeneratorService"),
   ILanguageProvider: Symbol("ILanguageProvider"),
-  ILanguageService: Symbol("ILanguageService"),
+  IProjectService: Symbol("IProjectService"),
   LanguageNode: Symbol("LanguageNode"),
 };
 

@@ -6,7 +6,7 @@ from textx import (clear_language_registrations, language_description,
 from textx.exceptions import TextXRegistrationError
 
 from ..exceptions import LanguageNotRegistered, MultipleLanguagesError
-from ..models import TextXLanguage
+from ..models import TextXLanguage, TextXProject
 from ..utils import (compare_project_names, get_project_name_and_version,
                      run_proc_async)
 
@@ -51,6 +51,17 @@ def get_language_metamodel(language_name, file_name=None):
 
     lang_mm = lang_desc.metamodel
     return lang_mm() if callable(lang_mm) else lang_mm
+
+
+def get_projects(with_langs=True):
+    projects = {}
+    for lang in get_languages():
+        project_name = lang.projectName
+        if project_name not in projects:
+            projects[project_name] = TextXProject(project_name)
+        if with_langs is True:
+            projects[project_name].add_language(lang)
+    return projects
 
 
 async def install_project_async(folder_or_wheel, python_path, editable=False,

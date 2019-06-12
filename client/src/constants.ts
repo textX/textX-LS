@@ -24,8 +24,8 @@ export const CMD_GENERATOR_LIST: ICommand =  getCommands("getGenerators");
 export const CMD_GENERATOR_LIST_REFRESH: ICommand = getCommands("refreshGenerators");
 export const CMD_PROJECT_INSTALL: ICommand = getCommands("installProject");
 export const CMD_PROJECT_INSTALL_EDITABLE: ICommand = getCommands("installProjectEditable");
-export const CMD_LANGUAGE_LIST: ICommand = getCommands("getLanguages");
-export const CMD_LANGUAGE_LIST_REFRESH: ICommand = getCommands("refreshLanguages");
+export const CMD_PROJECT_LIST: ICommand = getCommands("getProjects");
+export const CMD_PROJECT_LIST_REFRESH: ICommand = getCommands("refreshProjects");
 export const CMD_PROJECT_SCAFFOLD: ICommand = getCommands("scaffoldProject");
 export const CMD_PROJECT_UNINSTALL: ICommand = getCommands("uninstallProject");
 // VS Code

@@ -59,8 +59,8 @@
         "category": "textX"
       },
       {
-        "command": "textx.refreshLanguages",
-        "title": "Refresh textX language list",
+        "command": "textx.refreshProjects",
+        "title": "Refresh textX projects",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
@@ -157,7 +157,7 @@
           "group": "navigation@2"
         },
         {
-          "command": "textx.refreshLanguages",
+          "command": "textx.refreshProjects",
           "when": "view == textxLanguages",
           "group": "navigation@3"
         }
@@ -165,7 +165,7 @@
       "view/item/context": [
         {
           "command": "textx.uninstallProject",
-          "when": "view == textxLanguages && viewItem == language",
+          "when": "view == textxLanguages && viewItem == project",
           "group": "inline"
         }
       ]

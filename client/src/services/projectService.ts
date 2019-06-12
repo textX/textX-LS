@@ -3,26 +3,26 @@ import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
 import { commands, Uri, window } from "vscode";
 import {
-  CMD_GENERATE_EXTENSION, CMD_LANGUAGE_LIST, CMD_LANGUAGE_LIST_REFRESH, CMD_PROJECT_INSTALL,
-  CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL,
+  CMD_GENERATE_EXTENSION, CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
+  CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL,
   EXTENSION_GENERATOR_TARGET, VS_CMD_INSTALL_EXTENSION, VS_CMD_UNINSTALL_EXTENSION,
 } from "../constants";
-import { ITextXLanguage } from "../interfaces";
+import { ITextXProject } from "../interfaces";
 import { getPython } from "../setup";
 import TYPES from "../types";
-import { LanguageNode } from "../ui/explorer/languageNode";
+import { ProjectNode } from "../ui/explorer/projectNode";
 import { mkdtempWrapper } from "../utils";
 import { IEventService } from "./eventService";
 
-export interface ILanguageService {
-  getInstalled(): Promise<ITextXLanguage[]>;
+export interface IProjectService {
+  getInstalled(): Promise<Map<string, ITextXProject>>;
   install(pyModulePath: string, editableMode?: boolean): Promise<void>;
-  scaffold(languageName: string): void;
-  uninstall(languageName: string): Promise<void>;
+  scaffold(projectName: string): void;
+  uninstall(projectName: string): Promise<void>;
 }
 
 @injectable()
-export class LanguageService implements ILanguageService {
+export class ProjectService implements IProjectService {
 
   constructor(
     @inject(TYPES.IEventService) private readonly eventService: IEventService,
@@ -30,9 +30,10 @@ export class LanguageService implements ILanguageService {
     this.registerCommands();
   }
 
-  public async getInstalled(): Promise<ITextXLanguage[]> {
-    const langs = await commands.executeCommand<ITextXLanguage[]>(CMD_LANGUAGE_LIST.external);
-    return langs || [];
+  public async getInstalled(): Promise<Map<string, ITextXProject>> {
+    // tslint:disable-next-line:max-line-length
+    const langs = await commands.executeCommand<Map<string, ITextXProject>>(CMD_PROJECT_LIST.external);
+    return langs || new Map<string, ITextXProject>();
   }
 
   public async install(pyModulePath: string, editableMode: boolean = false): Promise<void> {
@@ -55,15 +56,16 @@ export class LanguageService implements ILanguageService {
     this.eventService.fireLanguagesChanged();
   }
 
-  public scaffold(languageName: string): void {
-    commands.executeCommand(CMD_PROJECT_SCAFFOLD.external, languageName);
+  public scaffold(projectName: string): void {
+    commands.executeCommand(CMD_PROJECT_SCAFFOLD.external, projectName);
   }
 
   public async uninstall(projectName: string): Promise<void> {
-    const langName = await commands.executeCommand<string>(CMD_PROJECT_UNINSTALL.external,
-                                                           projectName);
-    if (langName) {
-      await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION, `textx.${langName.toLowerCase()}`);
+    const isUninstalled = await commands.executeCommand<string>(CMD_PROJECT_UNINSTALL.external,
+                                                                projectName);
+    if (isUninstalled) {
+      await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION,
+                                    `textx.${projectName.toLowerCase()}`);
     }
 
     // Refresh textX languages view
@@ -94,30 +96,30 @@ export class LanguageService implements ILanguageService {
       }
     });
 
-    commands.registerCommand(CMD_LANGUAGE_LIST_REFRESH.internal,
+    commands.registerCommand(CMD_PROJECT_LIST_REFRESH.internal,
                              () => this.eventService.fireLanguagesChanged());
 
     commands.registerCommand(CMD_PROJECT_SCAFFOLD.internal, async () => {
-      const languageName = await window.showInputBox({
+      const projectName = await window.showInputBox({
         ignoreFocusOut: true,
-        placeHolder: "Enter a language name.",
+        placeHolder: "Enter a project name.",
         validateInput: (value: string) => {
           if (value && value.trim().length > 0) {
             return null;
           } else {
-            return "Language package name is required.";
+            return "Project name is required.";
           }
         },
       });
 
-      if (languageName) {
-        this.scaffold(languageName.trim());
+      if (projectName) {
+        this.scaffold(projectName.trim());
        }
     });
 
     commands.registerCommand(CMD_PROJECT_UNINSTALL.internal, async (fileOrFolderOrTreeItem) => {
       let projectName = null;
-      if (fileOrFolderOrTreeItem instanceof LanguageNode) {
+      if (fileOrFolderOrTreeItem instanceof ProjectNode) {
         projectName = fileOrFolderOrTreeItem.projectName;
       } else {
         const path = fileOrFolderOrTreeItem.path;

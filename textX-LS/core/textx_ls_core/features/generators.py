@@ -5,7 +5,7 @@ from textx import (LanguageDesc, generator_descriptions,
 from textx.exceptions import TextXRegistrationError
 
 from ..exceptions import GeneratorNotExist
-from .languages import get_language
+from .projects import get_language
 
 extension_gen = None
 

@@ -7,7 +7,7 @@ from pygls.types import (DidChangeTextDocumentParams,
 from pygls.workspace import Document
 from textx_ls_core.exceptions import (LanguageNotRegistered,
                                       MultipleLanguagesError)
-from textx_ls_core.features.languages import get_language_metamodel
+from textx_ls_core.features.projects import get_language_metamodel
 
 
 class TextXDocument(Document):

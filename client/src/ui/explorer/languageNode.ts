@@ -1,14 +1,9 @@
-import { join } from "path";
-import { TreeItem, TreeItemCollapsibleState } from "vscode";
-import { RESOURCES_PATH } from "../../constants";
+import { TreeItemCollapsibleState } from "vscode";
+import { TextXNode } from "./textxNode";
 
-export class LanguageNode extends TreeItem {
+export class LanguageNode extends TextXNode {
 
   public readonly contextValue = "language";
-  public readonly iconPath = {
-    dark: join(RESOURCES_PATH , "dark", "x.svg"),
-    light: join(RESOURCES_PATH, "light", "x.svg"),
-  };
 
   constructor(
     public readonly label: string,

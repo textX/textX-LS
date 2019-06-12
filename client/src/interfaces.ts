@@ -16,3 +16,8 @@ export interface ITextXLanguage {
   projectName: string;
   description?: string;
 }
+
+export interface ITextXProject {
+  projectName: string;
+  languages?: ITextXLanguage[];
+}
