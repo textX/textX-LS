@@ -9,6 +9,16 @@ def compare_project_names(p1, p2):
     return replace(p1) == replace(p2)
 
 
+def dist_is_editable(dist_location, project_name):
+    """Is distribution installed in editable mode."""
+    def _check_egg(name):
+        return isdir(join(dist_location, name + '.egg-info')) or \
+            isfile(join(dist_location, name + '.egg-link'))
+
+    return _check_egg(project_name) or \
+        _check_egg(project_name.replace('-', '_'))
+
+
 def get_file_extension(uri):
     """Returns file extension (without dot) or file name."""
     try:

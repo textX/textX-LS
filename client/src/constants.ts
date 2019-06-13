@@ -31,3 +31,4 @@ export const CMD_PROJECT_UNINSTALL: ICommand = getCommands("uninstallProject");
 // VS Code
 export const VS_CMD_INSTALL_EXTENSION = "workbench.extensions.installExtension";
 export const VS_CMD_UNINSTALL_EXTENSION = "workbench.extensions.uninstallExtension";
+export const VS_CMD_WINDOW_RELOAD = "workbench.action.reloadWindow";

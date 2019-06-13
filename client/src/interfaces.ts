@@ -19,5 +19,7 @@ export interface ITextXLanguage {
 
 export interface ITextXProject {
   projectName: string;
+  editable: boolean;
+  distLocation: string;
   languages?: ITextXLanguage[];
 }

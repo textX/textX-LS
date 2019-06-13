@@ -1,4 +1,6 @@
 import functools
+import sys
+from os.path import isfile, join
 
 
 def skip_not_supported_langs(func):

@@ -1,11 +1,12 @@
 import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
-import { commands, Uri, window } from "vscode";
+import { commands, extensions, Uri, window } from "vscode";
 import {
   CMD_GENERATE_EXTENSION, CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
   CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL,
   EXTENSION_GENERATOR_TARGET, VS_CMD_INSTALL_EXTENSION, VS_CMD_UNINSTALL_EXTENSION,
+  VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXProject } from "../interfaces";
 import { getPython } from "../setup";
@@ -13,6 +14,7 @@ import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
 import { mkdtempWrapper } from "../utils";
 import { IEventService } from "./eventService";
+import { IWatcherService } from "./watcherService";
 
 export interface IProjectService {
   getInstalled(): Promise<Map<string, ITextXProject>>;
@@ -26,19 +28,28 @@ export class ProjectService implements IProjectService {
 
   constructor(
     @inject(TYPES.IEventService) private readonly eventService: IEventService,
+    @inject(TYPES.IWatcherService) private readonly watcherService: IWatcherService,
   ) {
     this.registerCommands();
   }
 
   public async getInstalled(): Promise<Map<string, ITextXProject>> {
     // tslint:disable-next-line:max-line-length
-    const langs = await commands.executeCommand<Map<string, ITextXProject>>(CMD_PROJECT_LIST.external);
-    return langs || new Map<string, ITextXProject>();
+    let projects = await commands.executeCommand<Map<string, ITextXProject>>(CMD_PROJECT_LIST.external);
+    projects = projects || new Map<string, ITextXProject>();
+    // watch editable projects
+    Object.values(projects).forEach((p: ITextXProject) => {
+      if (p.editable) {
+        this.watchProject(p.projectName, p.distLocation);
+      }
+    });
+
+    return projects;
   }
 
   public async install(pyModulePath: string, editableMode: boolean = false): Promise<void> {
-    const projectName = await commands.executeCommand<string>(CMD_PROJECT_INSTALL.external,
-                                                                 pyModulePath, editableMode);
+    const [projectName, distLocation] = await commands.executeCommand<string>(
+      CMD_PROJECT_INSTALL.external, pyModulePath, editableMode);
 
     if (projectName) {
       mkdtempWrapper(async (folder) => {
@@ -47,6 +58,15 @@ export class ProjectService implements IProjectService {
         );
 
         if (extensionPath) {
+          if (editableMode && distLocation) {
+            extensions.onDidChange((e) => {
+              const extensionName = extensionPath.split("\\").pop().split("/").pop().split(".")[0];
+              if (extensions.getExtension(`textx.${extensionName}`) !== undefined) {
+                // watch grammar files at least ...
+                this.watchProject(projectName, distLocation);
+              }
+            });
+          }
           await commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
         }
       });
@@ -64,8 +84,19 @@ export class ProjectService implements IProjectService {
     const isUninstalled = await commands.executeCommand<string>(CMD_PROJECT_UNINSTALL.external,
                                                                 projectName);
     if (isUninstalled) {
-      await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION,
-                                    `textx.${projectName.toLowerCase()}`);
+      // unwatch project
+      this.unwatchProject(projectName);
+
+      const extensionName = `textx.${projectName.toLowerCase()}`;
+      const extension = extensions.getExtension(extensionName);
+      const isActive = extension === undefined ? false : extension.isActive;
+
+      // Uninstall extension
+      await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION, extensionName);
+
+      if (isActive) {
+        await commands.executeCommand(VS_CMD_WINDOW_RELOAD);
+      }
     }
 
     // Refresh textX languages view
@@ -138,6 +169,18 @@ export class ProjectService implements IProjectService {
           this.uninstall(projectName.toString().trim());
         }
       }
+    });
+  }
+
+  private unwatchProject(projectName: string): void {
+    this.watcherService.unwatch(projectName);
+  }
+
+  private watchProject(projectName: string, distLocation: string): void {
+    // watch grammars
+    this.watcherService.watch(projectName, `${distLocation}/**/*.tx`).onDidChange(async (e) => {
+      // TODO: Regenerate coloring and replace it
+      commands.executeCommand(VS_CMD_WINDOW_RELOAD);
     });
   }
 

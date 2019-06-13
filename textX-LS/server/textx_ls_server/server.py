@@ -55,10 +55,10 @@ async def cmd_project_install(ls: TextXLanguageServer, params):
     editable = params[1]
 
     ls.show_message("Installing project from {}".format(folder_or_wheel))
-    is_installed, project_name = await install_project_async(folder_or_wheel,
-                                                             ls.python_path,
-                                                             editable,
-                                                             ls.show_message_log)
+    is_installed, project_name, dist_location = await install_project_async(folder_or_wheel,
+                                                                            ls.python_path,
+                                                                            editable,
+                                                                            ls.show_message_log)
 
     if is_installed:
         ls.show_message("Project {} is successfully installed."
@@ -67,7 +67,7 @@ async def cmd_project_install(ls: TextXLanguageServer, params):
         ls.show_message("Failed to install project {}."
                         .format(project_name), MessageType.Error)
 
-    return project_name if is_installed else None
+    return project_name if is_installed else None, dist_location
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_LIST)

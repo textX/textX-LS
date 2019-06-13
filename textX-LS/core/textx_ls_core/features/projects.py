@@ -1,14 +1,14 @@
 import sys
 
-from pkg_resources import get_distribution
+from pkg_resources import DistributionNotFound, get_distribution
 from textx import (clear_language_registrations, language_description,
                    language_descriptions, languages_for_file)
 from textx.exceptions import TextXRegistrationError
 
 from ..exceptions import LanguageNotRegistered, MultipleLanguagesError
 from ..models import TextXLanguage, TextXProject
-from ..utils import (compare_project_names, get_project_name_and_version,
-                     run_proc_async)
+from ..utils import (compare_project_names, dist_is_editable,
+                     get_project_name_and_version, run_proc_async)
 
 
 def get_languages():
@@ -58,7 +58,11 @@ def get_projects(with_langs=True):
     for lang in get_languages():
         project_name = lang.projectName
         if project_name not in projects:
-            projects[project_name] = TextXProject(project_name)
+            dist_location = get_distribution(project_name).location
+            editable = dist_is_editable(dist_location, project_name)
+            projects[project_name] = TextXProject(project_name,
+                                                  editable,
+                                                  dist_location)
         if with_langs is True:
             projects[project_name].add_language(lang)
     return projects
@@ -67,8 +71,7 @@ def get_projects(with_langs=True):
 async def install_project_async(folder_or_wheel, python_path, editable=False,
                                 msg_handler=None):
     project_name, version = get_project_name_and_version(folder_or_wheel)
-    is_installed = False
-
+    dist_location = None
     # TODO: Check if project with the same version is already installed ?
 
     cmd = [python_path, '-m', 'pip', 'install', folder_or_wheel]
@@ -78,14 +81,17 @@ async def install_project_async(folder_or_wheel, python_path, editable=False,
     retcode = await run_proc_async(cmd, msg_handler)
 
     # Successfully installed
-    if retcode == 0:
-        clear_language_registrations()
-        # Manually add package to sys.path if installed with -e flag
-        if editable and folder_or_wheel not in sys.path:
-            sys.path.append(folder_or_wheel)
-        is_installed = True
+    if retcode != 0:
+        return False, project_name
 
-    return is_installed, project_name
+    # Manually add package to sys.path if installed with -e flag
+    if editable and folder_or_wheel not in sys.path:
+        sys.path.append(folder_or_wheel)
+        dist_location = get_distribution(project_name).location
+
+    clear_language_registrations()
+
+    return True, project_name, dist_location
 
 
 async def uninstall_project_async(project_name, python_path,
@@ -93,21 +99,18 @@ async def uninstall_project_async(project_name, python_path,
     cmd = [python_path, '-m', 'pip', 'uninstall', project_name, '-y']
 
     # Get dist location before uninstalling with pip
-    dist_location = get_distribution(project_name).location
+    try:
+        dist_location = get_distribution(project_name).location
+        retcode = await run_proc_async(cmd, msg_handler)
 
-    # lang_name = None
-    # lang = get_language_by_project_name(project_name)
-    # if lang:
-    #     lang_name = lang.name
+        if retcode != 0:
+            return False
 
-    # retcode = await run_proc_async(cmd, msg_handler)
+        # Manually remove package from sys.path if needed
+        if dist_location in sys.path:
+            sys.path.remove(dist_location)
+        clear_language_registrations()
+    except DistributionNotFound:
+        pass
 
-    # if retcode != 0:
-    #     return False, lang_name
-
-    # # Manually remove package from sys.path if needed
-    # if dist_location in sys.path:
-    #     sys.path.remove(dist_location)
-
-    # clear_language_registrations()
-    # return True, lang_name
+    return True

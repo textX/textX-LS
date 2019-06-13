@@ -21,7 +21,7 @@ export class TextXLanguageProvider implements ILanguageProvider {
     @inject(TYPES.IEventService) private readonly eventService: IEventService,
     @inject(TYPES.IProjectService) private readonly projectService: IProjectService,
   ) {
-    this.onDidChangeTreeData = this.eventService.getEmitter<LanguageNode>(TYPES.LanguageNode).event;
+    this.onDidChangeTreeData = this.eventService.getEmitter<LanguageNode>(TYPES.TextXNode).event;
   }
 
   public getChildren(element?: TextXNode): Thenable<TextXNode[]> {

@@ -4,6 +4,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-lan
 
 import { TEXTX_LS_SERVER } from "./constants";
 import container from "./inversify.config";
+import { IWatcherService } from "./services/watcherService";
 import { installLSWithProgress } from "./setup";
 import TYPES from "./types";
 import { IGeneratorProvider, ILanguageProvider } from "./ui/explorer";
@@ -14,9 +15,6 @@ function getClientOptions(): LanguageClientOptions {
   return {
     documentSelector: ["*"],
     outputChannelName: "textX",
-    synchronize: {
-      fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
-    },
   };
 }
 
@@ -71,10 +69,13 @@ export async function activate(context: ExtensionContext) {
     // inversifyjs - get instances
     const generatorProvider = container.get<IGeneratorProvider>(TYPES.IGeneratorProvider);
     const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
+    const watcherService = container.get<IWatcherService>(TYPES.IWatcherService);
 
     // Tree Providers
-    window.registerTreeDataProvider("textxGenerators", generatorProvider);
-    window.registerTreeDataProvider("textxLanguages", languageProvider);
+    // tslint:disable-next-line:max-line-length
+    context.subscriptions.push(window.registerTreeDataProvider("textxGenerators", generatorProvider));
+    context.subscriptions.push(window.registerTreeDataProvider("textxLanguages", languageProvider));
+    context.subscriptions.push(watcherService);
   });
 
   context.subscriptions.push(client.start());

@@ -2,14 +2,14 @@ import { injectable } from "inversify";
 import { EventEmitter } from "vscode";
 import TYPES from "../types";
 import { GeneratorNode } from "../ui/explorer/generatorNode";
-import { LanguageNode } from "../ui/explorer/languageNode";
+import { TextXNode } from "../ui/explorer/textxNode";
 
 export interface IEventService {
   getEmitter<T>(type: symbol): EventEmitter<T | undefined>;
   fireGeneratorsChanged(): void;
   fireLanguagesChanged(): void;
   onGeneratorsChanged(listener: (e: GeneratorNode) => any, thisArgs?: any): void;
-  onLanguagesChanged(listener: (e: LanguageNode) => any, thisArgs?: any): void;
+  onLanguagesChanged(listener: (e: TextXNode) => any, thisArgs?: any): void;
 }
 
 @injectable()
@@ -18,7 +18,7 @@ export class EventService implements IEventService {
   private readonly eventEmitters: Map<symbol, any> = new Map<symbol, any>();
 
   constructor() {
-    this.eventEmitters[TYPES.LanguageNode] = new EventEmitter<LanguageNode | undefined>();
+    this.eventEmitters[TYPES.TextXNode] = new EventEmitter<TextXNode | undefined>();
     this.eventEmitters[TYPES.GeneratorNode] = new EventEmitter<GeneratorNode | undefined>();
   }
 
@@ -31,15 +31,15 @@ export class EventService implements IEventService {
   }
 
   public fireLanguagesChanged(): void {
-    this.getEmitter<LanguageNode>(TYPES.LanguageNode).fire();
+    this.getEmitter<TextXNode>(TYPES.TextXNode).fire();
   }
 
   public onGeneratorsChanged(listener: (e: GeneratorNode) => any, thisArgs?: any): void {
     this.getEmitter(TYPES.GeneratorNode).event(listener, thisArgs);
   }
 
-  public onLanguagesChanged(listener: (e: LanguageNode) => any, thisArgs?: any): void {
-    this.getEmitter(TYPES.LanguageNode).event(listener, thisArgs);
+  public onLanguagesChanged(listener: (e: TextXNode) => any, thisArgs?: any): void {
+    this.getEmitter(TYPES.TextXNode).event(listener, thisArgs);
   }
 
 }

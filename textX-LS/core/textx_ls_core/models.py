@@ -9,8 +9,10 @@ class TextXLanguage:
 
 
 class TextXProject:
-    def __init__(self, project_name):
+    def __init__(self, project_name, editable, dist_location=None):
         self.projectName = project_name
+        self.editable = editable
+        self.distLocation = dist_location
         self.languages = []
 
     def add_language(self, language: TextXLanguage):
