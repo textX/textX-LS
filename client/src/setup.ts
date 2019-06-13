@@ -45,11 +45,12 @@ function getVenvPackageVersion(python: string, name: string): number[] | null {
 }
 
 function installAllWheelsFromDirectory(python: string, cwd: string) {
-  readdirSync(cwd).forEach((file) => {
-    if (file.endsWith(".whl")) {
-      execSync(`${python} -m pip install ${file}`, { cwd });
-    }
-  });
+  // readdirSync(cwd).forEach((file) => {
+  //   if (file.endsWith(".whl")) {
+  //     execSync(`${python} -m pip install ${file}`, { cwd });
+  //   }
+  // });
+  execSync(`${python} -m pip install -r requirements.txt`, { cwd });
 }
 
 function* installLS(context: ExtensionContext): IterableIterator<string> {
