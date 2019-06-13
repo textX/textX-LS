@@ -1,7 +1,6 @@
 import { injectable } from "inversify";
-import { commands, FileSystemWatcher, workspace } from "vscode";
+import { FileSystemWatcher, workspace } from "vscode";
 import { Disposable } from "vscode-languageclient";
-import { VS_CMD_WINDOW_RELOAD } from "../constants";
 
 export interface IWatcherService extends Disposable {
   watch(key: string, path: string): FileSystemWatcher;

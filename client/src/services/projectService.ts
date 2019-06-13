@@ -1,18 +1,16 @@
 import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
-import { commands, extensions, Uri, window } from "vscode";
+import { commands, window } from "vscode";
 import {
-  CMD_GENERATE_EXTENSION, CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
-  CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL,
-  EXTENSION_GENERATOR_TARGET, VS_CMD_INSTALL_EXTENSION, VS_CMD_UNINSTALL_EXTENSION,
-  VS_CMD_WINDOW_RELOAD,
+  CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST, CMD_PROJECT_LIST_REFRESH,
+  CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXProject } from "../interfaces";
 import { getPython } from "../setup";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
-import { mkdtempWrapper } from "../utils";
+import { generateAndInstallExtension, uninstallExtension } from "../utils";
 import { IEventService } from "./eventService";
 import { IWatcherService } from "./watcherService";
 
@@ -52,24 +50,10 @@ export class ProjectService implements IProjectService {
       CMD_PROJECT_INSTALL.external, pyModulePath, editableMode);
 
     if (projectName) {
-      mkdtempWrapper(async (folder) => {
-        const extensionPath = await commands.executeCommand<string>(
-          CMD_GENERATE_EXTENSION.external, projectName, EXTENSION_GENERATOR_TARGET, folder,
-        );
-
-        if (extensionPath) {
-          if (editableMode && distLocation) {
-            extensions.onDidChange((e) => {
-              const extensionName = extensionPath.split("\\").pop().split("/").pop().split(".")[0];
-              if (extensions.getExtension(`textx.${extensionName}`) !== undefined) {
-                // watch grammar files at least ...
-                this.watchProject(projectName, distLocation);
-              }
-            });
-          }
-          await commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
-        }
-      });
+      const isInstalled = await generateAndInstallExtension(projectName);
+      if (isInstalled) {
+        this.watchProject(projectName, distLocation);
+      }
     }
 
     // Refresh textX languages view
@@ -87,14 +71,10 @@ export class ProjectService implements IProjectService {
       // unwatch project
       this.unwatchProject(projectName);
 
-      const extensionName = `textx.${projectName.toLowerCase()}`;
-      const extension = extensions.getExtension(extensionName);
-      const isActive = extension === undefined ? false : extension.isActive;
+      // Uninstall vscode extension
+      const uninstall = await uninstallExtension(projectName);
 
-      // Uninstall extension
-      await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION, extensionName);
-
-      if (isActive) {
+      if (uninstall.isActive) {
         await commands.executeCommand(VS_CMD_WINDOW_RELOAD);
       }
     }
@@ -178,8 +158,10 @@ export class ProjectService implements IProjectService {
 
   private watchProject(projectName: string, distLocation: string): void {
     // watch grammars
-    this.watcherService.watch(projectName, `${distLocation}/**/*.tx`).onDidChange(async (e) => {
-      // TODO: Regenerate coloring and replace it
+    this.watcherService.watch(projectName, `${distLocation}/**/*.tx`).onDidChange(async (_) => {
+      // TODO: Regenerate coloring and set grammar
+      // Upstream: https://github.com/microsoft/vscode/issues/68647
+      await generateAndInstallExtension(projectName);
       commands.executeCommand(VS_CMD_WINDOW_RELOAD);
     });
   }
