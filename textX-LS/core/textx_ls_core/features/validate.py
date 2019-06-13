@@ -9,7 +9,10 @@ def validate(metamodel, model_str) -> Optional[List[TextXError]]:
     """
     errors = []
     try:
-        metamodel.model_from_str(model_str)
+        try:
+            metamodel.model_from_str(model_str)
+        except AssertionError:  # https://github.com/textX/textX/blob/129fec9f334b7a101836eb2f23dbd650c7b8a4e6/textx/metamodel.py#L290
+            pass
     except TextXError as e:
         errors.append(e)
     return errors

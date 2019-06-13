@@ -21,22 +21,20 @@ README = codecs.open(os.path.join(os.path.dirname(__file__), 'README.md'),
                      'r', encoding='utf-8').read()
 
 dev_require = [
-    "bandit==1.5.1",
-    "flake8==3.7.7"
+    'bandit==1.5.1',
+    'flake8==3.7.7'
 ]
 
 tests_require = [
-    "coverage==4.5.3",
-    "pytest==4.3.1",
-    "pytest-cov==2.6.1"
+    'coverage==4.5.3',
+    'pytest==4.3.1',
+    'pytest-cov==2.6.1'
 ]
 
-# TODO: Split extras for different clients
-# E.G.
 # pip install textx_ls_core[vscode]
-# vscode_require = [
-#   'textx_vscode_gen': ...
-# ]
+vscode_require = [
+    'textx_vscode_gen>=0.1.0',
+]
 
 
 setup(
@@ -57,6 +55,7 @@ setup(
     extras_require={
         'dev': dev_require,
         'test': tests_require,
+        'vscode': vscode_require,
     },
     tests_require=tests_require,
     classifiers=[
