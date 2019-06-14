@@ -1,4 +1,5 @@
 from pygls.types import Diagnostic, Position, Range
+
 from textx_ls_core.features.validate import validate
 
 
@@ -6,7 +7,7 @@ def _create_diagnostics(doc):
     """Creates diagnostics from TextXError objects."""
     return [
         Diagnostic(_get_diagnostic_range(err), _get_diagnostic_message(err))
-        for err in validate(doc.metamodel, doc.source)
+        for err in validate(doc.metamodel, doc.source, doc.path)
     ]
 
 
