@@ -73,14 +73,13 @@ export class ProjectService implements IProjectService {
 
       // Uninstall vscode extension
       const uninstall = await uninstallExtension(projectName);
-
-      if (uninstall.isActive) {
+      if (uninstall.isUninstalled && uninstall.isActive) {
         await commands.executeCommand(VS_CMD_WINDOW_RELOAD);
       }
-    }
 
-    // Refresh textX languages view
-    this.eventService.fireLanguagesChanged();
+      // Refresh textX languages view
+      this.eventService.fireLanguagesChanged();
+    }
   }
 
   private registerCommands() {

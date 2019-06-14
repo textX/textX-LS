@@ -57,8 +57,12 @@ export function uninstallExtension(projectName: string): Promise<ITextXExtension
       resolve({ isActive, isUninstalled: extension === undefined });
     });
 
-    await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION, extensionName);
-    resolve({ isActive, isUninstalled: true });
+    try {
+      await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION, extensionName);
+      resolve({ isActive, isUninstalled: true });
+    } catch (_) {
+      resolve({ isActive, isUninstalled: false});
+    }
   });
 }
 
