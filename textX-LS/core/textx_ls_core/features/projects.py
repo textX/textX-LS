@@ -1,6 +1,7 @@
 import sys
 
 from pkg_resources import DistributionNotFound, get_distribution
+
 from textx import (clear_language_registrations, language_description,
                    language_descriptions, languages_for_file)
 from textx.exceptions import TextXRegistrationError
@@ -30,7 +31,7 @@ def get_languages_by_project_name(project_name):
     return langs
 
 
-def get_language_metamodel(language_name, file_name=None):
+def get_language_metamodel_loader(language_name, file_name=None):
     lang_desc = None
     try:
         lang_desc = language_description(language_name)
@@ -49,8 +50,7 @@ def get_language_metamodel(language_name, file_name=None):
         raise LanguageNotRegistered('No language registered that can parse'
                                     ' "{}".'.format(file_name))
 
-    lang_mm = lang_desc.metamodel
-    return lang_mm() if callable(lang_mm) else lang_mm
+    return lang_desc.metamodel
 
 
 def get_projects(with_langs=True):
