@@ -7,7 +7,7 @@ def _create_diagnostics(doc):
     """Creates diagnostics from TextXError objects."""
     return [
         Diagnostic(_get_diagnostic_range(err), _get_diagnostic_message(err))
-        for err in validate(doc.metamodel, doc.source, doc.path)
+        for err in validate(doc.get_metamodel(True), doc.source, doc.path)
     ]
 
 

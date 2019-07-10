@@ -7,6 +7,7 @@ from pygls.server import LanguageServer
 from pygls.types import (
     DidChangeTextDocumentParams, DidCloseTextDocumentParams,
     DidOpenTextDocumentParams, MessageType)
+
 from textx_ls_core.features.generators import (generate_extension,
                                                get_generators)
 from textx_ls_core.features.projects import (get_projects,
@@ -112,7 +113,6 @@ def doc_change(ls: TextXLanguageServer, params: DidChangeTextDocumentParams,
 @textx_server.feature(TEXT_DOCUMENT_DID_CLOSE)
 def doc_close(ls: TextXLanguageServer, params: DidCloseTextDocumentParams):
     """Clear diagnostics on document close event."""
-
     ls.publish_diagnostics(params.textDocument.uri, [])
 
 

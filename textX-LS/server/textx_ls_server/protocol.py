@@ -1,9 +1,9 @@
 from os.path import basename
 
 from pygls.protocol import LanguageServerProtocol
-from pygls.types import (DidChangeTextDocumentParams,
-                         DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-                         MessageType)
+from pygls.types import (
+    DidChangeTextDocumentParams, DidCloseTextDocumentParams,
+    DidOpenTextDocumentParams, MessageType)
 from pygls.workspace import Document
 
 from textx_ls_core.exceptions import (LanguageNotRegistered,
@@ -22,12 +22,17 @@ class TextXDocument(Document):
         self.language_name = language_name
         self.mm_loader = mm_loader
 
-        self.metamodel = None
-        self.load_metamodel()
+        self._metamodel = None
+        self.refresh_metamodel()
 
-    def load_metamodel(self):
+    def get_metamodel(self, refresh=False):
+        if self._metamodel is None or refresh:
+            self.refresh_metamodel()
+        return self._metamodel
+
+    def refresh_metamodel(self):
         # Called on grammar changes
-        self.metamodel = self.mm_loader() if callable(self.mm_loader) \
+        self._metamodel = self.mm_loader() if callable(self.mm_loader) \
             else self.mm_loader
 
 
