@@ -1,3 +1,7 @@
+import { ITokenColorSettings } from "./interfaces";
+
+export type TokenColors = Map<string, ITokenColorSettings>;
+
 const TYPES = {
   GeneratorNode: Symbol("GeneratorNode"),
   IEventService: Symbol("IEventService"),

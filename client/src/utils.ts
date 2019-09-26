@@ -1,12 +1,13 @@
-import { mkdtemp, unlink } from "fs";
+import { mkdtemp, readFileSync, unlink } from "fs";
 import { tmpdir } from "os";
-import { join } from "path";
-import { commands, extensions, Uri, window } from "vscode";
+import { dirname, join } from "path";
+import { commands, extensions, Uri, window, workspace } from "vscode";
 import {
   CMD_GENERATE_EXTENSION, EXTENSION_GENERATOR_TARGET, VS_CMD_INSTALL_EXTENSION,
   VS_CMD_UNINSTALL_EXTENSION,
- } from "./constants";
+} from "./constants";
 import { ICommand, ITextXExtensionInstall, ITextXExtensionUninstall } from "./interfaces";
+import { TokenColors } from "./types";
 
 export function getCommands(command: string): ICommand {
   return {
@@ -15,19 +16,50 @@ export function getCommands(command: string): ICommand {
   };
 }
 
-// tslint:disable-next-line:max-line-length
-export function mkdtempWrapper(callback: (folder: string) => Promise<void>): void {
-  mkdtemp(join(tmpdir(), "textx-"), async (err, folder) => {
-    if (err) {
-      window.showErrorMessage(`Cannot create temp directory.`);
+export function getCurrentTheme(): string {
+  return workspace.getConfiguration("workbench").get("colorTheme");
+}
+
+export function getTokenColorsForTheme(themeName: string): TokenColors {
+  const tokenColors = new Map();
+  let currentThemePath;
+  for (const extension of extensions.all) {
+    const themes = extension.packageJSON.contributes && extension.packageJSON.contributes.themes;
+    const currentTheme = themes && themes.find((theme) => theme.id === themeName);
+    if (currentTheme) {
+      currentThemePath = join(extension.extensionPath, currentTheme.path);
+      break;
     }
-    await callback(folder);
-    unlink(folder, (unlinkErr) => unlinkErr );
-  });
+  }
+  const themePaths = [];
+  if (currentThemePath) { themePaths.push(currentThemePath); }
+  while (themePaths.length > 0) {
+    const themePath = themePaths.pop();
+    const theme = JSON.parse(readFileSync(themePath).toString()); // change to async
+    if (theme) {
+      if (theme.include) {
+        themePaths.push(join(dirname(themePath), theme.include));
+      }
+      if (theme.tokenColors) {
+        theme.tokenColors.forEach((rule) => {
+          if (typeof rule.scope === "string" && !tokenColors.has(rule.scope)) {
+            tokenColors.set(rule.scope, rule.settings);
+          } else if (rule.scope instanceof Array) {
+            rule.scope.forEach((scope) => {
+              if (!tokenColors.has(rule.scope)) {
+                tokenColors.set(scope, rule.settings);
+              }
+            });
+          }
+        });
+      }
+    }
+  }
+  return tokenColors;
 }
 
 export function generateAndInstallExtension(projectName: string): Promise<ITextXExtensionInstall> {
-  return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
     mkdtempWrapper(async (folder) => {
       const extensionPath = await commands.executeCommand<string>(
         CMD_GENERATE_EXTENSION.external, projectName, EXTENSION_GENERATOR_TARGET, folder,
@@ -40,8 +72,18 @@ export function generateAndInstallExtension(projectName: string): Promise<ITextX
         resolve({extension, isActive, isInstalled: extension !== undefined });
       });
 
-      commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
+      await commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
     });
+  });
+}
+
+export function mkdtempWrapper(callback: (folder: string) => Promise<void>): void {
+  mkdtemp(join(tmpdir(), "textx-"), async (err, folder) => {
+    if (err) {
+      window.showErrorMessage(`Cannot create temp directory.`);
+    }
+    await callback(folder);
+    unlink(folder, (unlinkErr) => unlinkErr );
   });
 }
 
@@ -67,5 +109,5 @@ export function uninstallExtension(projectName: string): Promise<ITextXExtension
 }
 
 export function textxExtensionName(name: string): string {
-  return `textx.${name.toLowerCase()}`;
+  return `textX.${name.toLowerCase().replace(/_/g, "-")}`;
 }
