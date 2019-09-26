@@ -4,6 +4,10 @@ import { Container } from "inversify";
 import { EventService, IEventService } from "./services/eventService";
 import { GeneratorService, IGeneratorService } from "./services/generatorService";
 import { IProjectService, ProjectService } from "./services/projectService";
+import {
+  ISyntaxHighlightingService,
+  SyntaxHighlightingService,
+} from "./services/syntaxHighlightingService";
 import { IWatcherService, WatcherService } from "./services/watcherService";
 import TYPES from "./types";
 import {
@@ -15,6 +19,7 @@ const container = new Container();
 container.bind<IEventService>(TYPES.IEventService).to(EventService).inSingletonScope();
 container.bind<IGeneratorService>(TYPES.IGeneratorService).to(GeneratorService);
 container.bind<IProjectService>(TYPES.IProjectService).to(ProjectService);
+container.bind<ISyntaxHighlightingService>(TYPES.ISyntaxHighlightingService).to(SyntaxHighlightingService); // tslint:disable: max-line-length
 container.bind<IWatcherService>(TYPES.IWatcherService).to(WatcherService);
 
 // Tree data providers

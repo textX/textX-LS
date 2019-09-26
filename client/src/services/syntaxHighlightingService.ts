@@ -1,12 +1,12 @@
 import { injectable } from "inversify";
 import {
-  DecorationRenderOptions, Disposable, Range, TextDocument, window, workspace,
+  DecorationRenderOptions, Range, TextDocument, window, workspace,
 } from "vscode";
 import { IKeywordInfo } from "../interfaces";
 import { TokenColors } from "../types";
 import { getCurrentTheme, getTokenColorsForTheme } from "../utils";
 
-export interface ISyntaxHighlightingService extends Disposable {
+export interface ISyntaxHighlightingService {
   highlightDocument(document: TextDocument): void;
 }
 
@@ -69,10 +69,6 @@ export class SyntaxHighlightingService implements ISyntaxHighlightingService {
 
   public addLanguageKeywords(languageId: string) {
     // get keywords for language
-  }
-
-  public dispose(): void {
-    throw new Error("Method not implemented.");
   }
 
   private getKeywordDecorationOptions(keyword: IKeywordInfo): DecorationRenderOptions {
