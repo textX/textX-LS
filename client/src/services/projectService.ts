@@ -1,16 +1,17 @@
 import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
-import { commands, window } from "vscode";
+import { commands, extensions, Uri, window } from "vscode";
 import {
-  CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST, CMD_PROJECT_LIST_REFRESH,
-  CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, VS_CMD_WINDOW_RELOAD,
+  CMD_GENERATE_EXTENSION, CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
+  CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, EXTENSION_GENERATOR_TARGET,
+  VS_CMD_INSTALL_EXTENSION, VS_CMD_UNINSTALL_EXTENSION, VS_CMD_WINDOW_RELOAD,
 } from "../constants";
-import { ITextXProject } from "../interfaces";
+import { ITextXExtensionInstall, ITextXExtensionUninstall, ITextXProject } from "../interfaces";
 import { getPython } from "../setup";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
-import { generateAndInstallExtension, uninstallExtension } from "../utils";
+import { mkdtempWrapper, textxExtensionName } from "../utils";
 import { IEventService } from "./eventService";
 import { IWatcherService } from "./watcherService";
 
@@ -50,7 +51,7 @@ export class ProjectService implements IProjectService {
       CMD_PROJECT_INSTALL.external, pyModulePath, editableMode);
 
     if (projectName) {
-      const isInstalled = await generateAndInstallExtension(projectName);
+      const isInstalled = await this.generateAndInstallExtension(projectName);
       if (isInstalled) {
         this.watchProject(projectName, distLocation);
       }
@@ -72,7 +73,7 @@ export class ProjectService implements IProjectService {
       this.unwatchProject(projectName);
 
       // Uninstall vscode extension
-      const uninstall = await uninstallExtension(projectName);
+      const uninstall = await this.uninstallExtension(projectName);
       if (uninstall.isUninstalled && uninstall.isActive) {
         await commands.executeCommand(VS_CMD_WINDOW_RELOAD);
       }
@@ -80,6 +81,25 @@ export class ProjectService implements IProjectService {
       // Refresh textX languages view
       this.eventService.fireLanguagesChanged();
     }
+  }
+
+  private generateAndInstallExtension(projectName: string): Promise<ITextXExtensionInstall> {
+    return new Promise(async (resolve) => {
+      mkdtempWrapper(async (folder) => {
+        const extensionPath = await commands.executeCommand<string>(
+          CMD_GENERATE_EXTENSION.external, projectName, EXTENSION_GENERATOR_TARGET, folder,
+        );
+
+        extensions.onDidChange((_) => {
+          const extensionName = extensionPath.split("\\").pop().split("/").pop().split(".")[0];
+          const extension = extensions.getExtension(textxExtensionName(extensionName));
+          const isActive = extension === undefined ? false : extension.isActive;
+          resolve({extension, isActive, isInstalled: extension !== undefined });
+        });
+
+        await commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
+      });
+    });
   }
 
   private registerCommands() {
@@ -151,6 +171,27 @@ export class ProjectService implements IProjectService {
     });
   }
 
+  private uninstallExtension(projectName: string): Promise<ITextXExtensionUninstall> {
+    return new Promise(async (resolve) => {
+      const extensionName = textxExtensionName(projectName);
+      let extension = extensions.getExtension(extensionName);
+      const isActive = extension === undefined ? false : extension.isActive;
+
+      extensions.onDidChange((_) => {
+        // If extension is NOT active
+        extension = extensions.getExtension(extensionName);
+        resolve({ isActive, isUninstalled: extension === undefined });
+      });
+
+      try {
+        await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION, extensionName);
+        resolve({ isActive, isUninstalled: true });
+      } catch (_) {
+        resolve({ isActive, isUninstalled: false});
+      }
+    });
+  }
+
   private unwatchProject(projectName: string): void {
     this.watcherService.unwatch(projectName);
   }
@@ -160,8 +201,12 @@ export class ProjectService implements IProjectService {
     this.watcherService.watch(projectName, `${distLocation}/**/*.tx`).onDidChange(async (_) => {
       // TODO: Regenerate coloring and set grammar
       // Upstream: https://github.com/microsoft/vscode/issues/68647
-      await generateAndInstallExtension(projectName);
-      commands.executeCommand(VS_CMD_WINDOW_RELOAD);
+      const extension = extensions.getExtension(textxExtensionName(projectName));
+      if (extension) {
+        const extensionPath = extension.extensionPath;
+        await this.generateAndInstallExtension(projectName);
+        commands.executeCommand(VS_CMD_WINDOW_RELOAD);
+      }
     });
   }
 
