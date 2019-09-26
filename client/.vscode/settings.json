@@ -1,0 +1,7 @@
+{
+    "python.pythonPath": "../env/bin/python",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.tslint": true,
+    }
+}
