@@ -9,7 +9,7 @@ const TYPES = {
   IGeneratorService: Symbol("IGeneratorService"),
   ILanguageProvider: Symbol("ILanguageProvider"),
   IProjectService: Symbol("IProjectService"),
-  ISyntaxHighlightingService: Symbol("ISyntaxHighlightingService"),
+  ISyntaxHighlightService: Symbol("ISyntaxHighlightService"),
   IWatcherService: Symbol("IWatcherService"),
   TextXNode: Symbol("LanguageNode"),
 };

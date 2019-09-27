@@ -11,6 +11,7 @@ export const RESOURCES_PATH = join(EXTENSION_PATH, "resources");
 
 // Other
 export const EXTENSION_GENERATOR_TARGET = "vscode";
+export const EXTENSION_SYNTAX_HIGHLIGHT_TARGET = "textmate";
 export const IS_WIN = process.platform === "win32";
 export const LS_VENV_NAME = "textxls";
 export const LS_WHEELS_DIR = "wheels";
@@ -20,6 +21,7 @@ export const TEXTX_LS_SERVER = "textx_ls_server";
 // Commands
 // TextX-LS
 export const CMD_GENERATE_EXTENSION: ICommand = getCommands("generateExtension");
+export const CMD_GENERATE_SYNTAXES: ICommand = getCommands("generateSyntaxes");
 export const CMD_GENERATOR_LIST: ICommand =  getCommands("getGenerators");
 export const CMD_GENERATOR_LIST_REFRESH: ICommand = getCommands("refreshGenerators");
 export const CMD_PROJECT_INSTALL: ICommand = getCommands("installProject");

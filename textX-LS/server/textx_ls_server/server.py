@@ -1,18 +1,29 @@
 import sys
 
-from pygls.features import (TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_CLOSE,
-                            TEXT_DOCUMENT_DID_OPEN)
+from pygls.features import (
+    TEXT_DOCUMENT_DID_CHANGE,
+    TEXT_DOCUMENT_DID_CLOSE,
+    TEXT_DOCUMENT_DID_OPEN,
+)
 from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.types import (
-    DidChangeTextDocumentParams, DidCloseTextDocumentParams,
-    DidOpenTextDocumentParams, MessageType)
+    DidChangeTextDocumentParams,
+    DidCloseTextDocumentParams,
+    DidOpenTextDocumentParams,
+    MessageType,
+)
 
-from textx_ls_core.features.generators import (generate_extension,
-                                               get_generators)
-from textx_ls_core.features.projects import (get_projects,
-                                             install_project_async,
-                                             uninstall_project_async)
+from textx_ls_core.features.generators import (
+    generate_extension,
+    generate_syntaxes,
+    get_generators,
+)
+from textx_ls_core.features.projects import (
+    get_projects,
+    install_project_async,
+    uninstall_project_async,
+)
 
 from .features.diagnostics import send_diagnostics
 from .protocol import TextXDocument, TextXProtocol
@@ -21,6 +32,7 @@ from .utils import skip_not_supported_langs
 
 class TextXLanguageServer(LanguageServer):
     CMD_GENERATE_EXTENSION = "textx/generateExtension"
+    CMD_GENERATE_SYNTAXES = "textx/generateSyntaxes"
     CMD_GENERATOR_LIST = "textx/getGenerators"
     CMD_PROJECT_INSTALL = "textx/installProject"
     CMD_PROJECT_LIST = "textx/getProjects"
@@ -29,7 +41,6 @@ class TextXLanguageServer(LanguageServer):
 
     def __init__(self):
         super().__init__(protocol_cls=TextXProtocol)
-
         self.python_path = sys.executable
 
 
@@ -41,7 +52,23 @@ def cmd_generate_extension(ls: TextXLanguageServer, params):
     project_name = params[0]
     target = params[1]
     dest_dir = params[2]
-    return generate_extension(project_name, target, dest_dir)
+    editable = params[3]
+    syntax_target = params[4]
+
+    # If project is in editable mode, return language syntaxes map
+    # NOTE: This won't be required for all clients
+    extension_path = generate_extension(project_name, target, dest_dir, editable)
+    if editable:
+        return extension_path, generate_syntaxes(project_name, syntax_target)
+    else:
+        return extension_path, None
+
+
+@textx_server.command(TextXLanguageServer.CMD_GENERATE_SYNTAXES)
+def cmd_generate_syntaxes(ls: TextXLanguageServer, params):
+    project_name = params[0]
+    target = params[1]
+    return generate_syntaxes(project_name, target)
 
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATOR_LIST)
@@ -56,19 +83,18 @@ async def cmd_project_install(ls: TextXLanguageServer, params):
     editable = params[1]
 
     ls.show_message("Installing project from {}".format(folder_or_wheel))
-    is_installed, project_name, dist_location = await install_project_async(folder_or_wheel,
-                                                                            ls.python_path,
-                                                                            editable,
-                                                                            ls.show_message_log)
+    is_installed, project_name, dist_location = await install_project_async(
+        folder_or_wheel, ls.python_path, editable, ls.show_message_log
+    )
 
     if is_installed:
-        ls.show_message("Project {} is successfully installed."
-                        .format(project_name))
+        ls.show_message("Project {} is successfully installed.".format(project_name))
     else:
-        ls.show_message("Failed to install project {}."
-                        .format(project_name), MessageType.Error)
+        ls.show_message(
+            "Failed to install project {}.".format(project_name), MessageType.Error
+        )
 
-    return project_name if is_installed else None, dist_location
+    return project_name, dist_location if is_installed else None, dist_location
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_LIST)
@@ -88,24 +114,25 @@ async def cmd_project_uninstall(ls: TextXLanguageServer, params):
     project_name = params[0]
 
     ls.show_message("Uninstalling project {}".format(project_name))
-    is_uninstalled = await uninstall_project_async(project_name,
-                                                   ls.python_path,
-                                                   ls.show_message_log)
+    is_uninstalled = await uninstall_project_async(
+        project_name, ls.python_path, ls.show_message_log
+    )
 
     if is_uninstalled:
-        ls.show_message("Project {} is successfully uninstalled."
-                        .format(project_name))
+        ls.show_message("Project {} is successfully uninstalled.".format(project_name))
     else:
-        ls.show_message("Failed to uninstall project {}."
-                        .format(project_name), MessageType.Error)
+        ls.show_message(
+            "Failed to uninstall project {}.".format(project_name), MessageType.Error
+        )
 
     return is_uninstalled
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)
 @skip_not_supported_langs
-def doc_change(ls: TextXLanguageServer, params: DidChangeTextDocumentParams,
-               doc: TextXDocument):
+def doc_change(
+    ls: TextXLanguageServer, params: DidChangeTextDocumentParams, doc: TextXDocument
+):
     """Validates model on document text change."""
     send_diagnostics(ls, doc)
 
@@ -118,7 +145,8 @@ def doc_close(ls: TextXLanguageServer, params: DidCloseTextDocumentParams):
 
 @textx_server.feature(TEXT_DOCUMENT_DID_OPEN)
 @skip_not_supported_langs
-def doc_open(ls: TextXLanguageServer, params: DidOpenTextDocumentParams,
-             doc: TextXDocument):
+def doc_open(
+    ls: TextXLanguageServer, params: DidOpenTextDocumentParams, doc: TextXDocument
+):
     """Validates model on document text change."""
     send_diagnostics(ls, doc)

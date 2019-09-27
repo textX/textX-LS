@@ -1,21 +1,29 @@
 import sys
 
 from pkg_resources import DistributionNotFound, get_distribution
-
-from textx import (clear_language_registrations, language_description,
-                   language_descriptions, languages_for_file)
+from textx import (
+    clear_language_registrations,
+    language_description,
+    language_descriptions,
+    languages_for_file,
+)
 from textx.exceptions import TextXRegistrationError
 
 from ..exceptions import LanguageNotRegistered, MultipleLanguagesError
 from ..models import TextXLanguage, TextXProject
-from ..utils import (compare_project_names, dist_is_editable,
-                     get_project_name_and_version, run_proc_async)
+from ..utils import (
+    compare_project_names,
+    dist_is_editable,
+    get_project_name_and_version,
+    run_proc_async,
+)
 
 
 def get_languages():
     return [
-        TextXLanguage(lang) for lang in language_descriptions().values()
-        if lang.name is not 'textX'
+        TextXLanguage(lang)
+        for lang in language_descriptions().values()
+        if lang.name is not "textX"
     ]
 
 
@@ -42,13 +50,14 @@ def get_language_metamodel_loader(language_name, file_name=None):
         lang_descs_len = len(lang_descs)
         if lang_descs_len > 1:
             raise MultipleLanguagesError(
-                'Multiple languages can parse "{}". Skipping.'
-                .format(file_name))
+                'Multiple languages can parse "{}". Skipping.'.format(file_name)
+            )
         lang_desc = lang_descs.pop() if lang_descs_len == 1 else None
 
     if lang_desc is None:
-        raise LanguageNotRegistered('No language registered that can parse'
-                                    ' "{}".'.format(file_name))
+        raise LanguageNotRegistered(
+            "No language registered that can parse" ' "{}".'.format(file_name)
+        )
 
     return lang_desc.metamodel
 
@@ -60,29 +69,28 @@ def get_projects(with_langs=True):
         if project_name not in projects:
             dist_location = get_distribution(project_name).location
             editable = dist_is_editable(dist_location, project_name)
-            projects[project_name] = TextXProject(project_name,
-                                                  editable,
-                                                  dist_location)
+            projects[project_name] = TextXProject(project_name, editable, dist_location)
         if with_langs is True:
             projects[project_name].add_language(lang)
     return projects
 
 
-async def install_project_async(folder_or_wheel, python_path, editable=False,
-                                msg_handler=None):
+async def install_project_async(
+    folder_or_wheel, python_path, editable=False, msg_handler=None
+):
     project_name, version = get_project_name_and_version(folder_or_wheel)
     dist_location = None
     # TODO: Check if project with the same version is already installed ?
 
-    cmd = [python_path, '-m', 'pip', 'install', folder_or_wheel]
+    cmd = [python_path, "-m", "pip", "install", folder_or_wheel]
     if editable:
-        cmd.insert(4, '-e')
+        cmd.insert(4, "-e")
 
     retcode = await run_proc_async(cmd, msg_handler)
 
     # Successfully installed
     if retcode != 0:
-        return False, project_name
+        return False, project_name, dist_location
 
     # Manually add package to sys.path if installed with -e flag
     if editable and folder_or_wheel not in sys.path:
@@ -94,9 +102,8 @@ async def install_project_async(folder_or_wheel, python_path, editable=False,
     return True, project_name, dist_location
 
 
-async def uninstall_project_async(project_name, python_path,
-                                  msg_handler=None):
-    cmd = [python_path, '-m', 'pip', 'uninstall', project_name, '-y']
+async def uninstall_project_async(project_name, python_path, msg_handler=None):
+    cmd = [python_path, "-m", "pip", "uninstall", project_name, "-y"]
 
     # Get dist location before uninstalling with pip
     try:

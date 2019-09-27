@@ -2,17 +2,14 @@ import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
 import { commands, extensions, Uri, window } from "vscode";
-import {
-  CMD_GENERATE_EXTENSION, CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
-  CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, EXTENSION_GENERATOR_TARGET,
-  VS_CMD_INSTALL_EXTENSION, VS_CMD_UNINSTALL_EXTENSION, VS_CMD_WINDOW_RELOAD,
-} from "../constants";
+import { CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST, CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, EXTENSION_GENERATOR_TARGET, EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VS_CMD_INSTALL_EXTENSION, VS_CMD_UNINSTALL_EXTENSION, VS_CMD_WINDOW_RELOAD } from "../constants";
 import { ITextXExtensionInstall, ITextXExtensionUninstall, ITextXProject } from "../interfaces";
 import { getPython } from "../setup";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
 import { mkdtempWrapper, textxExtensionName } from "../utils";
 import { IEventService } from "./eventService";
+import { ISyntaxHighlightService } from "./SyntaxHighlightService";
 import { IWatcherService } from "./watcherService";
 
 export interface IProjectService {
@@ -27,6 +24,7 @@ export class ProjectService implements IProjectService {
 
   constructor(
     @inject(TYPES.IEventService) private readonly eventService: IEventService,
+    @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService, // tslint:disable: max-line-length
     @inject(TYPES.IWatcherService) private readonly watcherService: IWatcherService,
   ) {
     this.registerCommands();
@@ -40,6 +38,7 @@ export class ProjectService implements IProjectService {
     Object.values(projects).forEach((p: ITextXProject) => {
       if (p.editable) {
         this.watchProject(p.projectName, p.distLocation);
+        this.loadLanguageKeywords(p.projectName);
       }
     });
 
@@ -51,7 +50,7 @@ export class ProjectService implements IProjectService {
       CMD_PROJECT_INSTALL.external, pyModulePath, editableMode);
 
     if (projectName) {
-      const isInstalled = await this.generateAndInstallExtension(projectName);
+      const isInstalled = await this.generateAndInstallExtension(projectName, editableMode);
       if (isInstalled) {
         this.watchProject(projectName, distLocation);
       }
@@ -83,23 +82,41 @@ export class ProjectService implements IProjectService {
     }
   }
 
-  private generateAndInstallExtension(projectName: string): Promise<ITextXExtensionInstall> {
+  private generateAndInstallExtension(
+    projectName: string, editableMode: boolean = false,
+  ): Promise<ITextXExtensionInstall> {
+
     return new Promise(async (resolve) => {
       mkdtempWrapper(async (folder) => {
-        const extensionPath = await commands.executeCommand<string>(
+        const [extensionPath, languageSyntaxes] = await commands.executeCommand(
           CMD_GENERATE_EXTENSION.external, projectName, EXTENSION_GENERATOR_TARGET, folder,
-        );
+          editableMode, EXTENSION_SYNTAX_HIGHLIGHT_TARGET);
 
         extensions.onDidChange((_) => {
           const extensionName = extensionPath.split("\\").pop().split("/").pop().split(".")[0];
           const extension = extensions.getExtension(textxExtensionName(extensionName));
           const isActive = extension === undefined ? false : extension.isActive;
+
+          this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
+          this.syntaxHighlightService.highlightDocument();
+
           resolve({extension, isActive, isInstalled: extension !== undefined });
         });
 
         await commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
       });
     });
+  }
+
+  private async getLanguagesSyntaxes(projectName: string): Promise<Map<string, string>> {
+    return await commands.executeCommand(CMD_GENERATE_SYNTAXES.external, projectName,
+      EXTENSION_SYNTAX_HIGHLIGHT_TARGET);
+  }
+
+  private async loadLanguageKeywords(projectName: string) {
+    const languageSyntaxes: Map<string, string> = await this.getLanguagesSyntaxes(projectName);
+    this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
+    this.syntaxHighlightService.highlightDocument();
   }
 
   private registerCommands() {
@@ -199,14 +216,7 @@ export class ProjectService implements IProjectService {
   private watchProject(projectName: string, distLocation: string): void {
     // watch grammars
     this.watcherService.watch(projectName, `${distLocation}/**/*.tx`).onDidChange(async (_) => {
-      // TODO: Regenerate coloring and set grammar
-      // Upstream: https://github.com/microsoft/vscode/issues/68647
-      const extension = extensions.getExtension(textxExtensionName(projectName));
-      if (extension) {
-        const extensionPath = extension.extensionPath;
-        await this.generateAndInstallExtension(projectName);
-        commands.executeCommand(VS_CMD_WINDOW_RELOAD);
-      }
+      this.loadLanguageKeywords(projectName);
     });
   }
 

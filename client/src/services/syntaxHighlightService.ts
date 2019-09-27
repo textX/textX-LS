@@ -1,17 +1,16 @@
 import { injectable } from "inversify";
-import {
-  DecorationRenderOptions, Range, TextDocument, window, workspace,
-} from "vscode";
+import { DecorationRenderOptions, Range, TextDocument, window, workspace } from "vscode";
 import { IKeywordInfo } from "../interfaces";
 import { TokenColors } from "../types";
 import { getCurrentTheme, getTokenColorsForTheme } from "../utils";
 
-export interface ISyntaxHighlightingService {
-  highlightDocument(document: TextDocument): void;
+export interface ISyntaxHighlightService {
+  highlightDocument(document?: TextDocument): void;
+  addLanguageKeywordsFromTextmate(languageSyntaxes: Map<string, string>): void;
 }
 
 @injectable()
-export class SyntaxHighlightingService implements ISyntaxHighlightingService {
+export class SyntaxHighlightService implements ISyntaxHighlightService {
   private currentTheme: string = null;
   private languageKeywordsCache: Map<string, IKeywordInfo[]> = new Map<string, IKeywordInfo[]>();
   private tokenColors: TokenColors = null;
@@ -31,28 +30,22 @@ export class SyntaxHighlightingService implements ISyntaxHighlightingService {
       }
     });
 
-    // TEST
-    const kw1 = {
-      decoration: null,
-      keyword: "data",
-      length: 4,
-      regex: new RegExp(`\\b${"data"}\\b`, "g"),
-      scope: "support.class",
-    };
-    const kw2 = {
-      decoration: null,
-      keyword: "Int",
-      length: 3,
-      regex: new RegExp(`\\b${"Int"}\\b`, "g"),
-      scope: "constant.language",
-    };
-    kw1.decoration = window.createTextEditorDecorationType(this.getKeywordDecorationOptions(kw1));
-    kw2.decoration = window.createTextEditorDecorationType(this.getKeywordDecorationOptions(kw2));
+    // highlight on doc changes
+    workspace.onDidChangeTextDocument((_) => {
+      this.highlightDocument(window.activeTextEditor.document);
+    });
 
-    this.languageKeywordsCache.set("plaintext", [kw1, kw2]);
+    // highlight on tab change
+    window.onDidChangeActiveTextEditor((e) => {
+      this.highlightDocument(e.document);
+    });
   }
 
-  public highlightDocument(document: TextDocument): void {
+  public highlightDocument(document?: TextDocument): void {
+    if (document === undefined) {
+      document = window.activeTextEditor.document;
+    }
+
     const languageId = document.languageId;
     const documentText = document.getText();
 
@@ -67,12 +60,30 @@ export class SyntaxHighlightingService implements ISyntaxHighlightingService {
     });
   }
 
-  public addLanguageKeywords(languageId: string) {
-    // get keywords for language
+  public addLanguageKeywordsFromTextmate(languageSyntaxes: Object): void {
+    for (const [langId, textmateJSON] of Object.entries(languageSyntaxes)) {
+      (this.languageKeywordsCache.get(langId) || []).forEach((kwInfo) => kwInfo.decoration.dispose());
+      this.languageKeywordsCache.set(langId, this.getKeywordsFromTextmateJSON(textmateJSON));
+    }
   }
 
-  private getKeywordDecorationOptions(keyword: IKeywordInfo): DecorationRenderOptions {
-    return {color: this.tokenColors.get(keyword.scope).foreground };
+  private getKeywordDecorationOptions(scope: string): DecorationRenderOptions {
+    return {color: this.tokenColors.get(scope).foreground };
+  }
+
+  private getKeywordsFromTextmateJSON(textmate: string): IKeywordInfo[] {
+    return JSON.parse(textmate).repository.language_keyword.patterns.map((pattern) => {
+      const keyword: string = pattern.match;
+      const scope: string = pattern.name;
+
+      return {
+        decoration: window.createTextEditorDecorationType(this.getKeywordDecorationOptions(scope)),
+        keyword: keyword,
+        length: keyword.length,
+        regex: this.getKeywordsRegex(keyword),
+        scope,
+      };
+    });
   }
 
   private getKeywordRangesInDocument(
@@ -89,11 +100,16 @@ export class SyntaxHighlightingService implements ISyntaxHighlightingService {
     return ranges;
   }
 
+  private getKeywordsRegex(keyword: string): RegExp {
+    return new RegExp(`\\b${keyword}\\b`, "g");
+  }
+
   private reinitializeDecorations(): void {
     for (const languageKeywords of this.languageKeywordsCache.values()) {
       languageKeywords.forEach((kw) => {
         kw.decoration.dispose(); // remove previous decorations from editor
-        kw.decoration = window.createTextEditorDecorationType(this.getKeywordDecorationOptions(kw));
+        // tslint:disable-next-line: max-line-length
+        kw.decoration = window.createTextEditorDecorationType(this.getKeywordDecorationOptions(kw.scope));
       });
     }
   }
