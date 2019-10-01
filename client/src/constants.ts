@@ -30,6 +30,7 @@ export const CMD_PROJECT_LIST: ICommand = getCommands("getProjects");
 export const CMD_PROJECT_LIST_REFRESH: ICommand = getCommands("refreshProjects");
 export const CMD_PROJECT_SCAFFOLD: ICommand = getCommands("scaffoldProject");
 export const CMD_PROJECT_UNINSTALL: ICommand = getCommands("uninstallProject");
+export const CMD_VALIDATE_DOCUMENTS: ICommand = getCommands("validateDocuments");
 // VS Code
 export const VS_CMD_INSTALL_EXTENSION = "workbench.extensions.installExtension";
 export const VS_CMD_UNINSTALL_EXTENSION = "workbench.extensions.uninstallExtension";

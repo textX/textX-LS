@@ -38,6 +38,7 @@ class TextXLanguageServer(LanguageServer):
     CMD_PROJECT_LIST = "textx/getProjects"
     CMD_PROJECT_SCAFFOLD = "textx/scaffoldProject"
     CMD_PROJECT_UNINSTALL = "textx/uninstallProject"
+    CMD_VALIDATE_DOCUMENTS = "textx/validateDocuments"
 
     def __init__(self):
         super().__init__(protocol_cls=TextXProtocol)
@@ -126,6 +127,14 @@ async def cmd_project_uninstall(ls: TextXLanguageServer, params):
         )
 
     return is_uninstalled
+
+
+@textx_server.command(TextXLanguageServer.CMD_VALIDATE_DOCUMENTS)
+def cmd_validate_documents(ls: TextXLanguageServer, params):
+    project_name = params[0]
+    for doc in ls.workspace.documents.values():
+        if project_name and project_name == doc.project_name:
+            send_diagnostics(ls, doc)
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)

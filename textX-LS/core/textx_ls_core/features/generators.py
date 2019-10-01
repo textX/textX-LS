@@ -5,17 +5,13 @@ from textx import LanguageDesc, generator_descriptions, generator_for_language_t
 from textx.exceptions import TextXRegistrationError
 
 from ..exceptions import GeneratorNotExist
-from .projects import (
-    get_language,
-    get_language_metamodel_loader,
-    get_languages_by_project_name,
-)
+from .projects import get_language, get_language_desc, get_languages_by_project_name
 
 
 @lru_cache()
-def get_generator(language_name, target_name):
+def get_generator(language, target):
     try:
-        return generator_for_language_target(language_name, target_name)
+        return generator_for_language_target(language, target)
     except TextXRegistrationError:
         raise GeneratorNotExist("Extension generator not exist for {}".format(target))
 
@@ -33,13 +29,15 @@ def generate_extension(project_name, target, dest_dir, editable):
 
 
 def generate_syntaxes(project_name, target):
-    syntax_gen = generator_for_language_target("textX", target)
+    syntax_gen = get_generator("textX", target)
 
     lang_syntax_map = {}
     for lang in get_languages_by_project_name(project_name):
         lang_name = lang.name.lower()
-        metamodel = get_language_metamodel_loader(lang_name)()
-        syntax_file = syntax_gen(None, metamodel, **{"name": lang_name, "silent": 1})
+        lang_desc = get_language_desc(lang_name)
+        syntax_file = syntax_gen(
+            None, lang_desc.metamodel(), **{"name": lang_name, "silent": 1}
+        )
         if syntax_file:
             lang_syntax_map[lang_name] = syntax_file
     return lang_syntax_map

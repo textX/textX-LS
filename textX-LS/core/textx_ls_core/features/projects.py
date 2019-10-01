@@ -39,7 +39,7 @@ def get_languages_by_project_name(project_name):
     return langs
 
 
-def get_language_metamodel_loader(language_name, file_name=None):
+def get_language_desc(language_name, file_name=None):
     lang_desc = None
     try:
         lang_desc = language_description(language_name)
@@ -59,7 +59,7 @@ def get_language_metamodel_loader(language_name, file_name=None):
             "No language registered that can parse" ' "{}".'.format(file_name)
         )
 
-    return lang_desc.metamodel
+    return lang_desc
 
 
 def get_projects(with_langs=True):

@@ -2,7 +2,12 @@ import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
 import { commands, extensions, Uri, window } from "vscode";
-import { CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST, CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, EXTENSION_GENERATOR_TARGET, EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VS_CMD_INSTALL_EXTENSION, VS_CMD_UNINSTALL_EXTENSION, VS_CMD_WINDOW_RELOAD } from "../constants";
+import {
+  CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE,
+  CMD_PROJECT_LIST, CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL,
+  CMD_VALIDATE_DOCUMENTS, EXTENSION_GENERATOR_TARGET, EXTENSION_SYNTAX_HIGHLIGHT_TARGET,
+  VS_CMD_INSTALL_EXTENSION, VS_CMD_UNINSTALL_EXTENSION, VS_CMD_WINDOW_RELOAD,
+} from "../constants";
 import { ITextXExtensionInstall, ITextXExtensionUninstall, ITextXProject } from "../interfaces";
 import { getPython } from "../setup";
 import TYPES from "../types";
@@ -98,7 +103,7 @@ export class ProjectService implements IProjectService {
           const isActive = extension === undefined ? false : extension.isActive;
 
           this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
-          this.syntaxHighlightService.highlightDocument();
+          this.syntaxHighlightService.highlightEditorsDocument();
 
           resolve({extension, isActive, isInstalled: extension !== undefined });
         });
@@ -116,7 +121,7 @@ export class ProjectService implements IProjectService {
   private async loadLanguageKeywords(projectName: string) {
     const languageSyntaxes: Map<string, string> = await this.getLanguagesSyntaxes(projectName);
     this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
-    this.syntaxHighlightService.highlightDocument();
+    this.syntaxHighlightService.highlightAllEditorsDocument();
   }
 
   private registerCommands() {
@@ -217,6 +222,7 @@ export class ProjectService implements IProjectService {
     // watch grammars
     this.watcherService.watch(projectName, `${distLocation}/**/*.tx`).onDidChange(async (_) => {
       this.loadLanguageKeywords(projectName);
+      commands.executeCommand(CMD_VALIDATE_DOCUMENTS.external, projectName);
     });
   }
 

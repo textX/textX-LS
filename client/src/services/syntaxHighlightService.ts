@@ -1,11 +1,12 @@
 import { injectable } from "inversify";
-import { DecorationRenderOptions, Range, TextDocument, window, workspace } from "vscode";
+import { DecorationRenderOptions, Range, TextEditor, window, workspace } from "vscode";
 import { IKeywordInfo } from "../interfaces";
 import { TokenColors } from "../types";
 import { getCurrentTheme, getTokenColorsForTheme } from "../utils";
 
 export interface ISyntaxHighlightService {
-  highlightDocument(document?: TextDocument): void;
+  highlightAllEditorsDocument(): void;
+  highlightEditorsDocument(editor?: TextEditor): void;
   addLanguageKeywordsFromTextmate(languageSyntaxes: Map<string, string>): void;
 }
 
@@ -26,33 +27,36 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
         this.currentTheme = getCurrentTheme();
         this.tokenColors = getTokenColorsForTheme(this.currentTheme);
         this.reinitializeDecorations();
-        this.highlightDocument(window.activeTextEditor.document);
+        this.highlightEditorsDocument(window.activeTextEditor);
       }
     });
 
     // highlight on doc changes
     workspace.onDidChangeTextDocument((_) => {
-      this.highlightDocument(window.activeTextEditor.document);
+      this.highlightEditorsDocument(window.activeTextEditor);
     });
 
     // highlight on tab change
     window.onDidChangeActiveTextEditor((e) => {
-      this.highlightDocument(e.document);
+      this.highlightEditorsDocument(e);
     });
   }
 
-  public highlightDocument(document?: TextDocument): void {
-    if (document === undefined) {
-      document = window.activeTextEditor.document;
+  public highlightAllEditorsDocument(): void {
+    window.visibleTextEditors.forEach((editor) => this.highlightEditorsDocument(editor));
+  }
+
+  public highlightEditorsDocument(editor?: TextEditor): void {
+    if (editor === undefined) {
+      editor = window.activeTextEditor;
     }
 
+    const document = editor.document;
     const languageId = document.languageId;
     const documentText = document.getText();
-
-    const editor = window.activeTextEditor;
     const offsetToPosition = editor.document.positionAt;
 
-    const keywordInfos = this.languageKeywordsCache.get(languageId);
+    const keywordInfos = this.languageKeywordsCache.get(languageId) || [];
     keywordInfos.forEach((kwInfo) => {
       // tslint:disable-next-line: max-line-length
       const keywordRanges = this.getKeywordRangesInDocument(kwInfo, documentText, offsetToPosition);
