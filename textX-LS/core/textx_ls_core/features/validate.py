@@ -1,7 +1,6 @@
 from typing import List, Optional
 
 from textx.exceptions import TextXError
-from textx.metamodel import TextXMetaMetaModel
 
 
 def validate(metamodel, model_str, file_name) -> Optional[List[TextXError]]:

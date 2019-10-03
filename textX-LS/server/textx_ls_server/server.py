@@ -5,7 +5,6 @@ from pygls.features import (
     TEXT_DOCUMENT_DID_CLOSE,
     TEXT_DOCUMENT_DID_OPEN,
 )
-from pygls.protocol import LanguageServerProtocol
 from pygls.server import LanguageServer
 from pygls.types import (
     DidChangeTextDocumentParams,

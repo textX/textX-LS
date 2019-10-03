@@ -1,11 +1,11 @@
 from functools import lru_cache
 from os.path import join
 
-from textx import LanguageDesc, generator_descriptions, generator_for_language_target
+from textx import generator_descriptions, generator_for_language_target
 from textx.exceptions import TextXRegistrationError
 
 from ..exceptions import GeneratorNotExist
-from .projects import get_language, get_language_desc, get_languages_by_project_name
+from .projects import get_language_desc, get_languages_by_project_name
 
 
 @lru_cache()

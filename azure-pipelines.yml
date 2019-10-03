@@ -1,0 +1,72 @@
+trigger:
+  branches:
+    include:
+    - '*'
+
+pr:
+- master
+
+strategy:
+  matrix:
+    linux-ubuntu-16-04:
+      imageName: 'ubuntu-16.04'
+    macOS:
+      imageName: 'macOS-10.14'
+    windows-64bit:
+      imageName: 'vs2017-win2016'
+      platform: x64
+      winArch: 'win64'
+    windows-32bit:
+      imageName: 'vs2017-win2016'
+      platform: x86
+      winArch: 'win32'
+pool:
+  vmImage: $(imageName)
+
+steps:
+# Set python version - 64bit python 3.6
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.6'
+  condition: not(and(eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['platform'], 'x86')))
+# Set python version - 32bit python 3.6
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.6'
+    architecture: x86
+  condition: and(eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['platform'], 'x86'))
+
+- script: |
+    python -m pip install --upgrade pip setuptools wheel
+    python -m pip install -r requirements.txt
+    python -m pip install pytest-azurepipelines
+  displayName: 'Install python dependencies'
+
+- script: |
+    python -m pre_commit run --all-files
+  displayName: 'black, flake8 and bandit checks'
+
+- script: |
+    cd textX-LS/core
+    python -m pytest tests/ --cov textx_ls_core --cov-report html
+  displayName: 'Run textX-LS-core tests'
+
+- script: |
+    cd textX-LS/server
+    python -m pytest tests/ --cov textx_ls_server --cov-report html
+  displayName: 'Run textX-LS-server tests'
+
+- script: |
+    cd client
+    npm i
+  displayName: 'Install node modules'
+
+- script: |
+    cd client
+    ./node_modules/.bin/tslint src\*.ts
+  displayName: 'textX-LS-VS-Code tslint'
+
+- script: |
+    exit 1
+  displayName: 'Check job status; Stop if something failed'
+  condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')

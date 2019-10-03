@@ -23,7 +23,7 @@ def get_languages():
     return [
         TextXLanguage(lang)
         for lang in language_descriptions().values()
-        if lang.name is not "textX"
+        if lang.name != "textX"
     ]
 
 

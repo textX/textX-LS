@@ -17,7 +17,7 @@ def _get_diagnostic_message(err):
     try:
         # Try to parse textX error message
         msg_decoded = err.args[0].decode("utf-8")
-        msg = msg_decoded.split(' at')[0]
+        msg = msg_decoded.split(" at")[0]
     except (AttributeError, LookupError):
         pass
     return msg
