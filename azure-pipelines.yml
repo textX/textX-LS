@@ -72,10 +72,8 @@ steps:
   condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
 
 ################################ BUILD VSIX ###################################
-- bash: |
-   cd client
-   chmod +x ./bin/copy-wheels.sh && sh ./bin/copy-wheels.sh
 
+- bash: |
    # Append build id to versions
    get_setuppy_version() {
        version=$(grep -o "'\d.\d.\d'" $1)
@@ -101,7 +99,7 @@ steps:
    replace_packagejson_version package.json $build_suffix
 
   displayName: 'Change versions (except for master branch and tags)'
-  condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/master'), ne(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), True))
+  condition: and(eq(variables['Agent.OS'], 'Darwin'), and(ne(variables['Build.SourceBranch'], 'refs/heads/master'), ne(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), True)))
 
 - bash: |
    # Build .vsix file
@@ -117,6 +115,7 @@ steps:
    echo "##vso[task.setvariable variable=TEXTX_LS_VSCODE_ARTIFACT_NAME]$TEXTX_LS_VSCODE_ARTIFACT_NAME"
   workingDirectory: client
   displayName: 'Create wheels and extension file'
+  condition: eq(variables['Agent.OS'], 'Darwin')
 
 - task: CopyFiles@2
   displayName: 'Copy wheels and vsix to artifact staging dir'
@@ -126,21 +125,25 @@ steps:
      wheels/*.whl
      *.vsix
     TargetFolder: '$(build.artifactstagingdirectory)'
+  condition: eq(variables['Agent.OS'], 'Darwin')
 
 - task: PublishBuildArtifacts@1
   displayName: '[textX-LS-core] Publish Artifact'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)/wheels/$(TEXTX_LS_CORE_ARTIFACT_NAME)'
     ArtifactName: '$(TEXTX_LS_CORE_ARTIFACT_NAME)'
+  condition: eq(variables['Agent.OS'], 'Darwin')
 
 - task: PublishBuildArtifacts@1
   displayName: '[textX-LS-server] Publish Artifact'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)/wheels/$(TEXTX_LS_SERVER_ARTIFACT_NAME)'
     ArtifactName: '$(TEXTX_LS_SERVER_ARTIFACT_NAME)'
+  condition: eq(variables['Agent.OS'], 'Darwin')
 
 - task: PublishBuildArtifacts@1
   displayName: '[textX-vscode] Publish Artifact'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)/$(TEXTX_LS_VSCODE_ARTIFACT_NAME)'
     ArtifactName: '$(TEXTX_LS_VSCODE_ARTIFACT_NAME)'
+  condition: eq(variables['Agent.OS'], 'Darwin')
