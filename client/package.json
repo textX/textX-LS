@@ -222,6 +222,7 @@
     "inversify": "^5.0.1",
     "reflect-metadata": "^0.1.13",
     "uuid": "^3.3.2",
-    "vscode-languageclient": "^5.2.1"
+    "vscode-languageclient": "^5.2.1",
+    "vsce": "^1.67.1"
   }
 }
