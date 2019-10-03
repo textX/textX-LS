@@ -45,34 +45,13 @@ function getVenvPackageVersion(python: string, name: string): number[] | null {
 }
 
 function installAllWheelsFromDirectory(python: string, cwd: string) {
-  // readdirSync(cwd).forEach((file) => {
-  //   if (file.endsWith(".whl")) {
-  //     execSync(`${python} -m pip install ${file}`, { cwd });
-  //   }
-  // });
-  execSync(`${python} -m pip install -r requirements.txt`, { cwd });
-}
-
-function* installLS(context: ExtensionContext): IterableIterator<string> {
-  yield "Installing textX language server";
-
-  // Get python interpreter
-  const python = getPython();
-  // Check python version (3.5+ is required)
-  const [major, minor] = getPythonVersion(python);
-  if (major !== 3 || minor < 5) {
-    throw new Error("Python 3.5+ is required!");
-  }
-
-  // Create virtual environment
-  const venv = createVirtualEnvironment(python, LS_VENV_NAME, context.extensionPath);
-  yield `Virtual Environment created in: ${venv}`;
-
-  // Install source from wheels
-  const venvPython = getPythonFromVenvPath(venv);
-  const wheelsPath = join(context.extensionPath, LS_WHEELS_DIR);
-  installAllWheelsFromDirectory(venvPython, wheelsPath);
-  yield `Successfully installed textX-LS-core and textX-LS-server.`;
+  readdirSync(cwd).forEach((file) => {
+    if (file.endsWith(".whl")) {
+      execSync(`${python} -m pip install ${file}`, { cwd });
+    }
+  });
+  // override requirements
+  execSync(`${python} -m pip install --upgrade --force-reinstall -r requirements.txt`, { cwd });
 }
 
 export async function installLSWithProgress(context: ExtensionContext): Promise<string> {
@@ -85,23 +64,37 @@ export async function installLSWithProgress(context: ExtensionContext): Promise<
   }
 
   // Install with progress bar
-  return await window.withProgress({
-    location: ProgressLocation.Window,
+  return window.withProgress({
+    location: ProgressLocation.Notification,
   }, (progress): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
-
-      // Catch generator errors
       try {
-        // Go through installation steps
-        for (const step of installLS(context)) {
-          progress.report({ message: step });
+        progress.report({message: "Installing textX language server"});
+
+        // Get python interpreter
+        const python = getPython();
+        // Check python version (3.5+ is required)
+        const [major, minor] = getPythonVersion(python);
+        if (major !== 3 || minor < 5) {
+          throw new Error("Python 3.5+ is required!");
         }
 
+        // Create virtual environment
+        progress.report({message: "Creating virtual environment..."});
+        const venv = createVirtualEnvironment(python, LS_VENV_NAME, context.extensionPath);
+        progress.report({message: `Virtual Environment created at: ${venv}`});
+
+        // Install source from wheels
+        progress.report({message: "Installing python packages..."});
+        const venvPython = getPythonFromVenvPath(venv);
+        const wheelsPath = join(context.extensionPath, LS_WHEELS_DIR);
+        installAllWheelsFromDirectory(venvPython, wheelsPath);
+        progress.report({message: "Successfully installed textX-LS-core and textX-LS-server."});
+
+        resolve(venvPython);
       } catch (err) {
         reject(err);
       }
-
-      resolve(venvPython);
     });
   });
 
