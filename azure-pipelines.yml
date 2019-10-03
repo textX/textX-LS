@@ -73,6 +73,9 @@ steps:
 
 ################################ BUILD VSIX ###################################
 - bash: |
+   cd client
+   chmod +x ./bin/copy-wheels.sh && sh ./bin/copy-wheels.sh
+
    # Append build id to versions
    get_setuppy_version() {
        version=$(grep -o "'\d.\d.\d'" $1)

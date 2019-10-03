@@ -4,7 +4,6 @@ echo Building and copying python wheels
 extension_dir="$(dirname "$(pwd)")"
 
 client_wheels_dir="$extension_dir/client/wheels/"
-mkdir -p $client_wheels_dir
 
 core_dir="$extension_dir/textX-LS/core"
 core_dist_dir="$core_dir/dist"
