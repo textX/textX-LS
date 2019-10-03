@@ -56,6 +56,10 @@ steps:
   workingDirectory: textX-LS/server
   displayName: 'Run textX-LS-server tests'
 
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.16.3'
+
 - task: Npm@1
   displayName: 'Install node modules'
   inputs:
