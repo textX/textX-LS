@@ -57,6 +57,11 @@ steps:
   displayName: 'Run textX-LS-server tests'
 
 - script: |
+    exit 1
+  displayName: 'Check job status; Stop if something failed'
+  condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
+
+- script: |
     cd client
     npm i
   displayName: 'Install node modules'

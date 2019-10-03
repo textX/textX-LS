@@ -14,7 +14,7 @@ SERVER_CREATE_DIAGNOSTICS_TARGET = (
 
 @pytest.fixture(scope="module")
 def doc():
-    return TextXDocument("uri", "mydsl", None, "source")
+    return TextXDocument("uri", "mydsl", "project", None, "source")
 
 
 @pytest.fixture(scope="module")
