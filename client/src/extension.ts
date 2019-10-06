@@ -1,5 +1,5 @@
 import * as net from "net";
-import { ExtensionContext, window, workspace } from "vscode";
+import { ExtensionContext, window } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
 
 import { TEXTX_LS_SERVER } from "./constants";

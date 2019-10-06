@@ -1,19 +1,19 @@
 import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
-import { commands, extensions, Uri, window } from "vscode";
+import { commands, extensions, window } from "vscode";
 import {
-  CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE,
-  CMD_PROJECT_LIST, CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL,
-  CMD_VALIDATE_DOCUMENTS, EXTENSION_GENERATOR_TARGET, EXTENSION_SYNTAX_HIGHLIGHT_TARGET,
-  VS_CMD_INSTALL_EXTENSION, VS_CMD_UNINSTALL_EXTENSION, VS_CMD_WINDOW_RELOAD,
+    CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
+    CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, CMD_VALIDATE_DOCUMENTS,
+    VS_CMD_UNINSTALL_EXTENSION, VS_CMD_WINDOW_RELOAD,
 } from "../constants";
-import { ITextXExtensionInstall, ITextXExtensionUninstall, ITextXProject } from "../interfaces";
+import { ITextXExtensionUninstall, ITextXProject } from "../interfaces";
 import { getPython } from "../setup";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
-import { mkdtempWrapper, textxExtensionName } from "../utils";
+import { textxExtensionName } from "../utils";
 import { IEventService } from "./eventService";
+import { IGeneratorService } from "./generatorService";
 import { ISyntaxHighlightService } from "./SyntaxHighlightService";
 import { IWatcherService } from "./watcherService";
 
@@ -28,6 +28,7 @@ export interface IProjectService {
 export class ProjectService implements IProjectService {
 
   constructor(
+    @inject(TYPES.IGeneratorService) private readonly generatorService: IGeneratorService,
     @inject(TYPES.IEventService) private readonly eventService: IEventService,
     @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService, // tslint:disable: max-line-length
     @inject(TYPES.IWatcherService) private readonly watcherService: IWatcherService,
@@ -55,7 +56,7 @@ export class ProjectService implements IProjectService {
       CMD_PROJECT_INSTALL.external, pyModulePath, editableMode);
 
     if (projectName) {
-      const isInstalled = await this.generateAndInstallExtension(projectName, editableMode);
+      const isInstalled = await this.generatorService.generateAndInstallExtension(projectName, editableMode);
       if (isInstalled) {
         this.watchProject(projectName, distLocation);
       }
@@ -87,39 +88,8 @@ export class ProjectService implements IProjectService {
     }
   }
 
-  private generateAndInstallExtension(
-    projectName: string, editableMode: boolean = false,
-  ): Promise<ITextXExtensionInstall> {
-
-    return new Promise(async (resolve) => {
-      mkdtempWrapper(async (folder) => {
-        const [extensionPath, languageSyntaxes] = await commands.executeCommand(
-          CMD_GENERATE_EXTENSION.external, projectName, EXTENSION_GENERATOR_TARGET, folder,
-          editableMode, EXTENSION_SYNTAX_HIGHLIGHT_TARGET);
-
-        extensions.onDidChange((_) => {
-          const extensionName = extensionPath.split("\\").pop().split("/").pop().split(".")[0];
-          const extension = extensions.getExtension(textxExtensionName(extensionName));
-          const isActive = extension === undefined ? false : extension.isActive;
-
-          this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
-          this.syntaxHighlightService.highlightEditorsDocument();
-
-          resolve({extension, isActive, isInstalled: extension !== undefined });
-        });
-
-        await commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
-      });
-    });
-  }
-
-  private async getLanguagesSyntaxes(projectName: string): Promise<Map<string, string>> {
-    return await commands.executeCommand(CMD_GENERATE_SYNTAXES.external, projectName,
-      EXTENSION_SYNTAX_HIGHLIGHT_TARGET);
-  }
-
   private async loadLanguageKeywords(projectName: string) {
-    const languageSyntaxes: Map<string, string> = await this.getLanguagesSyntaxes(projectName);
+    const languageSyntaxes: Map<string, string> = await this.generatorService.generateLanguagesSyntaxes(projectName);
     this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
     this.syntaxHighlightService.highlightAllEditorsDocument();
   }

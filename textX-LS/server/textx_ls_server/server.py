@@ -49,19 +49,15 @@ textx_server = TextXLanguageServer()
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATE_EXTENSION)
 def cmd_generate_extension(ls: TextXLanguageServer, params):
-    project_name = params[0]
-    target = params[1]
-    dest_dir = params[2]
-    editable = params[3]
-    syntax_target = params[4]
+    target = params[0]
+    dest_dir = params[1]
+    cmd_args = params[2]
 
-    # If project is in editable mode, return language syntaxes map
-    # NOTE: This won't be required for all clients
-    extension_path = generate_extension(project_name, target, dest_dir, editable)
-    if editable:
-        return extension_path, generate_syntaxes(project_name, syntax_target)
-    else:
-        return extension_path, None
+    try:
+        generate_extension(target, dest_dir, **cmd_args._asdict())
+        return True
+    except Exception:
+        return False
 
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATE_SYNTAXES)

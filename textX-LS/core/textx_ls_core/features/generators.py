@@ -1,5 +1,4 @@
 from functools import lru_cache
-from os.path import join
 
 from textx import generator_descriptions, generator_for_language_target
 from textx.exceptions import TextXRegistrationError
@@ -16,16 +15,9 @@ def get_generator(language, target):
         raise GeneratorNotExist("Extension generator not exist for {}".format(target))
 
 
-def generate_extension(project_name, target, dest_dir, editable):
+def generate_extension(target, dest_dir, **cmd_args):
     extension_gen = get_generator("textX", target)
-
-    if editable:
-        cmd_args = {"project_name": project_name, "vsix": 1, "skip_keywords": 1}
-    else:
-        cmd_args = {"project_name": project_name, "vsix": 1}
-
     extension_gen(None, None, dest_dir, **cmd_args)
-    return join(dest_dir, project_name + ".vsix")
 
 
 def generate_syntaxes(project_name, target):
