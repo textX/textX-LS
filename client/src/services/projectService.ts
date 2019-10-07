@@ -56,14 +56,14 @@ export class ProjectService implements IProjectService {
       CMD_PROJECT_INSTALL.external, pyModulePath, editableMode);
 
     if (projectName) {
+      // Refresh textX languages view
+      this.eventService.fireLanguagesChanged();
+
       const isInstalled = await this.generatorService.generateAndInstallExtension(projectName, editableMode);
       if (isInstalled) {
         this.watchProject(projectName, distLocation);
       }
     }
-
-    // Refresh textX languages view
-    this.eventService.fireLanguagesChanged();
   }
 
   public scaffold(projectName: string): void {
@@ -74,6 +74,9 @@ export class ProjectService implements IProjectService {
     const isUninstalled = await commands.executeCommand<string>(CMD_PROJECT_UNINSTALL.external,
                                                                 projectName);
     if (isUninstalled) {
+      // Refresh textX languages view
+      this.eventService.fireLanguagesChanged();
+
       // unwatch project
       this.unwatchProject(projectName);
 
@@ -82,9 +85,6 @@ export class ProjectService implements IProjectService {
       if (uninstall.isUninstalled && uninstall.isActive) {
         await commands.executeCommand(VS_CMD_WINDOW_RELOAD);
       }
-
-      // Refresh textX languages view
-      this.eventService.fireLanguagesChanged();
     }
   }
 
