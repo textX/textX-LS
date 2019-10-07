@@ -82,7 +82,7 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
 
       return {
         decoration: window.createTextEditorDecorationType(this.getKeywordDecorationOptions(scope)),
-        keyword: keyword,
+        keyword,
         length: keyword.length,
         regex: this.getKeywordsRegex(keyword),
         scope,

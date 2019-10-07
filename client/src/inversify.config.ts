@@ -19,8 +19,8 @@ const container = new Container();
 container.bind<IEventService>(TYPES.IEventService).to(EventService).inSingletonScope();
 container.bind<IGeneratorService>(TYPES.IGeneratorService).to(GeneratorService);
 container.bind<IProjectService>(TYPES.IProjectService).to(ProjectService);
-container.bind<ISyntaxHighlightService>(TYPES.ISyntaxHighlightService).to(SyntaxHighlightService);
-container.bind<IWatcherService>(TYPES.IWatcherService).to(WatcherService);
+container.bind<ISyntaxHighlightService>(TYPES.ISyntaxHighlightService).to(SyntaxHighlightService).inSingletonScope(); // tslint:disable: max-line-length
+container.bind<IWatcherService>(TYPES.IWatcherService).to(WatcherService).inSingletonScope();
 
 // Tree data providers
 container.bind<IGeneratorProvider>(TYPES.IGeneratorProvider).to(TextXGeneratorProvider);
