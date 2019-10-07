@@ -1,6 +1,7 @@
 client/node_modules
 client/out
 client/textxls
+client/libs
 
 # Artifacts
 *.vsix
