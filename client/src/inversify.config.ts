@@ -23,7 +23,7 @@ container.bind<ISyntaxHighlightService>(TYPES.ISyntaxHighlightService).to(Syntax
 container.bind<IWatcherService>(TYPES.IWatcherService).to(WatcherService).inSingletonScope();
 
 // Tree data providers
-container.bind<IGeneratorProvider>(TYPES.IGeneratorProvider).to(TextXGeneratorProvider);
-container.bind<ILanguageProvider>(TYPES.ILanguageProvider).to(TextXLanguageProvider);
+container.bind<IGeneratorProvider>(TYPES.IGeneratorProvider).to(TextXGeneratorProvider).inSingletonScope();
+container.bind<ILanguageProvider>(TYPES.ILanguageProvider).to(TextXLanguageProvider).inSingletonScope();
 
 export default container;

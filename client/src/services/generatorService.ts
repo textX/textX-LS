@@ -45,7 +45,7 @@ export class GeneratorService implements IGeneratorService {
 
             const languageSyntaxes = await this.generateLanguagesSyntaxes(projectName);
             this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
-            this.syntaxHighlightService.highlightEditorsDocument();
+            this.syntaxHighlightService.highlightAllEditorsDocument();
 
             resolve({extension, isActive, isInstalled: extension !== undefined });
           });

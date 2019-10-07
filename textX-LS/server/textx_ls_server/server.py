@@ -23,6 +23,7 @@ from textx_ls_core.features.projects import (
     install_project_async,
     uninstall_project_async,
 )
+from textx_ls_core.utils import compare_project_names
 
 from .features.diagnostics import send_diagnostics
 from .protocol import TextXDocument, TextXProtocol
@@ -128,7 +129,7 @@ async def cmd_project_uninstall(ls: TextXLanguageServer, params):
 def cmd_validate_documents(ls: TextXLanguageServer, params):
     project_name = params[0]
     for doc in ls.workspace.documents.values():
-        if project_name and project_name == doc.project_name:
+        if project_name and compare_project_names(project_name, doc.project_name):
             send_diagnostics(ls, doc)
 
 
