@@ -1,7 +1,6 @@
 client/node_modules
 client/out
 client/textxls
-client/wheels/requirements.txt
 
 # Artifacts
 *.vsix

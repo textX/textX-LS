@@ -45,13 +45,20 @@ function getVenvPackageVersion(python: string, name: string): number[] | null {
 }
 
 function installAllWheelsFromDirectory(python: string, cwd: string) {
+  // install wheels
   readdirSync(cwd).forEach((file) => {
-    if (file.endsWith(".whl")) {
+    if (file.
+      endsWith(".whl")) {
+      if (file.startsWith("textx_ls_core")) {
+        file = `${file}[vscode]`;
+      }
       execSync(`${python} -m pip install ${file}`, { cwd });
     }
   });
-  // override requirements
-  execSync(`${python} -m pip install --upgrade --force-reinstall -r requirements.txt`, { cwd });
+  // override requirements - must not be called in production
+  if (existsSync(join(cwd, "requirements-dev.txt"))) {
+    execSync(`${python} -m pip install --upgrade --force-reinstall -r requirements-dev.txt`, { cwd }); // tslint:disable: max-line-length
+  }
 }
 
 export async function installLSWithProgress(context: ExtensionContext): Promise<string> {
