@@ -29,7 +29,7 @@ dev_require = ["bandit==1.5.1", "flake8==3.7.7", "textx_gen_vscode>=0.1.0"]
 tests_require = ["coverage==4.5.3", "pytest==4.3.1", "pytest-cov==2.6.1"]
 
 # pip install textx_ls_core[vscode]
-vscode_require = ["textx_gen_vscode>=0.1.0"]
+vscode_require = ["textx_gen_vscode>=0.1.2"]
 
 
 if python_version().startswith("3.6"):  # For python 3.6
@@ -50,12 +50,7 @@ setup(
     packages=packages,
     include_package_data=True,
     package_data={"": ["*.tx"]},
-    install_requires=[
-        "textX>=2",
-        "textx_gen_coloring>=0.1.0",
-        "click==7.0",
-        "wheel_inspect==1.3.0",
-    ],
+    install_requires=["textX>=2", "click==7.0", "wheel_inspect==1.3.0"],
     extras_require={
         "dev": dev_require,
         "test": tests_require,

@@ -1,6 +1,6 @@
 -e ./textX-LS/core
 -e ./textX-LS/server
-textx_gen_vscode>=0.1.1
+textx_gen_vscode>=0.1.2
 
 black; python_version > '3.5'
 bandit==1.5.1

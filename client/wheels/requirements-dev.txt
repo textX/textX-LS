@@ -1,4 +1,3 @@
 # you can add specific version here, such as
 # git+https://github.com/textX/textX.git@danixeee/textx-ls-integration-v0.1.0
 https://github.com/textx/textx/archive/master.zip
-https://github.com/danixeee/textx-gen-vscode/archive/danixeee/pass-vsce-command-path.zip
