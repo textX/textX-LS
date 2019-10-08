@@ -26,7 +26,7 @@ setup(
     include_package_data=True,
     package_data={"": ["*.tx"]},
     install_requires=["textx_ls_core"],
-    entry_points={"textx_languages": ["workflow = tx_workflow:WorkflowLang"]},
+    entry_points={"textx_languages": ["workflow = tx_workflow:workflow"]},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",

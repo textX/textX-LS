@@ -26,7 +26,7 @@ setup(
     include_package_data=True,
     package_data={"": ["*.tx"]},
     install_requires=["textx_ls_core"],
-    entry_points={"textx_languages": ["robot = tx_robot:RobotLang"]},
+    entry_points={"textx_languages": ["robot = tx_robot:robot"]},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
