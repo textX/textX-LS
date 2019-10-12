@@ -18,12 +18,14 @@ from ..utils import (
     run_proc_async,
 )
 
+BUILT_IN_LANGUAGES = ["textX", "txcl"]
+
 
 def get_languages():
     return [
         TextXLanguage(lang)
         for lang in language_descriptions().values()
-        if lang.name != "textX"
+        if lang.name not in BUILT_IN_LANGUAGES
     ]
 
 
