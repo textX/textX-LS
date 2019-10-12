@@ -31,7 +31,7 @@ export function getTokenColorsForTheme(themeName: string): TokenColors {
   if (currentThemePath) { themePaths.push(currentThemePath); }
   while (themePaths.length > 0) {
     const themePath = themePaths.pop();
-    const theme = JSON.parse(readFileSync(themePath).toString()); // change to async
+    const theme = safelyLoadJSON(themePath);
     if (theme) {
       if (theme.include) {
         themePaths.push(join(dirname(themePath), theme.include));
@@ -62,6 +62,21 @@ export function mkdtempWrapper(callback: (folder: string) => Promise<void>): voi
     await callback(folder);
     unlink(folder, (unlinkErr) => unlinkErr );
   });
+}
+
+function removeJSONErrors(jsonStr: string): string {
+  jsonStr = jsonStr.replace(/,[\n|\s]*?(?=\]|\})/g, ""); // removes trailing commas
+  jsonStr = JSON.parse(JSON.stringify(jsonStr)); // removes comments
+  return jsonStr;
+}
+
+export function safelyLoadJSON(path: string): any {
+  const jsonStr = readFileSync(path).toString()
+  try {
+    return JSON.parse(jsonStr);
+  } catch {
+    return JSON.parse(removeJSONErrors(jsonStr));
+  }
 }
 
 export function textxExtensionName(name: string): string {
