@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 
 PACKAGE_NAME = "textx-ls-core"
 VERSION = "0.1.0"
-AUTHOR = "textX team"
+AUTHOR = "Daniel Elero"
 AUTHOR_EMAIL = "danixeee@gmail.com"
 DESCRIPTION = (
     "a core language server logic for domain specific languages based on textX"
