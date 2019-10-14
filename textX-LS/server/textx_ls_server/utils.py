@@ -1,9 +1,18 @@
 import functools
+from typing import Callable
 
 
-def skip_not_supported_langs(func):
+def skip_not_supported_langs(func: Callable) -> Callable:
     """Decorator which checks if document is in the workspace and call
     decorated function.
+
+    Args:
+        func: callable that is being decorated
+    Returns:
+        Decorated callable
+    Raises:
+        None
+
     """
 
     @functools.wraps(func)

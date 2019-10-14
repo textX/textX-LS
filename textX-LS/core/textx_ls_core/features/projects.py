@@ -1,7 +1,7 @@
 import sys
 from typing import Callable, List, Optional, Tuple
 
-from pkg_resources import get_distribution
+from pkg_resources import DistributionNotFound, get_distribution
 
 from textx import (
     LanguageDesc,
@@ -192,9 +192,13 @@ async def uninstall_project_async(
     cmd = [python_path, "-m", "pip", "uninstall", project_name, "-y"]
 
     # Get dist location before uninstalling with pip
-    dist_location = get_distribution(project_name).location
-    retcode, output = await run_async(cmd, msg_handler)
+    try:
+        dist_location = get_distribution(project_name).location
+    except DistributionNotFound as e:
+        raise UninstallTextXProjectError(project_name, "") from e
 
+    # Call pip uninstall command
+    retcode, output = await run_async(cmd, msg_handler)
     if retcode != 0:
         raise UninstallTextXProjectError(project_name, output)
 

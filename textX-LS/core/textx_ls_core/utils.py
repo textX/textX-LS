@@ -86,14 +86,15 @@ def get_project_name_and_version(folder_or_wheel: str) -> Tuple[str, str]:
             with open(setuppy, "r") as f:
                 exec(f.read())
             _, kwargs = mock_setup.call_args
-        project_name, version = kwargs.get("name", None)
-        version = kwargs.get("version", None)
+        project_name, version = kwargs.get("name", None), kwargs.get("version", None)
     elif isfile(folder_or_wheel) and folder_or_wheel.endswith(".whl"):  # wheel file
         from wheel_inspect import inspect_wheel
 
         project_info = inspect_wheel(folder_or_wheel)
-        project_name = project_info.get("project", None)
-        version = project_info.get("version", None)
+        project_name, version = (
+            project_info.get("project", None),
+            project_info.get("version", None),
+        )
 
     return project_name, version
 
