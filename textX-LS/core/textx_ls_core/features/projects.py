@@ -2,7 +2,6 @@ import sys
 from typing import Callable, List, Optional, Tuple
 
 from pkg_resources import DistributionNotFound, get_distribution
-
 from textx import (
     LanguageDesc,
     clear_language_registrations,
@@ -26,7 +25,7 @@ from ..utils import (
     run_async,
 )
 
-BUILT_IN_LANGUAGES = ["textX", "txcl"]
+BUILT_IN_LANGUAGES = ["textx", "txcl"]
 
 
 def get_languages() -> List[TextXLanguage]:
@@ -43,7 +42,7 @@ def get_languages() -> List[TextXLanguage]:
     return [
         TextXLanguage(lang)
         for lang in language_descriptions().values()
-        if lang.name not in BUILT_IN_LANGUAGES
+        if lang.name.lower() not in BUILT_IN_LANGUAGES
     ]
 
 

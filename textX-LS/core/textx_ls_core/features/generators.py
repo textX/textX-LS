@@ -28,7 +28,9 @@ def generate_extension(target: str, dest_dir: str, **cmd_args: Optional[dict]) -
         raise GenerateExtensionError from e
 
 
-def generate_syntaxes(project_name: str, target: str) -> Mapping[str, Any]:
+def generate_syntaxes(
+    project_name: str, target: str, **cmd_args: Optional[dict]
+) -> Mapping[str, Any]:
     """Generates syntax highlighting files for all project languages.
 
     NOTE: This is called on grammar changes and it collects new language keywords.
@@ -37,6 +39,7 @@ def generate_syntaxes(project_name: str, target: str) -> Mapping[str, Any]:
     Args:
         project_name: project for which to generate syntax highlightings
         target: syntax highlight file type (e.g. `vscode`)
+        cmd_args: other optional arguments
     Returns:
         A map where keys are language names and values are corresponding syntax
         highlighting files
@@ -54,7 +57,7 @@ def generate_syntaxes(project_name: str, target: str) -> Mapping[str, Any]:
             lang_name = lang.name.lower()
             lang_desc = get_language_desc(lang_name)
             syntax_file = syntax_gen(
-                None, lang_desc.metamodel(), **{"name": lang_name, "silent": 1}
+                None, lang_desc.metamodel(), **{"name": lang_name, **cmd_args}
             )
             if syntax_file:
                 lang_syntax_map[lang_name] = syntax_file

@@ -81,9 +81,9 @@ def cmd_generate_extension(ls: TextXLanguageServer, params):
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATE_SYNTAXES)
 def cmd_generate_syntaxes(ls: TextXLanguageServer, params):
-    project_name, target = params
+    project_name, target, cmd_args = params
     try:
-        return generate_syntaxes(project_name, target)
+        return generate_syntaxes(project_name, target, **cmd_args._asdict())
     except GenerateSyntaxHighlightError:
         err_msg = "Failed to generate syntax highlighting for '{}'.".format(
             project_name

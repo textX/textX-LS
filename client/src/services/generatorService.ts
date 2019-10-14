@@ -59,7 +59,7 @@ export class GeneratorService implements IGeneratorService {
 
   public async generateLanguagesSyntaxes(projectName: string): Promise<Map<string, string>> {
     return await commands.executeCommand(CMD_GENERATE_SYNTAXES.external, projectName,
-      EXTENSION_SYNTAX_HIGHLIGHT_TARGET);
+      EXTENSION_SYNTAX_HIGHLIGHT_TARGET, { silent: 1 });
   }
 
   public async getAll(): Promise<ITextXGenerator[]> {
