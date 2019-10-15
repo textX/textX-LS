@@ -1,13 +1,14 @@
 import { inject, injectable } from "inversify";
 import { join } from "path";
-import { commands, extensions, Uri , window } from "vscode";
+import { commands, window } from "vscode";
 import {
   CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_GENERATOR_LIST, EXTENSION_GENERATOR_TARGET,
-  EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VS_CMD_INSTALL_EXTENSION, VSCE_COMMAND_PATH,
+  EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VSCE_COMMAND_PATH,
 } from "../constants";
 import { ITextXExtensionInstall, ITextXGenerator } from "../interfaces";
 import TYPES from "../types";
-import { mkdtempWrapper, textxExtensionName } from "../utils";
+import { mkdtempWrapper } from "../utils";
+import { IExtensionService } from "./extensionService";
 import { ISyntaxHighlightService } from "./SyntaxHighlightService";
 
 export interface IGeneratorService {
@@ -22,6 +23,7 @@ export class GeneratorService implements IGeneratorService {
 
   constructor(
     @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService, // tslint:disable: max-line-length
+    @inject(TYPES.IExtensionService) private readonly extensionService: IExtensionService,
   ) { }
 
   public async generateAndInstallExtension(
@@ -38,19 +40,17 @@ export class GeneratorService implements IGeneratorService {
         if (isGenerated) {
           const extensionPath = join(folder, projectName + ".vsix");
 
-          extensions.onDidChange(async (_) => {
-            const extensionName = extensionPath.split("\\").pop().split("/").pop().split(".")[0];
-            const extension = extensions.getExtension(textxExtensionName(extensionName));
-            const isActive = extension === undefined ? false : extension.isActive;
+          try {
+            await this.extensionService.install(extensionPath);
 
-            const languageSyntaxes = await this.generateLanguagesSyntaxes(projectName);
-            this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
-            this.syntaxHighlightService.highlightAllEditorsDocument();
-
-            resolve({extension, isActive, isInstalled: extension !== undefined });
-          });
-
-          await commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
+            if (editableMode) {
+              const languageSyntaxes = await this.generateLanguagesSyntaxes(projectName);
+              this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
+              this.syntaxHighlightService.highlightAllEditorsDocument();
+            }
+          } catch (_) {
+            window.showErrorMessage(`Installing extension for project '${projectName}' failed.`);
+          }
         }
 
       });

@@ -21,12 +21,10 @@ export interface ITextXExtensionAPI {}
 export interface ITextXExtensionInstall {
   extension: Extension<ITextXExtensionAPI>;
   isActive: boolean;
-  isInstalled: boolean;
 }
 
 export interface ITextXExtensionUninstall {
   isActive: boolean;
-  isUninstalled: boolean;
 }
 
 export interface ITextXGenerator {

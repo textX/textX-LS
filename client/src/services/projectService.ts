@@ -1,18 +1,18 @@
 import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
-import { commands, extensions, window } from "vscode";
+import { commands, window } from "vscode";
 import {
     CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
     CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, CMD_VALIDATE_DOCUMENTS,
-    VS_CMD_UNINSTALL_EXTENSION, VS_CMD_WINDOW_RELOAD,
+    VS_CMD_WINDOW_RELOAD,
 } from "../constants";
-import { ITextXExtensionUninstall, ITextXProject } from "../interfaces";
+import { ITextXProject } from "../interfaces";
 import { getPython } from "../setup";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
-import { textxExtensionName } from "../utils";
 import { IEventService } from "./eventService";
+import { IExtensionService } from "./extensionService";
 import { IGeneratorService } from "./generatorService";
 import { ISyntaxHighlightService } from "./SyntaxHighlightService";
 import { IWatcherService } from "./watcherService";
@@ -30,6 +30,7 @@ export class ProjectService implements IProjectService {
   constructor(
     @inject(TYPES.IGeneratorService) private readonly generatorService: IGeneratorService,
     @inject(TYPES.IEventService) private readonly eventService: IEventService,
+    @inject(TYPES.IExtensionService) private readonly extensionService: IExtensionService,
     @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService, // tslint:disable: max-line-length
     @inject(TYPES.IWatcherService) private readonly watcherService: IWatcherService,
   ) {
@@ -81,9 +82,13 @@ export class ProjectService implements IProjectService {
       this.unwatchProject(projectName);
 
       // Uninstall vscode extension
-      const uninstall = await this.uninstallExtension(projectName);
-      if (uninstall.isUninstalled && uninstall.isActive) {
-        await commands.executeCommand(VS_CMD_WINDOW_RELOAD);
+      try {
+        const { isActive } = await this.extensionService.uninstall(projectName);
+        if (isActive) {
+          await commands.executeCommand(VS_CMD_WINDOW_RELOAD);
+        }
+      } catch (_) {
+        window.showErrorMessage(`Uninstalling extension for project '${projectName}' failed.`);
       }
     }
   }
@@ -159,27 +164,6 @@ export class ProjectService implements IProjectService {
         if (decision === "Yes") {
           this.uninstall(projectName.toString().trim());
         }
-      }
-    });
-  }
-
-  private uninstallExtension(projectName: string): Promise<ITextXExtensionUninstall> {
-    return new Promise(async (resolve) => {
-      const extensionName = textxExtensionName(projectName);
-      let extension = extensions.getExtension(extensionName);
-      const isActive = extension === undefined ? false : extension.isActive;
-
-      extensions.onDidChange((_) => {
-        // If extension is NOT active
-        extension = extensions.getExtension(extensionName);
-        resolve({ isActive, isUninstalled: extension === undefined });
-      });
-
-      try {
-        await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION, extensionName);
-        resolve({ isActive, isUninstalled: true });
-      } catch (_) {
-        resolve({ isActive, isUninstalled: false});
       }
     });
   }

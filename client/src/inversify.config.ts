@@ -2,6 +2,7 @@ import "reflect-metadata";
 
 import { Container } from "inversify";
 import { EventService, IEventService } from "./services/eventService";
+import { ExtensionService, IExtensionService } from "./services/extensionService";
 import { GeneratorService, IGeneratorService } from "./services/generatorService";
 import { IProjectService, ProjectService } from "./services/projectService";
 import {
@@ -17,6 +18,7 @@ import {
 const container = new Container();
 // Services
 container.bind<IEventService>(TYPES.IEventService).to(EventService).inSingletonScope();
+container.bind<IExtensionService>(TYPES.IExtensionService).to(ExtensionService).inSingletonScope();
 container.bind<IGeneratorService>(TYPES.IGeneratorService).to(GeneratorService);
 container.bind<IProjectService>(TYPES.IProjectService).to(ProjectService);
 container.bind<ISyntaxHighlightService>(TYPES.ISyntaxHighlightService).to(SyntaxHighlightService).inSingletonScope(); // tslint:disable: max-line-length

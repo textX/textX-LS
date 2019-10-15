@@ -79,6 +79,20 @@ export function safelyLoadJSON(path: string): any {
   }
 }
 
+export function timeoutPromise<T>(ms: number, promise: Promise<T>): Promise<T> {
+  const timeout = new Promise((_, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject();
+    }, ms);
+  });
+
+  return Promise.race<any>([
+    promise,
+    timeout,
+  ]);
+}
+
 export function textxExtensionName(name: string): string {
   return `textX.${name.toLowerCase().replace(/_/g, "-")}`;
 }
