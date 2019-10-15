@@ -63,7 +63,7 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
     });
   }
 
-  public addLanguageKeywordsFromTextmate(languageSyntaxes: Object): void {
+  public addLanguageKeywordsFromTextmate(languageSyntaxes: object): void {
     for (const [langId, textmateJSON] of Object.entries(languageSyntaxes)) {
       (this.languageKeywordsCache.get(langId) || []).forEach((kwInfo) => kwInfo.decoration.dispose());
       this.languageKeywordsCache.set(langId, this.getKeywordsFromTextmateJSON(textmateJSON));
@@ -94,6 +94,7 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
   ): Range[] {
 
     const ranges: Range[] = [];
+    // tslint:disable-next-line: no-conditional-assignment
     for (let match: RegExpExecArray; (match = keyword.regex.exec(documentText)) !== null;) {
       const matchIndex = match.index;
       ranges.push(new Range(offsetToPosition(matchIndex),

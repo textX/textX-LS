@@ -133,7 +133,6 @@ def cmd_generate_syntaxes(ls: TextXLanguageServer, params) -> Mapping[str, Any]:
 
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATOR_LIST)
-@textx_server.thread()
 def cmd_generator_list(ls: TextXLanguageServer, params) -> List[GeneratorDesc]:
     """Command that returns all registered generators.
 
@@ -178,7 +177,6 @@ async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_LIST)
-@textx_server.thread()
 def cmd_project_list(ls: TextXLanguageServer, params) -> List[TextXProject]:
     """Command that returns all registered textX projects.
 
