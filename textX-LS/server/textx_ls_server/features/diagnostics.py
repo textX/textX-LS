@@ -1,8 +1,8 @@
 from typing import List
 
 from pygls.types import Diagnostic, Position, Range
-
 from textx.exceptions import TextXError
+
 from textx_ls_core.features.validate import validate
 
 from ..protocol import TextXDocument

@@ -1,4 +1,5 @@
 from os.path import basename
+from typing import Optional, Union
 
 from pygls.protocol import LanguageServerProtocol
 from pygls.types import (
@@ -8,6 +9,7 @@ from pygls.types import (
     MessageType,
 )
 from pygls.workspace import Document
+from textx.metamodel import TextXMetaMetaModel, TextXMetaModel
 
 from textx_ls_core.exceptions import LanguageNotRegistered, MultipleLanguagesError
 from textx_ls_core.features.projects import get_language_desc
@@ -15,7 +17,19 @@ from textx_ls_core.features.projects import get_language_desc
 
 class TextXDocument(Document):
     """Represents document with additional information e.g. metamodel that can
-    parse document's content."""
+    parse document's content.
+
+    Attributes:
+        project_name (str): project name
+        language_name (bool): language name
+        mm_loader (Callable|TextXMetaMetaModel|TextXMetaModel): a language metamodel
+        _metamodel (TextXMetaModel): cached language metamodel
+
+    NOTE: If `mm_loader` returns a cached metamodel for a language (not callable) and
+          if language is installed in *editable* mode, editor won't be refreshed on
+          grammar changes!
+
+    """
 
     def __init__(
         self, uri, language_name, project_name, mm_loader, source=None, version=None
@@ -29,39 +43,109 @@ class TextXDocument(Document):
         self._metamodel = None
         self.refresh_metamodel()
 
-    def get_metamodel(self, refresh=False):
+    @property
+    def is_refreshable(self) -> bool:
+        """Indicates if language metamodel can be refreshed.
+
+        Args:
+            None
+        Returns:
+            Returns True if metamodel is refreshable, otherwise False
+        Raises:
+            None
+
+        """
+        try:
+            return id(self._metamodel) != id(self.mm_loader())
+        except TypeError:
+            return False
+
+    def get_metamodel(
+        self, refresh: Optional[bool] = False
+    ) -> Union[TextXMetaMetaModel, TextXMetaModel]:
+        """Returns a language metamodel.
+
+        Args:
+            refresh: If True, language metamodel will be re-loaded before returning
+        Returns:
+            Decorated callable
+        Raises:
+            None
+
+        """
         if self._metamodel is None or refresh:
             self.refresh_metamodel()
         return self._metamodel
 
-    def refresh_metamodel(self):
-        # Called on grammar changes
+    def refresh_metamodel(self) -> None:
+        """Refreshes (reloads) a language metamodel.
+
+        Args:
+            None
+        Returns:
+            None
+        Raises:
+            None
+
+        """
         self._metamodel = (
             self.mm_loader() if callable(self.mm_loader) else self.mm_loader
         )
 
 
 class TextXProtocol(LanguageServerProtocol):
-    """This class overrides text synchronization methods as we don't want to
-    process languages that we don't support.
+    """Represents a slightly modified Language Server Protocol. It is used to process
+    only textX languages.
+
+    Overridden methods:
+        bf_text_document__did_change
+        bf_text_document__did_close
+        bf_text_document__did_open
+
     """
 
-    def bf_text_document__did_change(self, params: DidChangeTextDocumentParams):
-        """Updates document's content if document is in the workspace."""
+    def bf_text_document__did_change(self, params: DidChangeTextDocumentParams) -> None:
+        """Updates document's content if document is in the workspace.
+
+        Args:
+            params: Read LSP
+        Returns:
+            None
+        Raises:
+            None
+
+        """
         if params.textDocument.uri in self.workspace.documents:
             for change in params.contentChanges:
                 self.workspace.update_document(params.textDocument, change)
 
-    def bf_text_document__did_close(self, params: DidCloseTextDocumentParams):
-        """Removes document from workspace if it is added previously."""
+    def bf_text_document__did_close(self, params: DidCloseTextDocumentParams) -> None:
+        """Removes document from workspace if it is added previously.
+
+        Args:
+            params: Read LSP
+        Returns:
+            None
+        Raises:
+            None
+
+        """
         if params.textDocument.uri in self.workspace.documents:
             self.workspace.remove_document(params.textDocument.uri)
 
-    def bf_text_document__did_open(self, params: DidOpenTextDocumentParams):
-        """Puts document to the workspace for supported files."""
+    def bf_text_document__did_open(self, params: DidOpenTextDocumentParams) -> None:
+        """Puts document to the workspace for supported files.
+
+        Args:
+            params: Read LSP
+        Returns:
+            None
+        Raises:
+            None
+
+        """
         doc = params.textDocument
-        doc_uri = doc.uri
-        lang_id = doc.languageId
+        doc_uri, lang_id = doc.uri, doc.languageId
 
         try:
             lang_desc = get_language_desc(lang_id, basename(doc_uri))
@@ -73,6 +157,7 @@ class TextXProtocol(LanguageServerProtocol):
                         MessageType.Error
                     )
                 )
+                return
 
             self.workspace._docs[doc_uri] = TextXDocument(
                 doc_uri,

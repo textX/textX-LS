@@ -11,7 +11,7 @@ def compare_project_names(p1: str, p2: str) -> bool:
         p1: project name
         p2: project name to compare to
     Returns:
-        True if project names are the same, else otherwise
+        True if project names are the same, otherwise False
     Raises:
         None
 
@@ -30,7 +30,7 @@ def dist_is_editable(dist_location: str, project_name: str) -> bool:
         dist_location: location of python package
         project_name: project name
     Returns:
-        True if project is installed in editable mode (with `-e` flag), else otherwise
+        True if project is installed in editable mode (with `-e` flag), otherwise False
     Raises:
         None
 
