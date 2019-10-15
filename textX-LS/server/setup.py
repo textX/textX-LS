@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 PACKAGE_NAME = "textx-ls-server"
 VERSION = "0.1.0"
-AUTHOR = "textX team"
+AUTHOR = "Daniel Elero"
 AUTHOR_EMAIL = "danixeee@gmail.com"
 DESCRIPTION = "a language server for domain specific languages based on textX"
 KEYWORDS = "textX DSL python domain specific languages language server protocol pygls"
