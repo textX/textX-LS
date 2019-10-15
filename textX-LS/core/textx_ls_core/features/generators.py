@@ -25,7 +25,7 @@ def generate_extension(target: str, dest_dir: str, **cmd_args: Optional[dict]) -
         extension_gen = generator_for_language_target("textX", target)
         extension_gen(None, None, dest_dir, **cmd_args)
     except Exception as e:
-        raise GenerateExtensionError from e
+        raise GenerateExtensionError(target, cmd_args) from e
 
 
 def generate_syntaxes(
@@ -63,7 +63,7 @@ def generate_syntaxes(
                 lang_syntax_map[lang_name] = syntax_file
         return lang_syntax_map
     except Exception as e:
-        raise GenerateSyntaxHighlightError from e
+        raise GenerateSyntaxHighlightError(project_name, target) from e
 
 
 def get_generators() -> List[GeneratorDesc]:

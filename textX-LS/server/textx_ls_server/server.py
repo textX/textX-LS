@@ -107,11 +107,8 @@ def cmd_generate_extension(ls: TextXLanguageServer, params) -> bool:
     try:
         generate_extension(target, dest_dir, **cmd_args._asdict())
         return True
-    except GenerateExtensionError:
-        err_msg = "Failed to generate the extension for '{}' with following arguments: '{}'.".format(
-            target, cmd_args
-        )
-        ls.show_errors(err_msg)
+    except GenerateExtensionError as e:
+        ls.show_errors(str(e))
         return False
 
 
@@ -130,11 +127,8 @@ def cmd_generate_syntaxes(ls: TextXLanguageServer, params) -> Mapping[str, Any]:
     project_name, target, cmd_args = params
     try:
         return generate_syntaxes(project_name, target, **cmd_args._asdict())
-    except GenerateSyntaxHighlightError:
-        err_msg = "Failed to generate syntax highlighting for '{}'.".format(
-            project_name
-        )
-        ls.show_errors(err_msg)
+    except GenerateSyntaxHighlightError as e:
+        ls.show_errors(str(e))
         return {}
 
 
@@ -178,9 +172,8 @@ async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str
         )
         ls.show_message("Project {} is successfully installed.".format(project_name))
         return project_name, dist_location
-    except InstallTextXProjectError:
-        err_msg = "Failed to install project from {}.".format(folder_or_wheel)
-        ls.show_errors(err_msg)
+    except InstallTextXProjectError as e:
+        ls.show_errors(str(e), e.detailed_err_msg)
         return None, None
 
 
@@ -226,9 +219,8 @@ async def cmd_project_uninstall(ls: TextXLanguageServer, params) -> bool:
         await uninstall_project_async(project_name, ls.python_path, ls.show_message_log)
         ls.show_message("Project {} is successfully uninstalled.".format(project_name))
         return True
-    except UninstallTextXProjectError:
-        err_msg = "Failed to uninstall project {}.".format(project_name)
-        ls.show_errors(err_msg)
+    except UninstallTextXProjectError as e:
+        ls.show_errors(str(e), e.detailed_err_msg)
         return False
 
 

@@ -90,15 +90,12 @@ def get_language_desc(
         lang_descs = languages_for_file(file_name)
         lang_descs_len = len(lang_descs)
         if lang_descs_len > 1:
-            raise MultipleLanguagesError(
-                'Multiple languages can parse "{}". Skipping.'.format(file_name)
-            )
+            raise MultipleLanguagesError(file_name)
+
         lang_desc = lang_descs.pop() if lang_descs_len == 1 else None
 
     if lang_desc is None:
-        raise LanguageNotRegistered(
-            "No language registered that can parse" ' "{}".'.format(file_name)
-        )
+        raise LanguageNotRegistered(file_name)
 
     return lang_desc
 
@@ -150,7 +147,6 @@ async def install_project_async(
     """
     project_name, version = get_project_name_and_version(folder_or_wheel)
     dist_location = None
-    # TODO: Check if project with the same version is already installed ?
 
     cmd = [python_path, "-m", "pip", "install", folder_or_wheel]
     if editable:
@@ -168,6 +164,13 @@ async def install_project_async(
         dist_location = get_distribution(project_name).location
 
     clear_language_registrations()
+
+    # Checks if language with the same name already exist
+    try:
+        language_descriptions()
+    except Exception as e:
+        await uninstall_project_async(project_name, python_path)
+        raise InstallTextXProjectError(project_name, dist_location, output) from e
 
     return project_name, dist_location
 
