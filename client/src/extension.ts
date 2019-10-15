@@ -4,7 +4,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-lan
 
 import { TEXTX_LS_SERVER } from "./constants";
 import container from "./inversify.config";
-import { IWatcherService } from "./services/watcherService";
+import { IWatcherService } from "./services";
 import { installLSWithProgress } from "./setup";
 import TYPES from "./types";
 import { IGeneratorProvider, ILanguageProvider } from "./ui/explorer";
@@ -72,7 +72,6 @@ export async function activate(context: ExtensionContext) {
     const watcherService = container.get<IWatcherService>(TYPES.IWatcherService);
 
     // Tree Providers
-    // tslint:disable-next-line:max-line-length
     context.subscriptions.push(window.registerTreeDataProvider("textxGenerators", generatorProvider));
     context.subscriptions.push(window.registerTreeDataProvider("textxLanguages", languageProvider));
     context.subscriptions.push(watcherService);

@@ -58,7 +58,6 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
 
     const keywordInfos = this.languageKeywordsCache.get(languageId) || [];
     keywordInfos.forEach((kwInfo) => {
-      // tslint:disable-next-line: max-line-length
       const keywordRanges = this.getKeywordRangesInDocument(kwInfo, documentText, offsetToPosition);
       editor.setDecorations(kwInfo.decoration, keywordRanges);
     });
@@ -95,7 +94,6 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
   ): Range[] {
 
     const ranges: Range[] = [];
-    // tslint:disable-next-line: no-conditional-assignment
     for (let match: RegExpExecArray; (match = keyword.regex.exec(documentText)) !== null;) {
       const matchIndex = match.index;
       ranges.push(new Range(offsetToPosition(matchIndex),
@@ -112,7 +110,6 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
     for (const languageKeywords of this.languageKeywordsCache.values()) {
       languageKeywords.forEach((kw) => {
         kw.decoration.dispose(); // remove previous decorations from editor
-        // tslint:disable-next-line: max-line-length
         kw.decoration = window.createTextEditorDecorationType(this.getKeywordDecorationOptions(kw.scope));
       });
     }

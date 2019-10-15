@@ -71,7 +71,7 @@ function removeJSONErrors(jsonStr: string): string {
 }
 
 export function safelyLoadJSON(path: string): any {
-  const jsonStr = readFileSync(path).toString()
+  const jsonStr = readFileSync(path).toString();
   try {
     return JSON.parse(jsonStr);
   } catch {

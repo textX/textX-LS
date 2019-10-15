@@ -32,7 +32,7 @@ export class ExtensionService implements IExtensionService {
 
   public uninstall(projectName: string): Promise<ITextXExtensionUninstall> {
     // After the extension is installed, it should be caught here
-    const uninstallExtensionPromise = new Promise<ITextXExtensionUninstall>(async (resolve) => {  // tslint:disable: max-line-length
+    const uninstallExtensionPromise = new Promise<ITextXExtensionUninstall>(async (resolve) => {
       const extensionName = textxExtensionName(projectName);
       let extension = extensions.getExtension(extensionName);
       const isActive = extension === undefined ? false : extension.isActive;

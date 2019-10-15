@@ -1,8 +1,7 @@
 import { inject, injectable } from "inversify";
 import { Event, TreeDataProvider, TreeItem } from "vscode";
 import { ITextXProject } from "../../interfaces";
-import { IEventService } from "../../services/eventService";
-import { IProjectService } from "../../services/projectService";
+import { IEventService, IProjectService } from "../../services";
 import TYPES from "../../types";
 import { LanguageNode } from "./languageNode";
 import { ProjectNode } from "./projectNode";

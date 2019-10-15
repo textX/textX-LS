@@ -1,15 +1,8 @@
 import "reflect-metadata";
 
 import { Container } from "inversify";
-import { EventService, IEventService } from "./services/eventService";
-import { ExtensionService, IExtensionService } from "./services/extensionService";
-import { GeneratorService, IGeneratorService } from "./services/generatorService";
-import { IProjectService, ProjectService } from "./services/projectService";
-import {
-  ISyntaxHighlightService,
-  SyntaxHighlightService,
-} from "./services/SyntaxHighlightService";
-import { IWatcherService, WatcherService } from "./services/watcherService";
+
+import * as services from "./services";
 import TYPES from "./types";
 import {
   IGeneratorProvider, ILanguageProvider, TextXGeneratorProvider, TextXLanguageProvider,
@@ -17,12 +10,13 @@ import {
 
 const container = new Container();
 // Services
-container.bind<IEventService>(TYPES.IEventService).to(EventService).inSingletonScope();
-container.bind<IExtensionService>(TYPES.IExtensionService).to(ExtensionService).inSingletonScope();
-container.bind<IGeneratorService>(TYPES.IGeneratorService).to(GeneratorService);
-container.bind<IProjectService>(TYPES.IProjectService).to(ProjectService);
-container.bind<ISyntaxHighlightService>(TYPES.ISyntaxHighlightService).to(SyntaxHighlightService).inSingletonScope(); // tslint:disable: max-line-length
-container.bind<IWatcherService>(TYPES.IWatcherService).to(WatcherService).inSingletonScope();
+container.bind<services.IEventService>(TYPES.IEventService).to(services.EventService).inSingletonScope();
+container.bind<services.IExtensionService>(TYPES.IExtensionService).to(services.ExtensionService).inSingletonScope();
+container.bind<services.IGeneratorService>(TYPES.IGeneratorService).to(services.GeneratorService);
+container.bind<services.IProjectService>(TYPES.IProjectService).to(services.ProjectService);
+container.bind<services.ISyntaxHighlightService>(TYPES.ISyntaxHighlightService).to(services.SyntaxHighlightService)
+                                                                               .inSingletonScope();
+container.bind<services.IWatcherService>(TYPES.IWatcherService).to(services.WatcherService).inSingletonScope();
 
 // Tree data providers
 container.bind<IGeneratorProvider>(TYPES.IGeneratorProvider).to(TextXGeneratorProvider).inSingletonScope();

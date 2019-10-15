@@ -57,7 +57,7 @@ function installAllWheelsFromDirectory(python: string, cwd: string) {
   });
   // override requirements - must not be called in production
   if (existsSync(join(cwd, "requirements-dev.txt"))) {
-    execSync(`${python} -m pip install --upgrade --force-reinstall -r requirements-dev.txt`, { cwd }); // tslint:disable: max-line-length
+    execSync(`${python} -m pip install --upgrade --force-reinstall -r requirements-dev.txt`, { cwd });
   }
 }
 

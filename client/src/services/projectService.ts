@@ -2,20 +2,16 @@ import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
 import { commands, window } from "vscode";
+import { IEventService, IExtensionService, IGeneratorService, ISyntaxHighlightService, IWatcherService } from ".";
 import {
-    CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
-    CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, CMD_VALIDATE_DOCUMENTS,
-    VS_CMD_WINDOW_RELOAD,
+  CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
+  CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, CMD_VALIDATE_DOCUMENTS,
+  VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXProject } from "../interfaces";
 import { getPython } from "../setup";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
-import { IEventService } from "./eventService";
-import { IExtensionService } from "./extensionService";
-import { IGeneratorService } from "./generatorService";
-import { ISyntaxHighlightService } from "./SyntaxHighlightService";
-import { IWatcherService } from "./watcherService";
 
 export interface IProjectService {
   getInstalled(): Promise<Map<string, ITextXProject>>;
@@ -31,14 +27,13 @@ export class ProjectService implements IProjectService {
     @inject(TYPES.IGeneratorService) private readonly generatorService: IGeneratorService,
     @inject(TYPES.IEventService) private readonly eventService: IEventService,
     @inject(TYPES.IExtensionService) private readonly extensionService: IExtensionService,
-    @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService, // tslint:disable: max-line-length
+    @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService,
     @inject(TYPES.IWatcherService) private readonly watcherService: IWatcherService,
   ) {
     this.registerCommands();
   }
 
   public async getInstalled(): Promise<Map<string, ITextXProject>> {
-    // tslint:disable-next-line:max-line-length
     let projects = await commands.executeCommand<Map<string, ITextXProject>>(CMD_PROJECT_LIST.external);
     projects = projects || new Map<string, ITextXProject>();
     // watch editable projects

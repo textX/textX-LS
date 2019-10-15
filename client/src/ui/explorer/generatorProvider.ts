@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { commands, Event, EventEmitter, TreeDataProvider, TreeItem } from "vscode";
 import { CMD_GENERATOR_LIST_REFRESH } from "../../constants";
-import { IGeneratorService } from "../../services/generatorService";
+import { IGeneratorService } from "../../services";
 import TYPES from "../../types";
 import { GeneratorNode } from "./generatorNode";
 

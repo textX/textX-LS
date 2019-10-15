@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import { join } from "path";
 import { commands, window } from "vscode";
+import { IExtensionService, ISyntaxHighlightService } from ".";
 import {
   CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_GENERATOR_LIST, EXTENSION_GENERATOR_TARGET,
   EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VSCE_COMMAND_PATH,
@@ -8,11 +9,9 @@ import {
 import { ITextXExtensionInstall, ITextXGenerator } from "../interfaces";
 import TYPES from "../types";
 import { mkdtempWrapper } from "../utils";
-import { IExtensionService } from "./extensionService";
-import { ISyntaxHighlightService } from "./SyntaxHighlightService";
 
 export interface IGeneratorService {
-  generateAndInstallExtension(projectName: string, editableMode: boolean): Promise<ITextXExtensionInstall>; // tslint:disable: max-line-length
+  generateAndInstallExtension(projectName: string, editableMode: boolean): Promise<ITextXExtensionInstall>;
   generateLanguagesSyntaxes(projectName: string): Promise<Map<string, string>>;
   getAll(): Promise<ITextXGenerator[]>;
   getByLanguage(languageName: string): Promise<ITextXGenerator[]>;
@@ -22,7 +21,7 @@ export interface IGeneratorService {
 export class GeneratorService implements IGeneratorService {
 
   constructor(
-    @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService, // tslint:disable: max-line-length
+    @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService,
     @inject(TYPES.IExtensionService) private readonly extensionService: IExtensionService,
   ) { }
 
