@@ -161,13 +161,13 @@ async def install_project_async(
     # Manually add package to sys.path if installed with -e flag
     if editable and folder_or_wheel not in sys.path:
         sys.path.append(folder_or_wheel)
-        dist_location = get_distribution(project_name).location
 
     clear_language_registrations()
 
     # Checks if language with the same name already exist
     try:
         language_descriptions()
+        dist_location = get_distribution(project_name).location
     except Exception as e:
         await uninstall_project_async(project_name, python_path)
         raise InstallTextXProjectError(project_name, dist_location, output) from e
