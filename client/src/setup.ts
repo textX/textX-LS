@@ -1,14 +1,14 @@
-import { execSync } from "child_process";
-import { existsSync, readdirSync } from "fs";
+import { existsSync } from "fs";
 import { join } from "path";
 import { ExtensionContext, ProgressLocation, window, workspace} from "vscode";
 import { IS_WIN, LS_VENV_NAME, LS_WHEELS_DIR, TEXTX_LS_SERVER } from "./constants";
+import { execAsync, readdirAsync } from "./utils";
 
-function createVirtualEnvironment(python: string, name: string, cwd: string): string {
+async function createVirtualEnvironment(python: string, name: string, cwd: string): Promise<string> {
   const path = join(cwd, name);
   if (!existsSync(path)) {
     const createVenvCmd = `virtualenv -p ${python} ${name}`;
-    execSync(createVenvCmd, { cwd });
+    await execAsync(createVenvCmd, { cwd });
   }
   return path;
 }
@@ -25,46 +25,39 @@ function getPythonFromVenvPath(venvPath: string): string {
   return IS_WIN ? join(venvPath, "Scripts", "python") : join(venvPath, "bin", "python");
 }
 
-function getPythonVersion(python: string): number[] {
+async function getPythonVersion(python: string): Promise<number[]> {
   const getPythonVersionCmd = `${python} --version`;
-  const version = execSync(getPythonVersionCmd).toString();
+  const version = await execAsync(getPythonVersionCmd);
   return version.match(new RegExp(/\d/g)).map((v) => Number.parseInt(v));
 }
 
-function getVenvPackageVersion(python: string, name: string): number[] | null {
+async function getVenvPackageVersion(python: string, name: string): Promise<number[] | null> {
   const listPipPackagesCmd = `${python} -m pip show ${name}`;
-
   try {
-    const packageInfo = execSync(listPipPackagesCmd).toString();
+    const packageInfo = await execAsync(listPipPackagesCmd);
     const packageVersion = packageInfo.match(new RegExp(/Version: \d\.\d\.\d/g));
     return packageVersion.pop().match(new RegExp(/\d/g)).map((v) => Number.parseInt(v));
-
   } catch (err) {
     return null;
   }
 }
 
-function installAllWheelsFromDirectory(python: string, cwd: string) {
+async function installAllWheelsFromDirectory(python: string, cwd: string) {
   // install wheels
-  readdirSync(cwd).forEach((file) => {
-    if (file.
-      endsWith(".whl")) {
-      if (file.startsWith("textx_ls_core")) {
-        file = `${file}[vscode]`;
-      }
-      execSync(`${python} -m pip install ${file}`, { cwd });
-    }
-  });
+  const files = await readdirAsync(cwd);
+  for (const file of files.filter((f) => f.endsWith(".whl"))) {
+    await execAsync(`${python} -m pip install ${file}[vscode]`, { cwd });
+  }
   // override requirements - must not be called in production
   if (existsSync(join(cwd, "requirements-dev.txt"))) {
-    execSync(`${python} -m pip install --upgrade --force-reinstall -r requirements-dev.txt`, { cwd });
+    await execAsync(`${python} -m pip install --upgrade --force-reinstall -r requirements-dev.txt`, { cwd });
   }
 }
 
 export async function installLSWithProgress(context: ExtensionContext): Promise<string> {
   // Check if LS is already installed
-  const venvPython = getPythonFromVenvPath(join(context.extensionPath, LS_VENV_NAME));
-  const isServerPackageInstalled = !!getVenvPackageVersion(venvPython, TEXTX_LS_SERVER);
+  let venvPython = getPythonFromVenvPath(join(context.extensionPath, LS_VENV_NAME));
+  const isServerPackageInstalled = !!(await getVenvPackageVersion(venvPython, TEXTX_LS_SERVER));
 
   if (isServerPackageInstalled) {
     return Promise.resolve(venvPython);
@@ -74,30 +67,27 @@ export async function installLSWithProgress(context: ExtensionContext): Promise<
   return window.withProgress({
     location: ProgressLocation.Notification,
   }, (progress): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<string>(async (resolve, reject) => {
       try {
-        progress.report({message: "Installing textX language server"});
+        progress.report({message: "Installing textX language server..."});
 
         // Get python interpreter
         const python = getPython();
         // Check python version (3.5+ is required)
-        const [major, minor] = getPythonVersion(python);
+        const [major, minor] = await getPythonVersion(python);
         if (major !== 3 || minor < 5) {
           throw new Error("Python 3.5+ is required!");
         }
 
         // Create virtual environment
-        progress.report({message: "Creating virtual environment..."});
-        const venv = createVirtualEnvironment(python, LS_VENV_NAME, context.extensionPath);
-        progress.report({message: `Virtual Environment created at: ${venv}`});
+        const venv = await createVirtualEnvironment(python, LS_VENV_NAME, context.extensionPath);
 
         // Install source from wheels
-        progress.report({message: "Installing python packages..."});
-        const venvPython = getPythonFromVenvPath(venv);
+        venvPython = getPythonFromVenvPath(venv);
         const wheelsPath = join(context.extensionPath, LS_WHEELS_DIR);
-        installAllWheelsFromDirectory(venvPython, wheelsPath);
-        progress.report({message: "Successfully installed textX-LS-core and textX-LS-server."});
+        await installAllWheelsFromDirectory(venvPython, wheelsPath);
 
+        window.showInformationMessage("textX extension is ready! :)");
         resolve(venvPython);
       } catch (err) {
         reject(err);
