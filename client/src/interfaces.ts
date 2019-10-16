@@ -19,8 +19,9 @@ export interface IKeywordInfo {
 export interface ITextXExtensionAPI {}
 
 export interface ITextXExtensionInstall {
-  extension: Extension<ITextXExtensionAPI>;
+  extension?: Extension<ITextXExtensionAPI>;
   isActive: boolean;
+  isUpdated?: boolean;
 }
 
 export interface ITextXExtensionUninstall {

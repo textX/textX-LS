@@ -48,17 +48,15 @@ export class ProjectService implements IProjectService {
   }
 
   public async install(pyModulePath: string, editableMode: boolean = false): Promise<void> {
-    const [projectName, distLocation] = await commands.executeCommand<string>(
+    const [projectName, projectVersion, distLocation] = await commands.executeCommand<string>(
       CMD_PROJECT_INSTALL.external, pyModulePath, editableMode);
 
     if (projectName) {
       // Refresh textX languages view
       this.eventService.fireLanguagesChanged();
+      this.watchProject(projectName, distLocation);
 
-      const isInstalled = await this.generatorService.generateAndInstallExtension(projectName, editableMode);
-      if (isInstalled) {
-        this.watchProject(projectName, distLocation);
-      }
+      await this.generatorService.generateAndInstallExtension(projectName, projectVersion, editableMode);
     }
   }
 

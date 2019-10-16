@@ -4,14 +4,15 @@ import { commands, window } from "vscode";
 import { IExtensionService, ISyntaxHighlightService } from ".";
 import {
   CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_GENERATOR_LIST, EXTENSION_GENERATOR_TARGET,
-  EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VSCE_COMMAND_PATH,
+  EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VS_CMD_WINDOW_RELOAD, VSCE_COMMAND_PATH,
 } from "../constants";
 import { ITextXExtensionInstall, ITextXGenerator } from "../interfaces";
 import TYPES from "../types";
 import { mkdtempWrapper } from "../utils";
 
 export interface IGeneratorService {
-  generateAndInstallExtension(projectName: string, editableMode: boolean): Promise<ITextXExtensionInstall>;
+  // tslint:disable-next-line: max-line-length
+  generateAndInstallExtension(projectName: string, projectVersion: string, editableMode: boolean): Promise<ITextXExtensionInstall>;
   generateLanguagesSyntaxes(projectName: string): Promise<Map<string, string>>;
   getAll(): Promise<ITextXGenerator[]>;
   getByLanguage(languageName: string): Promise<ITextXGenerator[]>;
@@ -26,12 +27,18 @@ export class GeneratorService implements IGeneratorService {
   ) { }
 
   public async generateAndInstallExtension(
-    projectName: string, editableMode: boolean = false,
+    projectName: string, projectVersion: string, editableMode: boolean = false,
   ): Promise<ITextXExtensionInstall> {
 
     return new Promise(async (resolve) => {
       mkdtempWrapper(async (folder) => {
-        const cmdArgs = { project_name: projectName, vsix: 1, skip_keywords: editableMode, vsce: VSCE_COMMAND_PATH };
+        const cmdArgs = {
+          project_name: projectName,
+          skip_keywords: editableMode,
+          version: projectVersion,
+          vsce: VSCE_COMMAND_PATH,
+          vsix: 1,
+        };
 
         const isGenerated = await commands.executeCommand(
           CMD_GENERATE_EXTENSION.external, EXTENSION_GENERATOR_TARGET, folder, cmdArgs);
@@ -40,13 +47,19 @@ export class GeneratorService implements IGeneratorService {
           const extensionPath = join(folder, projectName + ".vsix");
 
           try {
-            await this.extensionService.install(extensionPath);
+            const install = await this.extensionService.install(extensionPath, projectVersion);
+
+            if (install.isUpdated) {
+              return await commands.executeCommand(VS_CMD_WINDOW_RELOAD);
+            }
 
             if (editableMode) {
               const languageSyntaxes = await this.generateLanguagesSyntaxes(projectName);
               this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
               this.syntaxHighlightService.highlightAllEditorsDocument();
             }
+
+            resolve(install);
           } catch (_) {
             window.showErrorMessage(`Installing extension for project '${projectName}' failed.`);
           }

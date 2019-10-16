@@ -131,7 +131,7 @@ async def install_project_async(
     python_path: str,
     editable: Optional[str] = False,
     msg_handler: Optional[Callable] = None,
-) -> Tuple[str, str]:
+) -> Tuple[str, str, str]:
     """Installs textX project.
 
     Args:
@@ -140,7 +140,7 @@ async def install_project_async(
         editable: flag if project should be installed in editable mode
         msg_handler: a callable which is called with message argument when process writes to stdout
     Returns:
-        A tuple of project name and package dist location if project is installed successfully
+        A tuple of project name, version and package dist location if project is installed successfully
     Raises:
         InstallTextXProjectError: If project is not installed
 
@@ -172,7 +172,7 @@ async def install_project_async(
         await uninstall_project_async(project_name, python_path)
         raise InstallTextXProjectError(project_name, dist_location, output) from e
 
-    return project_name, dist_location
+    return project_name, version, dist_location
 
 
 async def uninstall_project_async(

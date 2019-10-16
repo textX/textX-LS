@@ -148,7 +148,7 @@ def cmd_generator_list(ls: TextXLanguageServer, params) -> List[GeneratorDesc]:
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_INSTALL)
-async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str]:
+async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str, str]:
     """Command that installs a textX language project.
 
     Args:
@@ -156,7 +156,7 @@ async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str
                 path to the wheel and flag that indicates if project should be
                 install in editable (development) mode
     Returns:
-        Project name and package dist location or Nones
+        Project name, version and package dist location or Nones
     Raises:
         None
 
@@ -166,14 +166,14 @@ async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str
     ls.show_message("Installing project from {}".format(folder_or_wheel))
 
     try:
-        project_name, dist_location = await install_project_async(
+        project_name, project_version, dist_location = await install_project_async(
             folder_or_wheel, ls.python_path, editable, ls.show_message_log
         )
         ls.show_message("Project {} is successfully installed.".format(project_name))
-        return project_name, dist_location
+        return project_name, project_version, dist_location
     except InstallTextXProjectError as e:
         ls.show_errors(str(e), e.detailed_err_msg)
-        return None, None
+        return None, None, None
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_LIST)
