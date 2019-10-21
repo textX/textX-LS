@@ -61,6 +61,10 @@ Now, switch to _debug_ view, choose `Server + Client` option and press _F5_.
 
 A new VS Code window should be opened in [examples](./examples) directory.
 
+## CI/CD and Artifacts
+
+Take a look at [build process](./azure-devops/README.md).
+
 ## License
 
 MIT

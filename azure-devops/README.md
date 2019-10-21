@@ -1,34 +1,33 @@
-# Azure DevOps setup
+# Build Process
 
 This project uses Azure DevOps for CI/CD process.
 
 ## Continuous Integration
 
-Every commit to any branch triggers the build and test pipeline on three different environments:
+Every commit to any branch triggers the build and test pipeline on four agents:
 
 - macOS
 - Linux
-- Windows
+- Windows 32bit
+- Windows 64bit
 
-_textX-LS-core_ and _textX-ls-server_ projects are tested for `3.5`, `3.6` and `3.7` versions of python.
+All agents are using _python 3.6_ for testing python code and checking code quality.
 
 Each successfully built commit ends up with 3 artifacts, for e.g. (also see picture below):
 
 - textX-0.1.0+75a162ef.vsix
-- textx_ls_core-0.1.0+75a162ef-py3-none-any.whl
-- textx_ls_server-0.1.0+75a162ef-py3-none-any.whl
+- textx_ls_core-0.1.0-py3-none-any.whl
+- textx_ls_server-0.1.0-py3-none-any.whl
 
-Artifacts versions are suffixed with 8 characters from git commit sha1.
+_vsix_ artifact version is suffixed with 8 characters from git commit sha1.
 
 <img src="../assets/azure-devops/artifacts.png" height="800px">
 
 ---
 
-**NOTE**: Merge commits to the `master` branch and git `tags` won't append the suffix to artifact versions, because those artifacts are published to PyPI and Marketplace.
-
----
-
 ## Continuous Delivery
+
+NOTE: This is a plan for the future :)
 
 Continuous delivery is triggered after pushing git tags to the master branch.
 
