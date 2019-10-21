@@ -1,7 +1,7 @@
 {
   "name": "textX",
   "description": "VS Code extension for domain specific languages based on textX",
-  "author": "textX team",
+  "author": "Daniel Elero",
   "repository": "https://github.com/textX/textX-LS",
   "license": "MIT",
   "version": "0.1.0",
@@ -19,15 +19,7 @@
     "Linters"
   ],
   "activationEvents": [
-    "workspaceContains:Textxfile",
-    "onLanguage:textx",
-    "onLanguage:textxfile",
-    "onView:textxLanguages",
-    "onView:textxGenerators",
-    "onCommand:textx.installProject",
-    "onCommand:textx.installProjectEditable",
-    "onCommand:textx.uninstallProject",
-    "onCommand:textx.scaffoldProject"
+    "*"
   ],
   "contributes": {
     "commands": [
@@ -79,7 +71,7 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "Docker configuration options",
+      "title": "textX configuration options",
       "properties": {
         "textx.showExplorer": {
           "type": "boolean",
