@@ -24,7 +24,7 @@ README = codecs.open(
     os.path.join(os.path.dirname(__file__), "README.md"), "r", encoding="utf-8"
 ).read()
 
-dev_require = ["bandit==1.5.1", "flake8==3.7.7", "textx_gen_vscode>=0.1.0"]
+dev_require = ["bandit==1.5.1", "flake8==3.7.7", "textx_gen_vscode>=0.1.2"]
 
 tests_require = ["coverage==4.5.3", "pytest==4.3.1", "pytest-cov==2.6.1"]
 
