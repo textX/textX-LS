@@ -42,6 +42,7 @@ export interface ITextXLanguage {
 
 export interface ITextXProject {
   projectName: string;
+  version: string;
   editable: boolean;
   distLocation: string;
   languages?: ITextXLanguage[];

@@ -32,16 +32,22 @@ class TextXProject:
         projectName (str): project name
         editable (bool): if project is installed in editable mode
         distLocation (str): project distribution location
+        version (str): project version
         languages (list): languages that are registered by this project
 
     """
 
     def __init__(
-        self, project_name: str, editable: bool, dist_location: Optional[str] = None
+        self,
+        project_name: str,
+        editable: bool,
+        version: str,
+        dist_location: Optional[str] = None,
     ):
         self.projectName = project_name
         self.editable = editable
         self.distLocation = dist_location
+        self.version = version
         self.languages = []
 
     def add_language(self, language: TextXLanguage):

@@ -35,7 +35,10 @@ export class TextXLanguageProvider implements ILanguageProvider {
       return new Promise(async (resolve) => {
         this.projects = await this.projectService.getInstalled();
         resolve(Object.values(this.projects).map(
-          (p) => new ProjectNode(p.projectName, p.projectName)));
+          (p) => {
+            const label = `${p.projectName} [${p.version}]${p.editable ? "*" : ""}`;
+            return new ProjectNode(label, p.projectName, p.version);
+          }));
       });
     }
   }

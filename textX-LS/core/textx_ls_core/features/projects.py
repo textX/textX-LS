@@ -118,9 +118,12 @@ def get_projects(with_langs: Optional[bool] = True) -> List[TextXProject]:
     for lang in get_languages():
         project_name = lang.projectName
         if project_name not in projects:
-            dist_location = get_distribution(project_name).location
+            dist = get_distribution(project_name)
+            dist_location = dist.location
             editable = dist_is_editable(dist_location, project_name)
-            projects[project_name] = TextXProject(project_name, editable, dist_location)
+            projects[project_name] = TextXProject(
+                project_name, editable, dist.version, dist_location
+            )
         if with_langs is True:
             projects[project_name].add_language(lang)
     return projects

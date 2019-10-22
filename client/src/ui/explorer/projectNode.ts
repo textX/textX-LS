@@ -14,6 +14,7 @@ export class ProjectNode extends TextXNode {
   constructor(
     public readonly label: string,
     public readonly projectName: string,
+    public readonly projectVersion: string,
   ) {
     super(label, TreeItemCollapsibleState.Expanded);
   }
