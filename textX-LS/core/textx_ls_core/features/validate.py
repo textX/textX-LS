@@ -1,17 +1,30 @@
-from typing import List, Optional
+from typing import List, Union
 
 from textx.exceptions import TextXError
+from textx.metamodel import TextXMetaMetaModel, TextXMetaModel
 
-from ..languages import LanguageTemplate
 
+def validate(
+    metamodel: Union[TextXMetaMetaModel, TextXMetaModel], model: str, file_path: str
+) -> List[TextXError]:
+    """Validates given model.
 
-def validate(lang: LanguageTemplate, model_str) -> Optional[List[TextXError]]:
-    """Validates given model. For now returned list will contain maximum one
-    error, since textX does not have built-in error recovery mechanism.
+    NOTE: For now returned list will contain maximum one error, since textX does not
+          have built-in error recovery mechanism.
+
+    Args:
+        metamodel: language metamodel
+        model: model
+        file_path: A path to the `model` file
+    Returns:
+        A list of textX errors or empty list if model is valid
+    Raises:
+        None
+
     """
     errors = []
     try:
-        lang.metamodel.model_from_str(model_str)
+        metamodel.model_from_str(model, file_name=file_path)
     except TextXError as e:
         errors.append(e)
     return errors

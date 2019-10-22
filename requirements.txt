@@ -1,0 +1,13 @@
+-e ./textX-LS/core
+-e ./textX-LS/server
+textx_gen_vscode>=0.1.2
+
+black; python_version > '3.5'
+bandit==1.5.1
+coverage==4.5.3
+flake8==3.7.7
+mock==2.0.0
+pre-commit; python_version > '3.5'
+pytest==4.3.1
+pytest-cov==2.6.1
+wheel

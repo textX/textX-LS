@@ -1,9 +1,7 @@
 client/node_modules
 client/out
-client/.vscode/settings.json
-
-textX-LS/core/.vscode/settings.json
-textX-LS/server/.vscode/settings.json
+client/textxls
+client/libs
 
 # Artifacts
 *.vsix

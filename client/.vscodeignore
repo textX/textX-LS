@@ -1,5 +1,6 @@
 .vscode
 node_modules
+textxls
 src/**
 out/**
 package-json.lock
@@ -8,3 +9,5 @@ tslint.json
 webpack.config.js
 *.vsix
 *.log
+
+!libs/**/extension.vsixmanifest

@@ -1,0 +1,18 @@
+{
+    "python.pythonPath": "../../env/bin/python",
+    "python.testing.pytestPath": "../../env/bin/pytest",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.linting.flake8Enabled": false,
+    "python.linting.pycodestyleEnabled": false,
+    "python.formatting.blackPath": "black",
+    "python.sortImports.args": [
+        "-l",
+        "88"
+    ],
+    "python.formatting.provider": "black"
+}

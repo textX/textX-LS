@@ -8,6 +8,7 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
+                "${workspaceFolder}/../examples",
                 // "--disable-extensions",
                 "--extensionDevelopmentPath=${workspaceFolder}"
             ],

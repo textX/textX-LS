@@ -1,28 +1,105 @@
 {
   "name": "textX",
+  "displayName": "textX",
   "description": "VS Code extension for domain specific languages based on textX",
-  "author": "textX team",
+  "preview": true,
+  "author": {
+    "email": "danixeee@gmail.com",
+    "name": "Daniel Elero"
+  },
   "repository": "https://github.com/textX/textX-LS",
+  "bugs": {
+    "url": "https://github.com/textX/textX-LS/issues"
+  },
   "license": "MIT",
   "version": "0.1.0",
   "publisher": "textX",
-  "icon": "art/textX-logo.png",
+  "icon": "media/textX-logo.png",
   "engines": {
-    "vscode": "^1.33.1"
+    "vscode": "^1.36.1"
   },
   "main": "./dist/extension",
   "categories": [
     "Programming Languages",
-    "Domain Specific Languages",
-    "DSL",
-    "textX"
+    "Formatters",
+    "Snippets",
+    "Themes",
+    "Linters"
   ],
   "activationEvents": [
-    "workspaceContains:Textxfile",
-    "onLanguage:textx",
-    "onLanguage:textxfile"
+    "*"
   ],
   "contributes": {
+    "commands": [
+      {
+        "command": "textx.installProject",
+        "title": "Install textX project",
+        "icon": {
+          "light": "resources/light/add.svg",
+          "dark": "resources/dark/add.svg"
+        },
+        "category": "textX"
+      },
+      {
+        "command": "textx.installProjectEditable",
+        "title": "Install textX project",
+        "icon": {
+          "light": "resources/light/add.svg",
+          "dark": "resources/dark/add.svg"
+        },
+        "category": "textX"
+      },
+      {
+        "command": "textx.uninstallProject",
+        "title": "Uninstall textX project",
+        "icon": {
+          "light": "resources/light/bin.svg",
+          "dark": "resources/dark/bin.svg"
+        },
+        "category": "textX"
+      },
+      {
+        "command": "textx.refreshProjects",
+        "title": "Refresh textX projects",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        },
+        "category": "textX"
+      },
+      {
+        "command": "textx.scaffoldProject",
+        "title": "Scaffold textX project",
+        "icon": {
+          "light": "resources/light/thunder.svg",
+          "dark": "resources/dark/thunder.svg"
+        },
+        "category": "textX"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "textX configuration options",
+      "properties": {
+        "textx.showExplorer": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show or hide the textX Explorer"
+        }
+      }
+    },
+    "grammars": [
+      {
+        "language": "textx",
+        "scopeName": "source.textx",
+        "path": "./syntaxes/textx.json"
+      },
+      {
+        "language": "textxfile",
+        "scopeName": "source.textxfile",
+        "path": "./syntaxes/textxfile.json"
+      }
+    ],
     "languages": [
       {
         "id": "textxfile",
@@ -45,43 +122,107 @@
         "configuration": "./language-configuration.json"
       }
     ],
-    "grammars": [
-      {
-        "language": "textx",
-        "scopeName": "source.textx",
-        "path": "./syntaxes/textx.json"
-      },
-      {
-        "language": "textxfile",
-        "scopeName": "source.textxfile",
-        "path": "./syntaxes/textxfile.json"
-      }
-    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "textx.installProjectEditable",
+          "group": "textX@1",
+          "when": "resourceLangId == python && resourceFilename == setup.py"
+        },
+        {
+          "command": "textx.installProjectEditable",
+          "group": "textX@1",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "textx.uninstallProject",
+          "group": "textX@2",
+          "when": "resourceLangId == python && resourceFilename == setup.py"
+        },
+        {
+          "command": "textx.uninstallProject",
+          "group": "textX@2",
+          "when": "explorerResourceIsFolder"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "textx.installProject",
+          "when": "view == textxLanguages",
+          "group": "navigation@1"
+        },
+        {
+          "command": "textx.scaffoldProject",
+          "when": "view == textxLanguages",
+          "group": "navigation@2"
+        },
+        {
+          "command": "textx.refreshProjects",
+          "when": "view == textxLanguages",
+          "group": "navigation@3"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "textx.uninstallProject",
+          "when": "view == textxLanguages && viewItem == project",
+          "group": "inline"
+        }
+      ]
+    },
     "snippets": [
       {
         "language": "textxfile",
         "path": "./snippets/textxfile.json"
       }
-    ]
+    ],
+    "views": {
+      "textxView": [
+        {
+          "id": "textxLanguages",
+          "name": "Languages",
+          "when": "config.textx.showExplorer == true"
+        },
+        {
+          "id": "textxGenerators",
+          "name": "Generators",
+          "when": "config.textx.showExplorer == true"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "icon": "media/textX-menu.svg",
+          "id": "textxView",
+          "title": "textX"
+        }
+      ]
+    }
   },
   "scripts": {
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "vscode:prepublish": "webpack --mode production && chmod +x ./bin/copy-wheels.sh && sh ./bin/copy-wheels.sh",
+    "postinstall": "node ./node_modules/vscode/bin/install && npm --prefix libs install vsce",
+    "vscode:prepublish": "webpack --mode production && chmod +x ./bin/copy-wheels.sh && sh ./bin/copy-wheels.sh && npm --prefix libs install vsce",
     "webpack": "webpack --mode development",
     "webpack-dev": "webpack --mode development --watch"
   },
   "devDependencies": {
-    "@types/node": "^12.0.0",
-    "tslint": "^5.16.0",
-    "tslint-microsoft-contrib": "^6.1.1",
-    "ts-loader": "^6.0.0",
-    "tsutils": "^3.10.0",
-    "typescript": "^3.4.5",
-    "vscode": "^1.1.34",
-    "webpack": "^4.31.0",
-    "webpack-cli": "^3.3.2"
+    "@types/node": "^12.7.10",
+    "@types/uuid": "^3.4.5",
+    "ts-loader": "^6.0.2",
+    "tslint": "^5.20.0",
+    "tslint-microsoft-contrib": "^6.2.0",
+    "tsutils": "^3.17.1",
+    "typescript": "^3.6.3",
+    "vscode": "^1.1.36",
+    "webpack": "^4.41.0",
+    "webpack-cli": "^3.3.9"
   },
   "dependencies": {
-    "vscode-languageclient": "^5.2.1"
+    "inversify": "^5.0.1",
+    "reflect-metadata": "^0.1.13",
+    "uuid": "^3.3.3",
+    "vscode-languageclient": "^5.2.1",
+    "vsce": "^1.67.1"
   }
 }

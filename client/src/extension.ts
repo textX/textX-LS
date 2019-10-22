@@ -1,9 +1,13 @@
 import * as net from "net";
-import { ExtensionContext, window, workspace } from "vscode";
+import { ExtensionContext, window } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
 
 import { TEXTX_LS_SERVER } from "./constants";
+import container from "./inversify.config";
+import { IWatcherService } from "./services";
 import { installLSWithProgress } from "./setup";
+import TYPES from "./types";
+import { IGeneratorProvider, ILanguageProvider } from "./ui/explorer";
 
 let client: LanguageClient;
 
@@ -11,9 +15,6 @@ function getClientOptions(): LanguageClientOptions {
   return {
     documentSelector: ["*"],
     outputChannelName: "textX",
-    synchronize: {
-      fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
-    },
   };
 }
 
@@ -53,7 +54,7 @@ export async function activate(context: ExtensionContext) {
 
   if (isStartedInDebugMode()) {
     // Development - Run the server manually
-    client = startLangServerTCP(parseInt(process.env.SERVER_PORT));
+    client = startLangServerTCP(parseInt(process.env.SERVER_PORT || "2087"));
   } else {
     // Production - Client is going to run the server (for use within `.vsix` package)
     try {
@@ -64,12 +65,24 @@ export async function activate(context: ExtensionContext) {
     }
   }
 
+  client.onReady().then(() => {
+    // inversifyjs - get instances
+    const generatorProvider = container.get<IGeneratorProvider>(TYPES.IGeneratorProvider);
+    const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
+    const watcherService = container.get<IWatcherService>(TYPES.IWatcherService);
+
+    // Tree Providers
+    context.subscriptions.push(window.registerTreeDataProvider("textxGenerators", generatorProvider));
+    context.subscriptions.push(window.registerTreeDataProvider("textxLanguages", languageProvider));
+    context.subscriptions.push(watcherService);
+  });
+
   context.subscriptions.push(client.start());
 }
 
 export function deactivate(): Thenable<void> {
   if (!client) {
-    return undefined;
+    return Promise.resolve();
   }
   return client.stop();
 }
