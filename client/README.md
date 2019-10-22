@@ -24,25 +24,25 @@ There are two options for _installing_ a textX language project:
 
 Install in an editable mode|  Install from a wheel
 :-------------------------:|:-------------------------:
-<img src="./media/install-project-editable.png" width="350" height="500" /> |  <img src="./media/install-project-wheel.png" width="400" height="500" />
+<img src="https://github.com/textX/textX-LS/blob/master/client/media/install-project-editable.png" width="350" height="500" /> |  <img src="https://github.com/textX/textX-LS/blob/master/client/media/install-project-wheel.png" width="400" height="500" />
 
 Project could be uninstalled either from a context menu or by clicking on a _recycle bin_ icon (shows on hover), after which confirmation dialog will be shown.
 
 > **NOTE**: If the VS Code extension for a language is previously been activated (used), VS Code window will be restarted.
 
-<img src="./media/uninstall-project.png"/>
+<img src="https://github.com/textX/textX-LS/blob/master/client/media/uninstall-project.png"/>
 
 ### Languages / Generators Preview
 
 Registered textX languages and generators are listed in _textX view_.
 
-<img src="./media/textX-view.png" width="250" height="600" />
+<img src="https://github.com/textX/textX-LS/blob/master/client/media/textX-view.png" width="250" height="600" />
 
 ### Model / Meta-model Validation
 
 Metamodel validation|  Model validation
 :-------------------------:|:-------------------------:
-<img src="./media/metamodel-validation.png" width="350" height="400" /> |  <img src="./media/model-validation.png" width="350" height="400" />
+<img src="https://github.com/textX/textX-LS/blob/master/client/media/metamodel-validation.png" width="350" height="400" /> |  <img src="https://github.com/textX/textX-LS/blob/master/client/media/model-validation.png" width="350" height="400" />
 
 ### Default Syntax Highlighting
 
@@ -54,4 +54,4 @@ See images above.
 
 When textX project is installed in **editable mode**, the extension watches for a `.tx` (grammar) file changes and generates a new syntax highlighting information from the changed grammar. Extension then re-paints and re-validates opened files.
 
-<img src="./media/live-reload.png" width="800" height="550" />
+<img src="https://github.com/textX/textX-LS/blob/master/client/media/live-reload.png" width="800" height="550" />
