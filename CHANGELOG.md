@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning][semver].
 
 ## [Unreleased]
 
+## [0.1.0] (released 10/22/2019)
+
 ### Added
 
 - Implement a mechanism to install/uninstall textX language project ([#18])
@@ -20,4 +22,5 @@ and this project adheres to [Semantic Versioning][semver].
 [keepachangelog]: https://keepachangelog.com/en/1.0.0/
 [semver]: https://semver.org/spec/v2.0.0.html
 
-[Unreleased]: https://github.com/textX/textX-LS/compare/1f9a72a73cf69411587644d2715f2e6adf79e0ea...HEAD
+[Unreleased]: https://github.com/textX/textX-LS/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/textX/textX-LS/compare/1f9a72a73cf69411587644d2715f2e6adf79e0ea...v0.1.0
