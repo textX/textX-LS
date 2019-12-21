@@ -108,7 +108,7 @@ export class ProjectService implements IProjectService {
 
     commands.registerCommand(CMD_PROJECT_INSTALL_EDITABLE.internal, async (fileOrFolder) => {
       if (fileOrFolder) {
-        const path = fileOrFolder.path;
+        const path = fileOrFolder.fsPath;
         const pyModulePath = basename(path) === "setup.py" ? dirname(path) : path;
         this.install(pyModulePath, true);
       } else {
@@ -142,7 +142,7 @@ export class ProjectService implements IProjectService {
       if (fileOrFolderOrTreeItem instanceof ProjectNode) {
         projectName = fileOrFolderOrTreeItem.projectName;
       } else {
-        const path = fileOrFolderOrTreeItem.path;
+        const path = fileOrFolderOrTreeItem.fsPath;
         const setuppyPath = basename(path) === "setup.py" ? path : join(path, "setup.py");
         projectName = execSync(`${getPython()} ${setuppyPath} --name`);
       }
