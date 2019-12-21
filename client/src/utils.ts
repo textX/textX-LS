@@ -2,6 +2,7 @@ import { exec } from "child_process";
 import { mkdtemp, readdir, readFileSync, unlink } from "fs";
 import { tmpdir } from "os";
 import { dirname, join } from "path";
+import * as stripJsonComments from "strip-json-comments" ;
 import { extensions, window, workspace } from "vscode";
 import { ICommand } from "./interfaces";
 import { TokenColors } from "./types";
@@ -89,7 +90,8 @@ export function mkdtempWrapper(callback: (folder: string) => Promise<void>): voi
 
 function removeJSONErrors(jsonStr: string): string {
   jsonStr = jsonStr.replace(/,[\n|\s]*?(?=\]|\})/g, ""); // removes trailing commas
-  jsonStr = JSON.parse(JSON.stringify(jsonStr)); // removes comments
+  jsonStr = stripJsonComments(jsonStr);
+
   return jsonStr;
 }
 
