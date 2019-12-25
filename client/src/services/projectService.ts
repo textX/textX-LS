@@ -1,12 +1,14 @@
 import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
+import { trueCasePathSync } from "true-case-path";
 import { commands, window } from "vscode";
 import { IEventService, IExtensionService, IGeneratorService, ISyntaxHighlightService, IWatcherService } from ".";
 import {
   CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
   CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, CMD_VALIDATE_DOCUMENTS,
   VS_CMD_WINDOW_RELOAD,
+  IS_WIN,
 } from "../constants";
 import { ITextXProject } from "../interfaces";
 import { getPython } from "../setup";
@@ -66,7 +68,7 @@ export class ProjectService implements IProjectService {
 
   public async uninstall(projectName: string): Promise<void> {
     const isUninstalled = await commands.executeCommand<string>(CMD_PROJECT_UNINSTALL.external,
-                                                                projectName);
+      projectName);
     if (isUninstalled) {
       // Refresh textX languages view
       this.eventService.fireLanguagesChanged();
@@ -102,7 +104,7 @@ export class ProjectService implements IProjectService {
       });
 
       if (pyWheel && pyWheel.length === 1) {
-        this.install(pyWheel.pop().path);
+        this.install(pyWheel.pop().fsPath);
       }
     });
 
@@ -117,7 +119,7 @@ export class ProjectService implements IProjectService {
     });
 
     commands.registerCommand(CMD_PROJECT_LIST_REFRESH.internal,
-                             () => this.eventService.fireLanguagesChanged());
+      () => this.eventService.fireLanguagesChanged());
 
     commands.registerCommand(CMD_PROJECT_SCAFFOLD.internal, async () => {
       const projectName = await window.showInputBox({
@@ -134,7 +136,7 @@ export class ProjectService implements IProjectService {
 
       if (projectName) {
         this.scaffold(projectName.trim());
-       }
+      }
     });
 
     commands.registerCommand(CMD_PROJECT_UNINSTALL.internal, async (fileOrFolderOrTreeItem) => {
@@ -166,11 +168,24 @@ export class ProjectService implements IProjectService {
   }
 
   private watchProject(projectName: string, distLocation: string): void {
+    // NOTE:
+    // watch does not work on windows if path is not case-correct
+    // also it does not work with drive letter, for e.g. "C:\\x\\y\\z"
+    if (IS_WIN) {
+      // correct case
+      distLocation = trueCasePathSync(distLocation);
+      if (distLocation && distLocation[1] === ":") {
+        distLocation = `**\\${distLocation.slice(2)}`;
+      }
+    }
+
     // watch grammars
-    this.watcherService.watch(projectName, `${distLocation}/**/*.tx`).onDidChange(async (_) => {
-      this.loadLanguageKeywords(projectName);
-      commands.executeCommand(CMD_VALIDATE_DOCUMENTS.external, projectName);
-    });
+    this.watcherService
+      .watch(projectName, join(distLocation, "**", "*.tx"))
+      .onDidChange(async (_) => {
+        this.loadLanguageKeywords(projectName);
+        commands.executeCommand(CMD_VALIDATE_DOCUMENTS.external, projectName);
+      });
   }
 
 }

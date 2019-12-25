@@ -222,8 +222,9 @@
     "inversify": "^5.0.1",
     "reflect-metadata": "^0.1.13",
     "strip-json-comments": "^3.0.1",
+    "true-case-path": "^2.2.1",
     "uuid": "^3.3.3",
-    "vscode-languageclient": "^5.2.1",
-    "vsce": "^1.71.0"
+    "vsce": "^1.71.0",
+    "vscode-languageclient": "^5.2.1"
   }
 }

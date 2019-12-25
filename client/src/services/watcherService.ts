@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
-import { FileSystemWatcher, workspace } from "vscode";
+import { FileSystemWatcher, workspace, GlobPattern } from "vscode";
 import { Disposable } from "vscode-languageclient";
 
 export interface IWatcherService extends Disposable {
-  watch(key: string, path: string): FileSystemWatcher;
+  watch(key: string, pattern: GlobPattern): FileSystemWatcher;
   unwatch(key: string): void;
 }
 
@@ -16,8 +16,8 @@ export class WatcherService implements IWatcherService {
     this.watchers.clear();
   }
 
-  public watch(key: string, path: string): FileSystemWatcher {
-    const watcher = workspace.createFileSystemWatcher(path);
+  public watch(key: string, pattern: GlobPattern): FileSystemWatcher {
+    const watcher = workspace.createFileSystemWatcher(pattern);
     this.watchers.set(key, watcher);
     return watcher;
   }
