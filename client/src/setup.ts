@@ -1,13 +1,13 @@
 import { existsSync } from "fs";
 import { join } from "path";
-import { ExtensionContext, ProgressLocation, window, workspace} from "vscode";
+import { ExtensionContext, ProgressLocation, window, workspace } from "vscode";
 import { IS_WIN, LS_VENV_NAME, LS_WHEELS_DIR, TEXTX_LS_SERVER } from "./constants";
 import { execAsync, readdirAsync } from "./utils";
 
 async function createVirtualEnvironment(python: string, name: string, cwd: string): Promise<string> {
   const path = join(cwd, name);
   if (!existsSync(path)) {
-    const createVenvCmd = `virtualenv -p ${python} ${name}`;
+    const createVenvCmd = `${python} -m venv ${name}`;
     await execAsync(createVenvCmd, { cwd });
   }
   return path;
@@ -69,7 +69,7 @@ export async function installLSWithProgress(context: ExtensionContext): Promise<
   }, (progress): Promise<string> => {
     return new Promise<string>(async (resolve, reject) => {
       try {
-        progress.report({message: "Installing textX language server..."});
+        progress.report({ message: "Installing textX language server..." });
 
         // Get python interpreter
         const python = getPython();
