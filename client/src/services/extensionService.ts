@@ -29,9 +29,9 @@ export class ExtensionService implements IExtensionService {
       await commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
     });
 
-    // Extension should be installed in less than 3 seconds, if not, promise will be rejected.
+    // Extension should be installed in less than 10 seconds, if not, promise will be rejected.
     return new Promise((resolve, reject) => {
-      timeoutPromise<ITextXExtensionInstall>(3 * 1000, installExtensionPromise)
+      timeoutPromise<ITextXExtensionInstall>(10 * 1000, installExtensionPromise)
         .then((installed) => {
           resolve(installed);
         })
