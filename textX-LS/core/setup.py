@@ -6,7 +6,7 @@ from platform import python_version
 from setuptools import find_packages, setup
 
 PACKAGE_NAME = "textx-ls-core"
-VERSION = "0.2.0"
+VERSION = "0.1.1"
 AUTHOR = "Daniel Elero"
 AUTHOR_EMAIL = "danixeee@gmail.com"
 DESCRIPTION = (
