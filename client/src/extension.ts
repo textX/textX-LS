@@ -1,8 +1,8 @@
 import * as net from "net";
-import { ExtensionContext, window } from "vscode";
+import { ExtensionContext, window, commands } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
 
-import { TEXTX_LS_SERVER } from "./constants";
+import { CMD_PING, IS_WIN, PING_INTERVAL, TEXTX_LS_SERVER } from "./constants";
 import container from "./inversify.config";
 import { IWatcherService } from "./services";
 import { installLSWithProgress } from "./setup";
@@ -75,6 +75,14 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(window.registerTreeDataProvider("textxGenerators", generatorProvider));
     context.subscriptions.push(window.registerTreeDataProvider("textxLanguages", languageProvider));
     context.subscriptions.push(watcherService);
+
+    // Ping server -  temporary fix for windows
+    // It's like server goes into IDLE state and subprocesses are paused
+    if (!isStartedInDebugMode() && IS_WIN) {
+      setInterval(() => {
+        commands.executeCommand(CMD_PING.external);
+      }, PING_INTERVAL);
+    }
   });
 
   context.subscriptions.push(client.start());
