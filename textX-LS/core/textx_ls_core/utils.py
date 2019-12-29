@@ -133,4 +133,4 @@ async def run_async(
 
     process = await asyncio.ensure_future(_listener(process, msg_handler))
 
-    return process.returncode, linesep.join(output)
+    return process.returncode or 0, linesep.join(output)

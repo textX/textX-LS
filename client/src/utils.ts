@@ -2,29 +2,30 @@ import { exec } from "child_process";
 import { mkdtemp, readdir, readFileSync, unlink } from "fs";
 import { tmpdir } from "os";
 import { dirname, join } from "path";
+import * as stripJsonComments from "strip-json-comments";
 import { extensions, window, workspace } from "vscode";
 import { ICommand } from "./interfaces";
 import { TokenColors } from "./types";
 
 export async function execAsync(command: string, options: object = {}): Promise<string> {
   return new Promise((resolve, reject) => {
-      exec(command, options, (error, stdout, _) => {
-          if (error) {
-            return reject(error);
-          }
-          resolve(stdout.trim().toString());
-      });
+    exec(command, options, (error, stdout, _) => {
+      if (error) {
+        return reject(error);
+      }
+      resolve(stdout.trim().toString());
+    });
   });
 }
 
 export async function readdirAsync(path: string): Promise<string[]> {
   return new Promise((resolve, reject) => {
-      readdir(path, (error, files) => {
-          if (error) {
-            return reject([]);
-          }
-          resolve(files);
-      });
+    readdir(path, (error, files) => {
+      if (error) {
+        return reject([]);
+      }
+      resolve(files);
+    });
   });
 }
 
@@ -83,13 +84,14 @@ export function mkdtempWrapper(callback: (folder: string) => Promise<void>): voi
       window.showErrorMessage(`Cannot create temp directory.`);
     }
     await callback(folder);
-    unlink(folder, (unlinkErr) => unlinkErr );
+    unlink(folder, (unlinkErr) => unlinkErr);
   });
 }
 
 function removeJSONErrors(jsonStr: string): string {
   jsonStr = jsonStr.replace(/,[\n|\s]*?(?=\]|\})/g, ""); // removes trailing commas
-  jsonStr = JSON.parse(JSON.stringify(jsonStr)); // removes comments
+  jsonStr = stripJsonComments(jsonStr);
+
   return jsonStr;
 }
 

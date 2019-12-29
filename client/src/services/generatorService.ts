@@ -61,7 +61,7 @@ export class GeneratorService implements IGeneratorService {
 
             resolve(install);
           } catch (_) {
-            window.showErrorMessage(`Installing extension for project '${projectName}' failed.`);
+            window.showWarningMessage(`Installing extension for project '${projectName}' failed.`);
           }
         }
 

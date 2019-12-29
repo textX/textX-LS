@@ -18,14 +18,14 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
 
   constructor() {
     this.currentTheme = getCurrentTheme();
-    this.tokenColors = getTokenColorsForTheme(this.currentTheme);
+    this.tokenColors = this.tryGetTokenColorsForTheme(this.currentTheme);
 
     // watch for theme changes
     workspace.onDidChangeConfiguration((e) => {
       const themeChange = e.affectsConfiguration("workbench.colorTheme");
       if (themeChange) {
         this.currentTheme = getCurrentTheme();
-        this.tokenColors = getTokenColorsForTheme(this.currentTheme);
+        this.tokenColors = this.tryGetTokenColorsForTheme(this.currentTheme);
         this.reinitializeDecorations();
         this.highlightEditorsDocument(window.activeTextEditor);
       }
@@ -113,6 +113,15 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
         kw.decoration.dispose(); // remove previous decorations from editor
         kw.decoration = window.createTextEditorDecorationType(this.getKeywordDecorationOptions(kw.scope));
       });
+    }
+  }
+
+  private tryGetTokenColorsForTheme(themeName: string): TokenColors {
+    try {
+      return getTokenColorsForTheme(themeName);
+    } catch {
+      window.showWarningMessage(`Could not load tokens color for theme: ${this.currentTheme}`);
+      return new Map();
     }
   }
 

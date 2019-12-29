@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning][semver].
 
 ## [Unreleased]
 
+### Changed
+
+- Read python path from input-box if not found automatically ([#23])
+
+### Fixed
+
+- Various fixes for windows platform ([#23])
+
+[#23]: https://github.com/textX/textX-LS/pull/23
+
 ## [0.1.0] (released 10/22/2019)
 
 ### Added
