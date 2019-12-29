@@ -24,12 +24,12 @@ README = codecs.open(
     os.path.join(os.path.dirname(__file__), "README.md"), "r", encoding="utf-8"
 ).read()
 
-dev_require = ["bandit==1.5.1", "flake8==3.7.7", "textx_gen_vscode>=0.1.2"]
+dev_require = ["bandit==1.5.1", "flake8==3.7.7", "textx_gen_vscode>=0.1.3"]
 
 tests_require = ["coverage==4.5.3", "pytest==4.3.1", "pytest-cov==2.6.1"]
 
 # pip install textx_ls_core[vscode]
-vscode_require = ["textx_gen_vscode>=0.1.2"]
+vscode_require = ["textx_gen_vscode>=0.1.3"]
 
 
 if python_version().startswith("3.6"):  # For python 3.6
