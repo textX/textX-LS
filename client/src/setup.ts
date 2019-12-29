@@ -1,8 +1,17 @@
 import { existsSync } from "fs";
 import { join } from "path";
 import { ExtensionContext, ProgressLocation, window, workspace } from "vscode";
-import { IS_WIN, LS_VENV_NAME, LS_WHEELS_DIR, TEXTX_LS_SERVER } from "./constants";
+import { IS_WIN, LS_VENV_NAME, LS_VENV_PATH, LS_WHEELS_DIR, TEXTX_LS_SERVER } from "./constants";
 import { execAsync, readdirAsync } from "./utils";
+
+async function checkPythonVersion(python: string): Promise<boolean> {
+  try {
+    const [major, minor] = await getPythonVersion(python);
+    return major === 3 && minor > 4;
+  } catch {
+    return false;
+  }
+}
 
 async function createVirtualEnvironment(python: string, name: string, cwd: string): Promise<string> {
   const path = join(cwd, name);
@@ -13,15 +22,38 @@ async function createVirtualEnvironment(python: string, name: string, cwd: strin
   return path;
 }
 
-export function getPython(): string {
-  return workspace.getConfiguration("python").get<string>("pythonPath", getPythonCrossPlatform());
+export async function getPython(): Promise<string> {
+  let python = workspace.getConfiguration("python").get<string>("pythonPath", getPythonCrossPlatform());
+  if (await checkPythonVersion(python)) {
+    return python;
+  }
+
+  python = await window.showInputBox({
+    ignoreFocusOut: true,
+    placeHolder: "Enter a path to the python 3.5+.",
+    prompt: "This python will be used to create a virtual environment inside the extension directory.",
+    validateInput: async (value: string) => {
+      if (await checkPythonVersion(value)) {
+        return null;
+      } else {
+        return "Not a valid python path!";
+      }
+    },
+  });
+
+  // User canceled the input
+  if (python === "undefined") {
+    throw new Error("Python 3.5+ is required!");
+  }
+
+  return python;
 }
 
 function getPythonCrossPlatform(): string {
   return IS_WIN ? "python" : "python3";
 }
 
-function getPythonFromVenvPath(venvPath: string): string {
+export function getPythonFromVenvPath(venvPath: string = LS_VENV_PATH): string {
   return IS_WIN ? join(venvPath, "Scripts", "python") : join(venvPath, "bin", "python");
 }
 
@@ -56,7 +88,7 @@ async function installAllWheelsFromDirectory(python: string, cwd: string) {
 
 export async function installLSWithProgress(context: ExtensionContext): Promise<string> {
   // Check if LS is already installed
-  let venvPython = getPythonFromVenvPath(join(context.extensionPath, LS_VENV_NAME));
+  let venvPython = getPythonFromVenvPath();
   const isServerPackageInstalled = !!(await getVenvPackageVersion(venvPython, TEXTX_LS_SERVER));
 
   if (isServerPackageInstalled) {
@@ -72,12 +104,7 @@ export async function installLSWithProgress(context: ExtensionContext): Promise<
         progress.report({ message: "Installing textX language server..." });
 
         // Get python interpreter
-        const python = getPython();
-        // Check python version (3.5+ is required)
-        const [major, minor] = await getPythonVersion(python);
-        if (major !== 3 || minor < 5) {
-          throw new Error("Python 3.5+ is required!");
-        }
+        const python = await getPython();
 
         // Create virtual environment
         const venv = await createVirtualEnvironment(python, LS_VENV_NAME, context.extensionPath);

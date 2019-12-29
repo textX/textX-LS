@@ -7,11 +7,10 @@ import { IEventService, IExtensionService, IGeneratorService, ISyntaxHighlightSe
 import {
   CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
   CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, CMD_VALIDATE_DOCUMENTS,
-  VS_CMD_WINDOW_RELOAD,
-  IS_WIN,
+  IS_WIN, VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXProject } from "../interfaces";
-import { getPython } from "../setup";
+import { getPythonFromVenvPath } from "../setup";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
 
@@ -146,7 +145,7 @@ export class ProjectService implements IProjectService {
       } else {
         const path = fileOrFolderOrTreeItem.fsPath;
         const setuppyPath = basename(path) === "setup.py" ? path : join(path, "setup.py");
-        projectName = execSync(`${getPython()} ${setuppyPath} --name`);
+        projectName = execSync(`${getPythonFromVenvPath()} ${setuppyPath} --name`);
       }
 
       if (projectName) {
