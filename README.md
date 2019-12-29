@@ -1,6 +1,6 @@
 # _textX-LS_
 
-[![Build Status](https://dev.azure.com/textX/textX-LS/_apis/build/status/textX.textX-LS?branchName=master)](https://dev.azure.com/textX/textX-LS/_build/latest?branchName=master) [![MIT licensed](https://img.shields.io/cocoapods/l/AFNetworking.svg)](https://raw.githubusercontent.com/textX/textX-LS/master/LICENSE)
+[![Build Status](https://dev.azure.com/textX/textX-LS/_apis/build/status/textX.textX-LS?branchName=master)](https://dev.azure.com/textX/textX-LS/_build/latest?definitionId=6&branchName=master) [![MIT licensed](https://img.shields.io/cocoapods/l/AFNetworking.svg)](https://raw.githubusercontent.com/textX/textX-LS/master/LICENSE)
 
 _textX-LS_ is a language server that provides smartness for all domain specific languages based on [textX](https://github.com/textX/textX).
 
