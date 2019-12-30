@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning][semver].
 
 ## [Unreleased]
 
+### Fixed
+
+-Prevent server idle state on windows ([#26])
+
+[#26]: https://github.com/textX/textX-LS/pull/26
+
 ## [0.1.1] (released 12/29/2019)
 
 ### Changed
