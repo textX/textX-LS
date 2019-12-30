@@ -5,7 +5,7 @@ import os
 from setuptools import find_packages, setup
 
 PACKAGE_NAME = "textx-ls-server"
-VERSION = "0.1.2"
+VERSION = "0.2.0"
 AUTHOR = "Daniel Elero"
 AUTHOR_EMAIL = "danixeee@gmail.com"
 DESCRIPTION = "a language server for domain specific languages based on textX"
