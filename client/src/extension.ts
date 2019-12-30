@@ -1,5 +1,5 @@
 import * as net from "net";
-import { ExtensionContext, window, commands } from "vscode";
+import { commands, ExtensionContext, window } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
 
 import { CMD_PING, IS_WIN, PING_INTERVAL, TEXTX_LS_SERVER } from "./constants";
