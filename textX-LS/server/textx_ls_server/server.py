@@ -55,6 +55,7 @@ class TextXLanguageServer(LanguageServer):
     CMD_GENERATE_EXTENSION = "textx/generateExtension"
     CMD_GENERATE_SYNTAXES = "textx/generateSyntaxes"
     CMD_GENERATOR_LIST = "textx/getGenerators"
+    CMD_PING = "textx/ping"
     CMD_PROJECT_INSTALL = "textx/installProject"
     CMD_PROJECT_LIST = "textx/getProjects"
     CMD_PROJECT_SCAFFOLD = "textx/scaffoldProject"
@@ -299,3 +300,10 @@ def doc_open(
 
     """
     send_diagnostics(ls, doc)
+
+
+@textx_server.command(TextXLanguageServer.CMD_PING)
+def _cmd_ping(ls: TextXLanguageServer, params) -> None:
+    """Prevent server going into IDLE state on windows (?).
+    """
+    pass
