@@ -21,6 +21,7 @@ from textx_ls_core.exceptions import (
     GenerateExtensionError,
     GenerateSyntaxHighlightError,
     InstallTextXProjectError,
+    ScaffoldTextXProjectError,
     UninstallTextXProjectError,
 )
 from textx_ls_core.features.generators import (
@@ -33,6 +34,7 @@ from textx_ls_core.features.projects import (
     install_project_async,
     uninstall_project_async,
 )
+from textx_ls_core.generators.scaffolding import scaffold_project
 from textx_ls_core.models import TextXProject
 from textx_ls_core.utils import compare_project_names
 
@@ -194,8 +196,24 @@ def cmd_project_list(ls: TextXLanguageServer, params) -> List[TextXProject]:
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_SCAFFOLD)
-def cmd_project_scaffold(ls: TextXLanguageServer, params) -> None:
-    ls.show_message("Not implemented")
+def cmd_scaffold_project(ls: TextXLanguageServer, params) -> None:
+    """Command that scaffolds textX project.
+
+    Args:
+        params: project name
+    Returns:
+        None
+    Raises:
+        None
+
+    """
+    project_name = params[0]
+    try:
+        dest = scaffold_project(project_name, ls.workspace.root_path)
+        ls.show_message("Project successfully scaffolded at {}.".format(dest))
+    except ScaffoldTextXProjectError as e:
+        ls.show_errors(str(e))
+        return {}
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_UNINSTALL)
