@@ -42,15 +42,6 @@ class InstallTextXProjectError(TextXLSError):
         self.detailed_err_msg = detailed_err_msg
 
 
-class UninstallTextXProjectError(TextXLSError):
-    """Indicates an error while uninstalling a textX project."""
-
-    def __init__(self, project_name, detailed_err_msg):
-        super().__init__("Failed to uninstall project: {}".format(project_name))
-        self.project_name = project_name
-        self.detailed_err_msg = detailed_err_msg
-
-
 class LanguageNotRegistered(TextXLSError):
     """Indicates an error if language can't be parsed with any of registered metamodels.
     """
@@ -71,3 +62,21 @@ class MultipleLanguagesError(TextXLSError):
                 file_name
             )
         )
+
+
+class ScaffoldTextXProjectError(TextXLSError):
+    """Indicates an error while scaffolding a textX project."""
+
+    def __init__(self, project_name, detailed_err_msg):
+        super().__init__("Failed to scaffold project: {}".format(project_name))
+        self.project_name = project_name
+        self.detailed_err_msg = detailed_err_msg
+
+
+class UninstallTextXProjectError(TextXLSError):
+    """Indicates an error while uninstalling a textX project."""
+
+    def __init__(self, project_name, detailed_err_msg):
+        super().__init__("Failed to uninstall project: {}".format(project_name))
+        self.project_name = project_name
+        self.detailed_err_msg = detailed_err_msg
