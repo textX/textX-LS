@@ -1,7 +1,7 @@
 import shutil
 from functools import partial
 from os import rename
-from os.path import dirname, join, relpath
+from os.path import dirname, exists, join, relpath
 
 import jinja2
 
@@ -20,7 +20,18 @@ jinja_env = jinja2.Environment(
 
 
 def _populate_copy(project_name: str, src: str, dest: str) -> str:
-    """Populates jinja template."""
+    """Populates jinja template.
+
+    Args:
+        project_name: project name
+        src: source directory path
+        dest: destination directory path
+    Returns:
+        Destination directory path where template is coppied to
+    Raises:
+        None
+
+    """
     if src.endswith("template"):
         template_rel_path = relpath(src, textx_language_template_path)
         template = jinja_env.get_template(template_rel_path)
@@ -32,10 +43,27 @@ def _populate_copy(project_name: str, src: str, dest: str) -> str:
         return shutil.copy2(src, dest)
 
 
-def scaffold_project(project_name: str, dest_dir: str) -> str:
-    """Creates a new textX language project in a given destination directory."""
+def scaffold_language_project(project_name: str, dest_dir: str) -> str:
+    """Creates a new textX language project in a given destination directory.
+
+    Args:
+        project_name: project name
+        dest_dir: destination directory path where language project is scaffolded
+    Returns:
+        same as `dest_dir`
+    Raises:
+        ScaffoldTextXProjectError: If any of `shutil.Error`, `OSError`, `IOError` error
+                                   types occurs
+
+    """
     project_name = project_name.lower()
     dest = join(dest_dir, project_name)
+
+    if exists(dest):
+        raise ScaffoldTextXProjectError(
+            project_name,
+            "Project with name {} already exist at {}".format(project_name, dest),
+        )
 
     try:
         # Copy populated project template to dest path
@@ -45,8 +73,9 @@ def scaffold_project(project_name: str, dest_dir: str) -> str:
             copy_function=partial(_populate_copy, project_name),
         )
         # Rename project name
-        rename(join(dest, "project_name"), join(dest, "tx_{}".format(project_name)))
+        rename(join(dest, "tx_package_name"), join(dest, "tx_{}".format(project_name)))
 
         return dest
     except (shutil.Error, OSError, IOError) as e:
+        shutil.rmtree(dest)
         raise ScaffoldTextXProjectError(project_name, str(e)) from e
