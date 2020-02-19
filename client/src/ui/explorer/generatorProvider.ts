@@ -1,44 +1,44 @@
 import { inject, injectable } from "inversify";
-import { commands, Event, EventEmitter, TreeDataProvider, TreeItem } from "vscode";
-import { CMD_GENERATOR_LIST_REFRESH } from "../../constants";
-import { IGeneratorService } from "../../services";
+import { Event, TreeDataProvider, TreeItem } from "vscode";
+import { ITextXProject, ITextXGenerator } from "../../interfaces";
+import { IEventService, IGeneratorService, IProjectService } from "../../services";
 import TYPES from "../../types";
 import { GeneratorNode } from "./generatorNode";
+import { TextXNode } from "./textxNode";
+import { GeneratorConfigNode } from "./generatorConfigNode";
 
-export interface IGeneratorProvider extends TreeDataProvider<GeneratorNode> {}
+export interface IGeneratorProvider extends TreeDataProvider<TextXNode> {}
 
 @injectable()
 export class TextXGeneratorProvider implements IGeneratorProvider {
 
-  private _onDidChangeTreeData: EventEmitter<GeneratorNode | undefined> = new EventEmitter<GeneratorNode | undefined>(); // tslint:disable-line
-  readonly onDidChangeTreeData: Event<GeneratorNode | undefined> = this._onDidChangeTreeData.event; // tslint:disable-line
+  public readonly onDidChangeTreeData: Event<TextXNode | undefined>;
+
+  private generators: ITextXGenerator[];
 
   constructor(
+    @inject(TYPES.IEventService) private readonly eventService: IEventService,
     @inject(TYPES.IGeneratorService) private readonly generatorService: IGeneratorService,
   ) {
-    this.registerCommands();
+    this.onDidChangeTreeData = this.eventService.getEmitter<TextXNode>(TYPES.TextXNode).event;
   }
 
-  public getChildren(element?: GeneratorNode): Thenable<GeneratorNode[]> {
-    return new Promise(async (resolve) => {
-      const generators = await this.generatorService.getAll();
-      const nodes = generators.map((gen) => new GeneratorNode(gen.language,
-                                                                   gen.target,
-                                                                   gen.description));
-      resolve(nodes);
-    });
+  public getChildren(element?: TextXNode): Thenable<TextXNode[]> {
+    if (element instanceof GeneratorNode) {
+      return new Promise((resolve) => {
+        resolve(element.configurations.map((c) => new GeneratorConfigNode(c)));
+      });
+    } else {
+      return new Promise(async (resolve) => {
+        this.generators = await this.generatorService.getAll();
+        resolve(this.generators.map(
+          (g) => new GeneratorNode(g.language, g.target, g.configurations, g.description)));
+      });
+    }
   }
 
-  public getTreeItem(element: GeneratorNode): TreeItem {
+  public getTreeItem(element: GeneratorConfigNode): TreeItem {
     return element;
-  }
-
-  public refresh(): void {
-    this._onDidChangeTreeData.fire();
-  }
-
-  private registerCommands() {
-    commands.registerCommand(CMD_GENERATOR_LIST_REFRESH.internal, this.refresh);
   }
 
 }

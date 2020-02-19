@@ -1,8 +1,9 @@
 from typing import Any, List, Mapping, Optional
 
-from textx import GeneratorDesc, generator_descriptions, generator_for_language_target
+from textx import generator_descriptions, generator_for_language_target
 
 from ..exceptions import GenerateExtensionError, GenerateSyntaxHighlightError
+from ..models import TextXGenerator
 from .projects import get_language_desc, get_languages_by_project_name
 
 
@@ -66,7 +67,7 @@ def generate_syntaxes(
         raise GenerateSyntaxHighlightError(project_name, target) from e
 
 
-def get_generators() -> List[GeneratorDesc]:
+def get_generators() -> List[TextXGenerator]:
     """Returns all registered generators.
 
     Args:
@@ -78,7 +79,7 @@ def get_generators() -> List[GeneratorDesc]:
 
     """
     return [
-        gen
+        TextXGenerator(gen)
         for target_gens in generator_descriptions().values()
         for gen in target_gens.values()
     ]

@@ -12,6 +12,7 @@ export const RESOURCES_PATH = join(EXTENSION_PATH, "resources");
 // Other
 export const EXTENSION_GENERATOR_TARGET = "vscode";
 export const EXTENSION_SYNTAX_HIGHLIGHT_TARGET = "textmate";
+export const GENERATOR_CONFIGURATIONS_PATH = join(EXTENSION_PATH, "generator-configurations");
 export const IS_WIN = process.platform === "win32";
 export const LS_VENV_NAME = "textxls";
 export const LS_VENV_PATH = join(EXTENSION_PATH, LS_VENV_NAME);

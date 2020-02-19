@@ -32,6 +32,16 @@ export interface ITextXGenerator {
   language: string;
   target: string;
   description?: string;
+  configurations?: ITextXGeneratorConfig[];
+}
+
+export interface ITextXGeneratorConfig {
+  name: string; // configuration file name - set on loading
+  models: string[];
+  grammar?: string;
+  ignoreCase?: boolean;
+  overwrite?: boolean;
+  outputPath?: string;
 }
 
 export interface ITextXLanguage {
@@ -46,6 +56,7 @@ export interface ITextXProject {
   editable: boolean;
   distLocation: string;
   languages?: ITextXLanguage[];
+  generators?: ITextXGenerator[];
 }
 
 export interface ITokenColorSettings {

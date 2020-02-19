@@ -1,6 +1,7 @@
 import { join } from "path";
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { RESOURCES_PATH } from "../../constants";
+import { ITextXGeneratorConfig } from "../../interfaces";
 
 export class GeneratorNode extends TreeItem {
 
@@ -13,9 +14,10 @@ export class GeneratorNode extends TreeItem {
   constructor(
     public readonly language: string,
     public readonly target: string,
-    private readonly desc?: string,
+    public readonly configurations: ITextXGeneratorConfig[],
+    public readonly desc?: string,
   ) {
-    super(`${language}-${target}`, TreeItemCollapsibleState.None);
+    super(`${language}-${target}`, TreeItemCollapsibleState.Expanded);
   }
 
   public get tooltip(): string | undefined {

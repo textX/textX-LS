@@ -54,7 +54,7 @@ export class ProjectService implements IProjectService {
 
     if (projectName) {
       // Refresh textX languages view
-      this.eventService.fireLanguagesChanged();
+      this.eventService.fireTextxProjectChanged();
       this.watchProject(projectName, distLocation);
 
       await this.generatorService.generateAndInstallExtension(projectName, projectVersion, editableMode);
@@ -70,7 +70,7 @@ export class ProjectService implements IProjectService {
       projectName);
     if (isUninstalled) {
       // Refresh textX languages view
-      this.eventService.fireLanguagesChanged();
+      this.eventService.fireTextxProjectChanged();
 
       // unwatch project
       this.unwatchProject(projectName);
@@ -118,7 +118,7 @@ export class ProjectService implements IProjectService {
     });
 
     commands.registerCommand(CMD_PROJECT_LIST_REFRESH.internal,
-      () => this.eventService.fireLanguagesChanged());
+      () => this.eventService.fireTextxProjectChanged());
 
     commands.registerCommand(CMD_PROJECT_SCAFFOLD.internal, async () => {
       const projectName = await window.showInputBox({

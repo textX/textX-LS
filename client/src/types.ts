@@ -12,7 +12,8 @@ const TYPES = {
   IProjectService: Symbol("IProjectService"),
   ISyntaxHighlightService: Symbol("ISyntaxHighlightService"),
   IWatcherService: Symbol("IWatcherService"),
-  TextXNode: Symbol("LanguageNode"),
+  LanguageNode: Symbol("LanguageNode"),
+  TextXNode: Symbol("TextXNode"),
 };
 
 export default TYPES;

@@ -12,7 +12,7 @@ export interface ILanguageProvider extends TreeDataProvider<TextXNode> {}
 @injectable()
 export class TextXLanguageProvider implements ILanguageProvider {
 
-  public onDidChangeTreeData: Event<LanguageNode | undefined>;
+  public onDidChangeTreeData: Event<TextXNode | undefined>;
 
   private projects: Map<string, ITextXProject>;
 
@@ -20,14 +20,13 @@ export class TextXLanguageProvider implements ILanguageProvider {
     @inject(TYPES.IEventService) private readonly eventService: IEventService,
     @inject(TYPES.IProjectService) private readonly projectService: IProjectService,
   ) {
-    this.onDidChangeTreeData = this.eventService.getEmitter<LanguageNode>(TYPES.TextXNode).event;
-    this.projectService.getInstalled();
+    this.onDidChangeTreeData = this.eventService.getEmitter<TextXNode>(TYPES.TextXNode).event;
   }
 
   public getChildren(element?: TextXNode): Thenable<TextXNode[]> {
     // NOTE: All languages are returned in one call!
     if (element instanceof ProjectNode) {
-      return new Promise(async (resolve) => {
+      return new Promise((resolve) => {
         resolve((this.projects[element.projectName].languages || []).map(
           (l) => new LanguageNode(l.name, l.projectName, l.description)));
       });

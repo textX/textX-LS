@@ -1,12 +1,14 @@
+import { existsSync, readdirSync, readFileSync } from "fs";
 import { inject, injectable } from "inversify";
 import { join } from "path";
 import { commands, window } from "vscode";
 import { IExtensionService, ISyntaxHighlightService } from ".";
 import {
   CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_GENERATOR_LIST, EXTENSION_GENERATOR_TARGET,
-  EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VS_CMD_WINDOW_RELOAD, VSCE_COMMAND_PATH,
+  EXTENSION_SYNTAX_HIGHLIGHT_TARGET, GENERATOR_CONFIGURATIONS_PATH, VS_CMD_WINDOW_RELOAD,
+  VSCE_COMMAND_PATH,
 } from "../constants";
-import { ITextXExtensionInstall, ITextXGenerator } from "../interfaces";
+import { ITextXExtensionInstall, ITextXGenerator, ITextXGeneratorConfig } from "../interfaces";
 import TYPES from "../types";
 import { mkdtempWrapper } from "../utils";
 
@@ -75,8 +77,24 @@ export class GeneratorService implements IGeneratorService {
   }
 
   public async getAll(): Promise<ITextXGenerator[]> {
-    const gens = await commands.executeCommand<ITextXGenerator[]>(CMD_GENERATOR_LIST.external);
-    return gens || [];
+    const gens = await commands.executeCommand<ITextXGenerator[]>(CMD_GENERATOR_LIST.external) || [];
+    // load configurations - MOVE TO LS (could load config from DB in the future...)
+    gens.forEach((gen) => {
+      const configPath = join(GENERATOR_CONFIGURATIONS_PATH, gen.language + "-" + gen.target);
+      if (existsSync(configPath)) {
+        readdirSync(configPath).forEach((configJsonFileName) => {
+          const configJson = join(configPath, configJsonFileName);
+          try {
+            const config = JSON.parse(readFileSync(configJson).toString()) as ITextXGeneratorConfig;
+            config.name = configJsonFileName;
+            gen.configurations.push(config);
+          } catch (e) {
+            window.showErrorMessage(`Could not parse generator configuration ${configJson}`);
+          }
+        });
+      }
+    });
+    return gens;
   }
 
   public async getByLanguage(languageName: string): Promise<ITextXGenerator[]> {

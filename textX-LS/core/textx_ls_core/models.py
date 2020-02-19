@@ -1,6 +1,27 @@
 from typing import Optional
 
-from textx import LanguageDesc
+from textx import GeneratorDesc, LanguageDesc
+
+
+class TextXGenerator:
+    """Represents a textX language without metamodel attribute.
+
+    NOTE: Attributes are in camelCase notation needed for client-server automatic
+          (de)serialization
+
+    Attributes:
+        name (str): language name
+        description (str): language description or language name
+        projectName (str): project that registers this language
+
+    """
+
+    def __init__(self, gen_desc: GeneratorDesc):
+        self.language = gen_desc.language
+        self.target = gen_desc.target
+        self.description = gen_desc.description
+        self.project_name = gen_desc.project_name
+        self.configurations = []
 
 
 class TextXLanguage:
@@ -49,6 +70,10 @@ class TextXProject:
         self.distLocation = dist_location
         self.version = version
         self.languages = []
+        self.generators = []
 
     def add_language(self, language: TextXLanguage):
         self.languages.append(language)
+
+    def add_generator(self, generator: TextXGenerator):
+        self.generators.append(generator)

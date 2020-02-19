@@ -75,6 +75,33 @@
           "dark": "resources/dark/thunder.svg"
         },
         "category": "textX"
+      },
+      {
+        "command": "textx.removeGeneratorConfig",
+        "title": "Remove configuration",
+        "icon": {
+          "light": "resources/light/bin.svg",
+          "dark": "resources/dark/bin.svg"
+        },
+        "category": "textX"
+      },
+      {
+        "command": "textx.editGeneratorConfig",
+        "title": "Edit configuration",
+        "icon": {
+          "light": "resources/light/edit.svg",
+          "dark": "resources/dark/edit.svg"
+        },
+        "category": "textX"
+      },
+      {
+        "command": "textx.runGeneratorConfig",
+        "title": "Run configuration",
+        "icon": {
+          "light": "resources/light/run.svg",
+          "dark": "resources/dark/run.svg"
+        },
+        "category": "textX"
       }
     ],
     "configuration": {
@@ -166,6 +193,26 @@
         {
           "command": "textx.uninstallProject",
           "when": "view == textxLanguages && viewItem == project",
+          "group": "inline"
+        },
+        {
+          "command": "textx.uninstallProject",
+          "when": "view == textxGenerators && viewItem == generator",
+          "group": "inline"
+        },
+        {
+          "command": "textx.editGeneratorConfig",
+          "when": "view == textxGenerators && viewItem == generatorConfig",
+          "group": "inline"
+        },
+        {
+          "command": "textx.removeGeneratorConfig",
+          "when": "view == textxGenerators && viewItem == generatorConfig",
+          "group": "inline"
+        },
+        {
+          "command": "textx.runGeneratorConfig",
+          "when": "view == textxGenerators && viewItem == generatorConfig",
           "group": "inline"
         }
       ]
