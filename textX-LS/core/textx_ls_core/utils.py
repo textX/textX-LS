@@ -85,8 +85,25 @@ def get_project_name_and_version(folder_or_wheel: str) -> Tuple[str, str]:
         with mock.patch.object(setuptools, "setup") as mock_setup:
             with open(setuppy, "r") as f:
                 exec(f.read())
-            _, kwargs = mock_setup.call_args
-        project_name, version = kwargs.get("name", None), kwargs.get("version", None)
+            _, metadata = mock_setup.call_args
+
+        if "name" not in metadata:
+            # try to parse setup.cfg
+            setupcfg = join(folder_or_wheel, "setup.cfg")
+            if isfile(setupcfg):
+                try:
+                    from configparser import ConfigParser
+
+                    cfg_parser = ConfigParser()
+                    cfg_parser.read(setupcfg)
+                    metadata = dict(cfg_parser.items("metadata"))
+                except Exception:
+                    metadata = {}
+
+        project_name, version = (
+            metadata.get("name", None),
+            metadata.get("version", None),
+        )
     elif isfile(folder_or_wheel) and folder_or_wheel.endswith(".whl"):  # wheel file
         from wheel_inspect import inspect_wheel
 
