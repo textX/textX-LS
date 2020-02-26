@@ -2,6 +2,7 @@ import sys
 from typing import Callable, List, Optional, Tuple
 
 from pkg_resources import DistributionNotFound, get_distribution
+
 from textx import (
     LanguageDesc,
     clear_language_registrations,
@@ -208,7 +209,8 @@ async def uninstall_project_async(
         raise UninstallTextXProjectError(project_name, output)
 
     # Manually remove package from sys.path if needed
-    if dist_location in sys.path:
+    is_editable = dist_is_editable(dist_location, project_name)
+    if is_editable and dist_location in sys.path:
         sys.path.remove(dist_location)
 
     clear_language_registrations()
