@@ -74,9 +74,8 @@ def get_project_name_and_version(folder_or_wheel: str) -> Tuple[str, str]:
         None
 
     """
-    project_name = None
-    version = None
-    # Folder with setup.py inside (project)
+    project_metadata = {}
+    # Folder with setup.py inside (project) ...
     setuppy = join(folder_or_wheel, "setup.py")
     if isfile(setuppy):
         from unittest import mock
@@ -85,35 +84,27 @@ def get_project_name_and_version(folder_or_wheel: str) -> Tuple[str, str]:
         with mock.patch.object(setuptools, "setup") as mock_setup:
             with open(setuppy, "r") as f:
                 exec(f.read())
-            _, metadata = mock_setup.call_args
+            project_metadata.update(mock_setup.call_args[1])
+    # ... or setup.cfg
+    setupcfg = join(folder_or_wheel, "setup.cfg")
+    if isfile(setupcfg):
+        try:
+            from configparser import ConfigParser
 
-        if "name" not in metadata:
-            # try to parse setup.cfg
-            setupcfg = join(folder_or_wheel, "setup.cfg")
-            if isfile(setupcfg):
-                try:
-                    from configparser import ConfigParser
+            cfg_parser = ConfigParser()
+            cfg_parser.read(setupcfg)
+            project_metadata.update(dict(cfg_parser.items("metadata")))
+        except Exception:
+            pass
 
-                    cfg_parser = ConfigParser()
-                    cfg_parser.read(setupcfg)
-                    metadata = dict(cfg_parser.items("metadata"))
-                except Exception:
-                    metadata = {}
-
-        project_name, version = (
-            metadata.get("name", None),
-            metadata.get("version", None),
-        )
-    elif isfile(folder_or_wheel) and folder_or_wheel.endswith(".whl"):  # wheel file
+    # installed from wheel
+    if isfile(folder_or_wheel) and folder_or_wheel.endswith(".whl"):
         from wheel_inspect import inspect_wheel
 
-        project_info = inspect_wheel(folder_or_wheel)
-        project_name, version = (
-            project_info.get("project", None),
-            project_info.get("version", None),
-        )
+        project_metadata.update(inspect_wheel(folder_or_wheel))
+        project_metadata.update({"name": project_metadata.get("project")})
 
-    return project_name, version
+    return project_metadata.get("name", None), project_metadata.get("version", None)
 
 
 async def run_async(
