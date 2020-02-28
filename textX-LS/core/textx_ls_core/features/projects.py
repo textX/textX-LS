@@ -170,8 +170,8 @@ async def install_project_async(
 
     # Checks if language with the same name already exist
     try:
-        language_descriptions()
         dist_location = get_distribution(project_name).location
+        language_descriptions()
     except Exception as e:
         await uninstall_project_async(project_name, python_path)
         raise InstallTextXProjectError(project_name, dist_location, output) from e
