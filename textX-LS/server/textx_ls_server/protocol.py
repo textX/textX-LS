@@ -100,9 +100,6 @@ class TextXDocument(Document):
         self._metamodel = (
             self.mm_loader() if callable(self.mm_loader) else self.mm_loader
         )
-        self._metamodel._tx_model_kwarg_definitions.add_definition(
-            "project_root", "the root of your project"
-        )
 
 
 class TextXProtocol(LanguageServerProtocol):
