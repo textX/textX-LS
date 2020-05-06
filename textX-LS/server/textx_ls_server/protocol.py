@@ -8,9 +8,10 @@ from pygls.types import (
     DidOpenTextDocumentParams,
     MessageType,
 )
+from pygls.uris import to_fs_path
 from pygls.workspace import Document
-from textx.metamodel import TextXMetaMetaModel, TextXMetaModel
 
+from textx.metamodel import TextXMetaMetaModel, TextXMetaModel
 from textx_ls_core.exceptions import LanguageNotRegistered, MultipleLanguagesError
 from textx_ls_core.features.projects import get_language_desc
 
@@ -32,10 +33,18 @@ class TextXDocument(Document):
     """
 
     def __init__(
-        self, uri, language_name, project_name, mm_loader, source=None, version=None
+        self,
+        uri,
+        project_root,
+        language_name,
+        project_name,
+        mm_loader,
+        source=None,
+        version=None,
     ):
         super().__init__(uri, source, version, True)
 
+        self.project_root = to_fs_path(project_root)
         self.project_name = project_name
         self.language_name = language_name
         self.mm_loader = mm_loader
@@ -161,6 +170,7 @@ class TextXProtocol(LanguageServerProtocol):
 
             self.workspace._docs[doc_uri] = TextXDocument(
                 doc_uri,
+                self._get_project_root(doc_uri),
                 lang_id,
                 lang_desc.project_name,
                 mm_loader,
@@ -172,3 +182,9 @@ class TextXProtocol(LanguageServerProtocol):
         except LanguageNotRegistered:
             # Skip adding document to the workspace
             pass
+
+    def _get_project_root(self, doc_uri):
+        for folder_uri in sorted(self.workspace.folders.keys(), key=len, reverse=True):
+            if folder_uri in doc_uri:
+                return folder_uri
+        return self.workspace.root_path

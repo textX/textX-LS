@@ -1,8 +1,8 @@
 import mock
 import pytest
 from pygls.types import Diagnostic, Position, Range
-from textx.exceptions import TextXSyntaxError
 
+from textx.exceptions import TextXSyntaxError
 from textx_ls_server.features import diagnostics as diag
 from textx_ls_server.protocol import TextXDocument
 
@@ -14,7 +14,7 @@ SERVER_CREATE_DIAGNOSTICS_TARGET = (
 
 @pytest.fixture(scope="module")
 def doc():
-    return TextXDocument("uri", "mydsl", "project", None, "source")
+    return TextXDocument("uri", "../uri", "mydsl", "project", None, "source")
 
 
 @pytest.fixture(scope="module")

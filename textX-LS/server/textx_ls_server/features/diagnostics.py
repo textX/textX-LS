@@ -1,8 +1,8 @@
 from typing import List
 
 from pygls.types import Diagnostic, Position, Range
-from textx.exceptions import TextXError
 
+from textx.exceptions import TextXError
 from textx_ls_core.features.validate import validate
 
 from ..protocol import TextXDocument
@@ -21,7 +21,9 @@ def _create_diagnostics(doc: TextXDocument) -> List[Diagnostic]:
     """
     return [
         Diagnostic(_get_diagnostic_range(err), _get_diagnostic_message(err))
-        for err in validate(doc.get_metamodel(True), doc.source, doc.path)
+        for err in validate(
+            doc.get_metamodel(True), doc.source, doc.path, doc.project_root
+        )
     ]
 
 
@@ -58,7 +60,7 @@ def _get_diagnostic_range(err: TextXError) -> Range:
 
     """
     # Mark a whole line ( 500 for now, should be len(doc.lines[line]) )
-    line = 0 if err.line - 1 < 0 else err.line - 1
+    line = 0 if (err.line or 0) - 1 < 0 else (err.line or 0) - 1
     return Range(Position(line, 0), Position(line, 500))
 
 
