@@ -160,7 +160,7 @@ async def install_project_async(
 
     # Not installed
     if retcode != 0:
-        raise InstallTextXProjectError(project_name, dist_location, output)
+        raise InstallTextXProjectError(project_name, folder_or_wheel, output)
 
     # Manually add package to sys.path if installed with -e flag
     if editable and folder_or_wheel not in sys.path:
