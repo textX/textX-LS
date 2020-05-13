@@ -1,0 +1,9 @@
+from os.path import dirname, join
+
+from textx import language, metamodel_from_file
+
+
+@language("{{project_name}}", "*.{{project_name}}")
+def {{project_name}}():
+    "Language project scaffolded with textX extension."
+    return metamodel_from_file(join(dirname(__file__), "grammar.tx"))

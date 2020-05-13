@@ -125,10 +125,10 @@ export class ProjectService implements IProjectService {
         ignoreFocusOut: true,
         placeHolder: "Enter a project name.",
         validateInput: (value: string) => {
-          if (value && value.trim().length > 0) {
+          if (value && value.trim().length > 0 && /^[\w\.-]+$/.test(value)) {
             return null;
           } else {
-            return "Project name is required.";
+            return "Project name is required and has to be consisted of letters, numbers, ., -, _ .";
           }
         },
       });

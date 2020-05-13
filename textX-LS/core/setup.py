@@ -50,7 +50,12 @@ setup(
     packages=packages,
     include_package_data=True,
     package_data={"": ["*.tx"]},
-    install_requires=["textX>=2.1.0", "click==7.0", "wheel_inspect==1.3.0"],
+    install_requires=[
+        "textX>=2.1.0",
+        "click==7.0",
+        "jinja2>=2",
+        "wheel_inspect==1.3.0",
+    ],
     extras_require={
         "dev": dev_require,
         "test": tests_require,
