@@ -52,8 +52,7 @@ class UninstallTextXProjectError(TextXLSError):
 
 
 class LanguageNotRegistered(TextXLSError):
-    """Indicates an error if language can't be parsed with any of registered metamodels.
-    """
+    """Indicates an error if language can't be parsed with any of registered metamodels."""
 
     def __init__(self, file_name):
         super().__init__(
@@ -62,8 +61,7 @@ class LanguageNotRegistered(TextXLSError):
 
 
 class MultipleLanguagesError(TextXLSError):
-    """Indicates an error if language can be parsed with multiple registered metamodels.
-    """
+    """Indicates an error if language can be parsed with multiple registered metamodels."""
 
     def __init__(self, file_name):
         super().__init__(

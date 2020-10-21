@@ -304,6 +304,5 @@ def doc_open(
 
 @textx_server.command(TextXLanguageServer.CMD_PING)
 def _cmd_ping(ls: TextXLanguageServer, params) -> None:
-    """Prevent server going into IDLE state on windows (?).
-    """
+    """Prevent server going into IDLE state on windows (?)."""
     pass
