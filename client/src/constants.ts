@@ -18,9 +18,6 @@ export const LS_VENV_PATH = join(EXTENSION_PATH, LS_VENV_NAME);
 export const LS_WHEELS_DIR = "wheels";
 export const TEXTX_LS_CORE = "textx_ls_core";
 export const TEXTX_LS_SERVER = "textx_ls_server";
-export const VSCE_COMMAND_PATH = IS_WIN ?
-    join(EXTENSION_PATH, "libs", "vsce") :
-    join(EXTENSION_PATH, "libs", "node_modules", "vsce", "out", "vsce");
 
 // Commands
 // TextX-LS
