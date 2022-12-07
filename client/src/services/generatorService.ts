@@ -4,7 +4,7 @@ import { commands, window } from "vscode";
 import { IExtensionService, ISyntaxHighlightService } from ".";
 import {
   CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_GENERATOR_LIST, EXTENSION_GENERATOR_TARGET,
-  EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VS_CMD_WINDOW_RELOAD, VSCE_COMMAND_PATH,
+  EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXExtensionInstall, ITextXGenerator } from "../interfaces";
 import TYPES from "../types";
@@ -36,7 +36,6 @@ export class GeneratorService implements IGeneratorService {
           project_name: projectName,
           skip_keywords: editableMode,
           version: projectVersion,
-          vsce: VSCE_COMMAND_PATH,
           vsix: 1,
         };
 

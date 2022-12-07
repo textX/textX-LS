@@ -201,8 +201,8 @@
     }
   },
   "scripts": {
-    "postinstall": "node ./node_modules/vscode/bin/install && npm --prefix libs install vsce",
-    "vscode:prepublish": "webpack --mode production && chmod +x ./bin/copy-wheels.sh && sh ./bin/copy-wheels.sh && npm --prefix libs install vsce",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "vscode:prepublish": "webpack --mode production && chmod +x ./bin/copy-wheels.sh && sh ./bin/copy-wheels.sh",
     "webpack": "webpack --mode development",
     "webpack-dev": "webpack --mode development --watch"
   },
