@@ -14,6 +14,11 @@ and a _Visual Studio Code_ extension:
 
 - _[client](https://github.com/textX/textX-LS/tree/master/client)_
 
+## :warning: This project got a new maintainer
+
+After several years of inactivity this project is in a transition to a new maintainer.
+Please see [this announcement](https://github.com/textX/textX-LS/issues/68).
+
 ## Required textX Generator Plugins
 
 Building a custom VS Code extension for newly registered language is delegated to the _textx-vscode_ generator which uses _textx-coloring_ to produce a syntax highlighting _Textmate_ file.
