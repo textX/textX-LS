@@ -3,18 +3,16 @@ from os import linesep
 from traceback import format_exc
 from typing import Any, List, Mapping, Optional, Tuple
 
-from pygls.features import (
+from lsprotocol.types import (
     TEXT_DOCUMENT_DID_CHANGE,
     TEXT_DOCUMENT_DID_CLOSE,
     TEXT_DOCUMENT_DID_OPEN,
-)
-from pygls.server import LanguageServer
-from pygls.types import (
     DidChangeTextDocumentParams,
     DidCloseTextDocumentParams,
     DidOpenTextDocumentParams,
     MessageType,
 )
+from pygls.server import LanguageServer
 from textx import GeneratorDesc
 
 from textx_ls_core.exceptions import (
@@ -40,6 +38,8 @@ from .features.diagnostics import send_diagnostics
 from .protocol import TextXDocument, TextXProtocol
 from .utils import skip_not_supported_langs
 
+from .config import PACKAGE_NAME, VERSION
+
 
 class TextXLanguageServer(LanguageServer):
     """Represents a language server for languages based on textX grammar.
@@ -63,7 +63,7 @@ class TextXLanguageServer(LanguageServer):
     CMD_VALIDATE_DOCUMENTS = "textx/validateDocuments"
 
     def __init__(self):
-        super().__init__(protocol_cls=TextXProtocol)
+        super().__init__(name=PACKAGE_NAME, version=VERSION, protocol_cls=TextXProtocol)
         self.python_path = sys.executable
 
     def show_errors(self, err_msg: str, detailed_err_msg: Optional[str] = None) -> None:
@@ -106,7 +106,7 @@ def cmd_generate_extension(ls: TextXLanguageServer, params) -> bool:
     target, dest_dir, cmd_args = params
 
     try:
-        generate_extension(target, dest_dir, **cmd_args._asdict())
+        generate_extension(target, dest_dir, **cmd_args)
         return True
     except GenerateExtensionError as e:
         ls.show_errors(str(e))
@@ -127,7 +127,7 @@ def cmd_generate_syntaxes(ls: TextXLanguageServer, params) -> Mapping[str, Any]:
     """
     project_name, target, cmd_args = params
     try:
-        return generate_syntaxes(project_name, target, **cmd_args._asdict())
+        return generate_syntaxes(project_name, target, **cmd_args)
     except GenerateSyntaxHighlightError as e:
         ls.show_errors(str(e))
         return {}
@@ -243,7 +243,7 @@ def cmd_validate_documents(ls: TextXLanguageServer, params) -> None:
             else:
                 ls.show_message(
                     "Metamodel for language '{}' is cached and it couldn't be reloaded!".format(
-                        doc.language_name
+                        doc.language_id
                     ),
                     MessageType.Warning,
                 )
@@ -265,6 +265,7 @@ def doc_change(
         None
 
     """
+    print ('doc changed')
     send_diagnostics(ls, doc)
 
 
@@ -280,7 +281,7 @@ def doc_close(ls: TextXLanguageServer, params: DidCloseTextDocumentParams) -> No
         None
 
     """
-    ls.publish_diagnostics(params.textDocument.uri, [])
+    ls.publish_diagnostics(params.text_document.uri, [])
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_OPEN)

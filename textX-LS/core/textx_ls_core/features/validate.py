@@ -28,7 +28,9 @@ def validate(
     """
     errors = []
     try:
+        print('validateee')
         metamodel.model_from_str(model, file_name=file_path, project_root=project_root)
     except TextXError as e:
+        print (e)
         errors.append(e)
     return errors

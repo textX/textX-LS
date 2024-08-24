@@ -1,7 +1,6 @@
 # flake8: noqa
 import codecs
 import os
-from platform import python_version
 
 from setuptools import find_packages, setup
 
@@ -24,16 +23,12 @@ README = codecs.open(
     os.path.join(os.path.dirname(__file__), "README.md"), "r", encoding="utf-8"
 ).read()
 
-dev_require = ["bandit==1.5.1", "flake8==3.7.7", "textx_gen_vscode>=0.1.3"]
+dev_require = ["bandit==1.7.9", "black==24.4.2", "flake8==7.0.0", "textx_gen_vscode>=0.1.3"]
 
-tests_require = ["coverage==4.5.3", "pytest==4.3.1", "pytest-cov==2.6.1"]
+tests_require = ["coverage==7.5.3", "pytest==8.2.2", "pytest-cov==5.0.0"]
 
 # pip install textx_ls_core[vscode]
 vscode_require = ["textx_gen_vscode>=0.1.3"]
-
-
-if python_version().startswith("3.6"):  # For python 3.6
-    dev_require.append("black")
 
 
 setup(
@@ -50,13 +45,14 @@ setup(
     packages=packages,
     include_package_data=True,
     package_data={"": ["*.tx"]},
-    install_requires=["textX>=2.1.0", "wheel_inspect==1.3.0"],
+    install_requires=["textX>=4.0.1", "wheel_inspect==1.7.1"],
     extras_require={
         "dev": dev_require,
         "test": tests_require,
         "vscode": vscode_require,
     },
     tests_require=tests_require,
+    python_requires=">=3.8",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
@@ -65,9 +61,10 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
 )

@@ -1,6 +1,6 @@
 {
-    "python.pythonPath": "../../env/bin/python",
-    "python.testing.pytestPath": "../../env/bin/pytest",
+    "python.defaultInterpreterPath": "../../../venv/bin/python",
+    "python.testing.pytestPath": "../../../venv/bin/pytest",
     "python.testing.pytestArgs": [
         "tests"
     ],

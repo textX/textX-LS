@@ -1,0 +1,23 @@
+{
+  "txcfg": {
+    "prefix": "txcfg",
+    "body": [
+      "dsl ${1:language name}[ ${2:extension list} ] {}"
+    ],
+    "description": "Minimum textx configuration snippet."
+  },
+  "txcfgfull": {
+    "prefix": "txcfg",
+    "body": [
+      "dsl ${1:name}[${2:extension}] {",
+      "\tpublisher:   \"${3:publisher}\"",
+      "\tauthor:      \"${4:author}\"",
+      "\trepository:  \"${5:repository}\"",
+      "\turl:         \"${6:url}\"",
+      "\tversion:     \"${7:version}\"",
+      "\tdescription: \"${8:description}\"",
+      "}"
+    ],
+    "description": "Full textX configuration snippet."
+  }
+}
