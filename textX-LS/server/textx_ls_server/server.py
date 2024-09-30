@@ -265,7 +265,6 @@ def doc_change(
         None
 
     """
-    print ('doc changed')
     send_diagnostics(ls, doc)
 
 

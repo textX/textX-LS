@@ -26,7 +26,7 @@ class TextXDocument(Document):
 
     Attributes:
         project_name (str): project name
-        language_id (bool): language id
+        language_id (str): language id
         mm_loader (Callable|TextXMetaMetaModel|TextXMetaModel): a language metamodel
         _metamodel (TextXMetaModel): cached language metamodel
 
