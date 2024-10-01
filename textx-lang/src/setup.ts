@@ -7,7 +7,7 @@ import { execAsync, readdirAsync } from "./utils";
 async function checkPythonVersion(python: string): Promise<boolean> {
   try {
     const [major, minor] = await getPythonVersion(python);
-    return major === 3 && minor > 4;
+    return major === 3 && minor > 7;
   } catch {
     return false;
   }
@@ -60,7 +60,7 @@ export function getPythonFromVenvPath(venvPath: string = LS_VENV_PATH): string {
 async function getPythonVersion(python: string): Promise<number[]> {
   const getPythonVersionCmd = `${python} --version`;
   const version = await execAsync(getPythonVersionCmd);
-  return version.match(new RegExp(/\d/g)).map((v) => Number.parseInt(v));
+  return version.match(new RegExp(/\d+/g)).map((v) => Number.parseInt(v));
 }
 
 async function getVenvPackageVersion(python: string, name: string): Promise<number[] | null> {

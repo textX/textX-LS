@@ -38,7 +38,7 @@ setup(
     license=LICENSE,
     packages=packages,
     include_package_data=True,
-    install_requires=["pygls==1.3.1", "textx", "textx-ls-core"],
+    install_requires=["pygls==1.3.1", "textx==4.0.1", "setuptools==75.1.0"],
     extras_require={"dev": dev_require, "test": tests_require},
     tests_require=tests_require,
     python_requires=">=3.8",

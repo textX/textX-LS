@@ -115,8 +115,7 @@
         ],
         "extensions": [
           ".tx"
-        ],
-        "configuration": "./language-configuration.json"
+        ]
       }
     ],
     "menus": {
