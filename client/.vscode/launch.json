@@ -1,52 +1,54 @@
 // A launch configuration that compiles the extension and then opens it inside a new window
+// Use IntelliSense to learn about possible attributes.
+// Hover to view descriptions of existing attributes.
+// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Launch Client",
-            "type": "extensionHost",
-            "request": "launch",
-            "runtimeExecutable": "${execPath}",
-            "args": [
-                "${workspaceFolder}/../examples",
-                // "--disable-extensions",
-                "--extensionDevelopmentPath=${workspaceFolder}"
-            ],
-            "sourceMaps": true,
-            "outFiles": [
-                "${workspaceFolder}/dist/**/*.js"
-            ],
-            "preLaunchTask": "compile:client",
-            "env": {
-                "SERVER_PORT": "2087",
-                "VSCODE_DEBUG_MODE": "true"
-            }
-        },
-        {
-            "name": "Launch Server",
-            "type": "python",
-            "request": "launch",
-            "console": "integratedTerminal",
-            "module": "textx_ls_server",
-            "args": [
-                "--tcp",
-                "--port=2087"
-            ],
-            "justMyCode": false,
-            "pythonPath": "${config:python.pythonPath}",
-            "cwd": "${workspaceFolder}/../textX-LS/server",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/../textX-LS/server"
-            }
-        }
-    ],
-    "compounds": [
-        {
-            "name": "Server + Client",
-            "configurations": [
-                "Launch Server",
-                "Launch Client"
-            ]
-        }
-    ]
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch Client",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"sourceMaps": true,
+			"args": [
+				"${workspaceFolder}/../examples",
+				"--extensionDevelopmentPath=${workspaceFolder}"
+			],
+			"outFiles": [
+				"${workspaceFolder}/dist/**/*.js"
+			],
+			"preLaunchTask": "npm: watch:esbuild",
+			"env": {
+				"SERVER_PORT": "2087",
+				"VSCODE_DEBUG_MODE": "true"
+			}
+		},
+		{
+			"name": "Launch Server",
+			"type": "debugpy",
+			"request": "launch",
+			"console": "integratedTerminal",
+			"module": "textx_ls_server",
+			"args": [
+				"--tcp",
+				"--port=2087"
+			],
+			"justMyCode": false,
+			"python": "${config:python.defaultInterpreterPath}",
+			"cwd": "${workspaceFolder}/../textX-LS/server",
+			"env": {
+				"PYTHONPATH": "${workspaceFolder}/../textX-LS/server"
+			}
+		}
+	],
+	"compounds": [
+		{
+			"name": "Server + Client",
+			"configurations": [
+				"Launch Server",
+				"Launch Client"
+			]
+		}
+	]
 }

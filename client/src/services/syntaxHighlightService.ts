@@ -51,6 +51,10 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
       editor = window.activeTextEditor;
     }
 
+    if (editor === undefined) {
+      return;
+    }
+
     const document = editor.document;
     const languageId = document.languageId;
     const documentText = document.getText();
@@ -71,7 +75,7 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
   }
 
   private getKeywordDecorationOptions(scope: string): DecorationRenderOptions {
-    return {color: this.tokenColors.get(scope).foreground };
+    return { color: this.tokenColors.get(scope).foreground };
   }
 
   private getKeywordsFromTextmateJSON(textmate: string): IKeywordInfo[] {
@@ -98,7 +102,7 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
     for (let match: RegExpExecArray; (match = keyword.regex.exec(documentText)) !== null;) {
       const matchIndex = match.index;
       ranges.push(new Range(offsetToPosition(matchIndex),
-                            offsetToPosition(matchIndex + keyword.length)));
+        offsetToPosition(matchIndex + keyword.length)));
     }
     return ranges;
   }

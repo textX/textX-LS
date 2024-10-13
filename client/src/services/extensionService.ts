@@ -23,7 +23,7 @@ export class ExtensionService implements IExtensionService {
         const extension = extensions.getExtension(textxExtensionName(extensionName));
         const isActive = extension === undefined ? false : extension.isActive;
 
-        resolve({extension, isActive, isUpdated: false});
+        resolve({ extension, isActive, isUpdated: false });
       });
       // Call VS Code command to install the extension
       await commands.executeCommand(VS_CMD_INSTALL_EXTENSION, Uri.file(extensionPath));
@@ -40,9 +40,9 @@ export class ExtensionService implements IExtensionService {
           const newExtension = extensions.getExtension(textxExtensionName(extensionName));
           if (newExtension !== undefined) {
             if (projectVersion === oldExtensionVersion) {
-              resolve({extension: newExtension, isActive: newExtension.isActive, isUpdated: false});
+              resolve({ extension: newExtension, isActive: newExtension.isActive, isUpdated: false });
             } else {
-              resolve({extension: newExtension, isActive: newExtension.isActive, isUpdated: true});
+              resolve({ extension: newExtension, isActive: newExtension.isActive, isUpdated: true });
             }
           } else {
             reject();
@@ -61,15 +61,15 @@ export class ExtensionService implements IExtensionService {
       extensions.onDidChange((_) => {
         // If extension is NOT active
         extension = extensions.getExtension(extensionName);
-        resolve({isActive});
+        resolve({ isActive });
       });
 
       try {
         // Call VS Code command to uninstall the extension
         await commands.executeCommand(VS_CMD_UNINSTALL_EXTENSION, extensionName);
-        resolve({isActive});
+        resolve({ isActive });
       } catch {
-        resolve({isActive: false});
+        resolve({ isActive: false });
       }
     });
   }

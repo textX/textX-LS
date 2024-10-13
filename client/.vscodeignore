@@ -1,13 +1,16 @@
-.vscode
-node_modules
-textxls
-src/**
+.vscode/**
+.vscode-test/**
 out/**
-package-json.lock
-tsconfig.json
-tslint.json
-webpack.config.js
-*.vsix
-*.log
+node_modules/**
+src/**
+.gitignore
+.yarnrc
+esbuild.js
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts
+**/.vscode-test.*
 
-!libs/**/extension.vsixmanifest
+textxls

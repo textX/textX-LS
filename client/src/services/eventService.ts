@@ -27,10 +27,12 @@ export class EventService implements IEventService {
   }
 
   public fireGeneratorsChanged(): void {
+    // @ts-ignore
     this.getEmitter<GeneratorNode>(TYPES.GeneratorNode).fire();
   }
 
   public fireLanguagesChanged(): void {
+    // @ts-ignore
     this.getEmitter<TextXNode>(TYPES.TextXNode).fire();
   }
 

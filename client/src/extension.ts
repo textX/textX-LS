@@ -1,6 +1,6 @@
 import * as net from "net";
 import { commands, ExtensionContext, window } from "vscode";
-import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
+import { LanguageClient, LanguageClientOptions, ServerOptions, State } from "vscode-languageclient/node";
 
 import { CMD_PING, IS_WIN, PING_INTERVAL, TEXTX_LS_SERVER } from "./constants";
 import container from "./inversify.config";
@@ -35,7 +35,7 @@ function startLangServerTCP(addr: number): LanguageClient {
     });
   };
 
-  return new LanguageClient(`textX-LS (port ${addr})`, serverOptions, getClientOptions());
+  return new LanguageClient("textX", serverOptions, getClientOptions());
 }
 
 function startLangServer(
@@ -47,7 +47,7 @@ function startLangServer(
     options: { cwd },
   };
 
-  return new LanguageClient(command, serverOptions, getClientOptions());
+  return new LanguageClient("textX", serverOptions, getClientOptions());
 }
 
 export async function activate(context: ExtensionContext) {
@@ -65,27 +65,31 @@ export async function activate(context: ExtensionContext) {
     }
   }
 
-  client.onReady().then(() => {
-    // inversifyjs - get instances
-    const generatorProvider = container.get<IGeneratorProvider>(TYPES.IGeneratorProvider);
-    const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
-    const watcherService = container.get<IWatcherService>(TYPES.IWatcherService);
+  client.onDidChangeState((event) => {
+    if (event.newState === State.Running) {
+      // inversifyjs - get instances
+      const generatorProvider = container.get<IGeneratorProvider>(TYPES.IGeneratorProvider);
+      const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
+      const watcherService = container.get<IWatcherService>(TYPES.IWatcherService);
 
-    // Tree Providers
-    context.subscriptions.push(window.registerTreeDataProvider("textxGenerators", generatorProvider));
-    context.subscriptions.push(window.registerTreeDataProvider("textxLanguages", languageProvider));
-    context.subscriptions.push(watcherService);
+      // Tree Providers
+      context.subscriptions.push(window.registerTreeDataProvider("textxGenerators", generatorProvider));
+      context.subscriptions.push(window.registerTreeDataProvider("textxLanguages", languageProvider));
+      context.subscriptions.push(watcherService);
 
-    // Ping server -  temporary fix for windows
-    // It's like server goes into IDLE state and subprocesses are paused
-    if (!isStartedInDebugMode() && IS_WIN) {
-      setInterval(() => {
-        commands.executeCommand(CMD_PING.external);
-      }, PING_INTERVAL);
+      // Ping server -  temporary fix for windows
+      // It's like server goes into IDLE state and subprocesses are paused
+      if (!isStartedInDebugMode() && IS_WIN) {
+        setInterval(() => {
+          commands.executeCommand(CMD_PING.external);
+        }, PING_INTERVAL);
+      }
     }
   });
 
-  context.subscriptions.push(client.start());
+  client.start();
+
+  // context.subscriptions.push(client);
 }
 
 export function deactivate(): Thenable<void> {

@@ -4,7 +4,7 @@ import { ICommand } from "./interfaces";
 import { getCommands } from "./utils";
 
 // Extension info
-export const EXTENSION_JSON = extensions.getExtension("textX.textX").packageJSON;
+export const EXTENSION_JSON = extensions.getExtension("textX.textx-lang").packageJSON;
 export const EXTENSION_NAME = EXTENSION_JSON.displayName;
 export const EXTENSION_PATH = EXTENSION_JSON.extensionLocation.fsPath;
 export const RESOURCES_PATH = join(EXTENSION_PATH, "resources");
@@ -20,7 +20,7 @@ export const TEXTX_LS_CORE = "textx_ls_core";
 export const TEXTX_LS_SERVER = "textx_ls_server";
 export const VSCE_COMMAND_PATH = IS_WIN ?
     join(EXTENSION_PATH, "libs", "vsce") :
-    join(EXTENSION_PATH, "libs", "node_modules", "vsce", "out", "vsce");
+    join(EXTENSION_PATH, "libs", "node_modules", "@vscode", "vsce", "vsce");
 
 // Commands
 // TextX-LS
