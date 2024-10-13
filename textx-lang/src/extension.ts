@@ -87,7 +87,7 @@ export async function activate(context: ExtensionContext) {
     }
   });
 
-  client.start()
+  client.start();
 
   // context.subscriptions.push(client);
 }

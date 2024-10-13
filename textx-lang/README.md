@@ -1,71 +1,57 @@
-# textx-lang README
+<h1 align="center">
+  <br>
+    <img src="https://raw.githubusercontent.com/textX/textX/master/art/textX-logo.png?raw=true" alt="logo" width="300">
+  <br>
+  for VS Code
+</h1>
 
-This is the README for your extension "textx-lang". After writing up a brief description, we recommend including the following sections.
-
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+<h4 align="center">Provides a "smartness" to any textX language</h4>
 
 ---
 
-## Following extension guidelines
+[![Build Status](https://dev.azure.com/textX/textX-LS/_apis/build/status/textX.textX-LS?branchName=master)](https://dev.azure.com/textX/textX-LS/_build/latest?branchName=master) [![MIT licensed](https://img.shields.io/cocoapods/l/AFNetworking.svg)](https://raw.githubusercontent.com/textX/textX-LS/master/LICENSE)
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+textX for VS Code extension provides a syntax highlighting and intellisense for all domain specific languages based on [textX](https://github.com/textX/textX) using a [textX language server](https://github.com/textX/textX-LS).
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+## Features
 
-## Working with Markdown
+### Install/Uninstall textX Language Project
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+There are two options for _installing_ a textX language project:
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+- **editable mode** - by _right_ clicking on a project root directory, or a _setup.py_ file and clicking on `Install textX project`
+- **from wheel** - by opening a _textX view_, clicking on a _plus_ (+) icon and choosing a wheel (previously built manually)
 
-## For more information
+Install in an editable mode|  Install from a wheel
+:-------------------------:|:-------------------------:
+<img src="https://raw.githubusercontent.com/textX/textX-LS/master/client/media/install-project-editable.png" width="350" height="500" /> |  <img src="https://raw.githubusercontent.com/textX/textX-LS/master/client/media/install-project-wheel.png" width="400" height="500" />
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+Project could be uninstalled either from a context menu or by clicking on a _recycle bin_ icon (shows on hover), after which confirmation dialog will be shown.
 
-**Enjoy!**
+> **NOTE**: If the VS Code extension for a language is previously been activated (used), VS Code window will be restarted.
+
+<img src="https://raw.githubusercontent.com/textX/textX-LS/master/client/media/uninstall-project.png"/>
+
+### Languages / Generators Preview
+
+Registered textX languages and generators are listed in _textX view_.
+
+<img src="https://raw.githubusercontent.com/textX/textX-LS/master/client/media/textX-view.png" width="250" height="600" />
+
+### Model / Meta-model Validation
+
+Metamodel validation|  Model validation
+:-------------------------:|:-------------------------:
+<img src="https://raw.githubusercontent.com/textX/textX-LS/master/client/media/metamodel-validation.png" width="350" height="400" /> |  <img src="https://raw.githubusercontent.com/textX/textX-LS/master/client/media/model-validation.png" width="350" height="400" />
+
+### Default Syntax Highlighting
+
+See images above.
+
+> **NOTE**: Syntax highlighting for a languages installed in an editable mode is little bit hackish and not perfect, but it allows repaint model on grammar changes. See the following section.
+
+### Live Reload in Editable Mode
+
+When textX project is installed in **editable mode**, the extension watches for a `.tx` (grammar) file changes and generates a new syntax highlighting information from the changed grammar. Extension then re-paints and re-validates opened files.
+
+<img src="https://raw.githubusercontent.com/textX/textX-LS/master/client/media/live-reload.png" width="800" height="550" />
