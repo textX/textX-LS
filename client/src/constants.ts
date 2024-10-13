@@ -4,7 +4,7 @@ import { ICommand } from "./interfaces";
 import { getCommands } from "./utils";
 
 // Extension info
-export const EXTENSION_JSON = extensions.getExtension("textX.textx-lang").packageJSON;
+export const EXTENSION_JSON = extensions.getExtension("textX.textX").packageJSON;
 export const EXTENSION_NAME = EXTENSION_JSON.displayName;
 export const EXTENSION_PATH = EXTENSION_JSON.extensionLocation.fsPath;
 export const RESOURCES_PATH = join(EXTENSION_PATH, "resources");
