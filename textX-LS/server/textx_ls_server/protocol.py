@@ -2,7 +2,11 @@ from os.path import basename
 from typing import Optional, Union
 
 from pygls.protocol import LanguageServerProtocol
-from pygls.types import (
+from pygls.protocol.language_server import lsp_method
+from lsprotocol.types import (
+    TEXT_DOCUMENT_DID_CHANGE,
+    TEXT_DOCUMENT_DID_CLOSE,
+    TEXT_DOCUMENT_DID_OPEN,
     DidChangeTextDocumentParams,
     DidCloseTextDocumentParams,
     DidOpenTextDocumentParams,
@@ -22,7 +26,7 @@ class TextXDocument(Document):
 
     Attributes:
         project_name (str): project name
-        language_name (bool): language name
+        language_id (str): language id
         mm_loader (Callable|TextXMetaMetaModel|TextXMetaModel): a language metamodel
         _metamodel (TextXMetaModel): cached language metamodel
 
@@ -36,7 +40,7 @@ class TextXDocument(Document):
         self,
         uri,
         project_root,
-        language_name,
+        language_id,
         project_name,
         mm_loader,
         source=None,
@@ -46,7 +50,7 @@ class TextXDocument(Document):
 
         self.project_root = to_fs_path(project_root)
         self.project_name = project_name
-        self.language_name = language_name
+        self.language_id = language_id
         self.mm_loader = mm_loader
 
         self._metamodel = None
@@ -107,13 +111,14 @@ class TextXProtocol(LanguageServerProtocol):
     only textX languages.
 
     Overridden methods:
-        bf_text_document__did_change
-        bf_text_document__did_close
-        bf_text_document__did_open
+        lsp_text_document__did_change
+        lsp_text_document__did_close
+        lsp_text_document__did_open
 
     """
 
-    def bf_text_document__did_change(self, params: DidChangeTextDocumentParams) -> None:
+    @lsp_method(TEXT_DOCUMENT_DID_CHANGE)
+    def lsp_text_document__did_change(self, params: DidChangeTextDocumentParams) -> None:
         """Updates document's content if document is in the workspace.
 
         Args:
@@ -124,11 +129,12 @@ class TextXProtocol(LanguageServerProtocol):
             None
 
         """
-        if params.textDocument.uri in self.workspace.documents:
-            for change in params.contentChanges:
-                self.workspace.update_document(params.textDocument, change)
+        if params.text_document.uri in self.workspace.documents:
+            for change in params.content_changes:
+                self.workspace.update_document(params.text_document, change)
 
-    def bf_text_document__did_close(self, params: DidCloseTextDocumentParams) -> None:
+    @lsp_method(TEXT_DOCUMENT_DID_CLOSE)
+    def lsp_text_document__did_close(self, params: DidCloseTextDocumentParams) -> None:
         """Removes document from workspace if it is added previously.
 
         Args:
@@ -139,10 +145,11 @@ class TextXProtocol(LanguageServerProtocol):
             None
 
         """
-        if params.textDocument.uri in self.workspace.documents:
-            self.workspace.remove_document(params.textDocument.uri)
+        if params.text_document.uri in self.workspace.documents:
+            self.workspace.remove_document(params.text_document.uri)
 
-    def bf_text_document__did_open(self, params: DidOpenTextDocumentParams) -> None:
+    @lsp_method(TEXT_DOCUMENT_DID_OPEN)
+    def lsp_text_document__did_open(self, params: DidOpenTextDocumentParams) -> None:
         """Puts document to the workspace for supported files.
 
         Args:
@@ -153,8 +160,8 @@ class TextXProtocol(LanguageServerProtocol):
             None
 
         """
-        doc = params.textDocument
-        doc_uri, lang_id = doc.uri, doc.languageId
+        doc = params.text_document
+        doc_uri, lang_id = doc.uri, doc.language_id
 
         try:
             lang_desc = get_language_desc(lang_id, basename(doc_uri))
@@ -167,8 +174,8 @@ class TextXProtocol(LanguageServerProtocol):
                     )
                 )
                 return
-
-            self.workspace._docs[doc_uri] = TextXDocument(
+            
+            self.workspace._text_documents[doc_uri] = TextXDocument(
                 doc_uri,
                 self._get_project_root(doc_uri),
                 lang_id,

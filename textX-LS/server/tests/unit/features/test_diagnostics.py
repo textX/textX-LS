@@ -1,6 +1,6 @@
 import mock
 import pytest
-from pygls.types import Diagnostic, Position, Range
+from lsprotocol.types import Diagnostic, Position, Range
 
 from textx.exceptions import TextXSyntaxError
 from textx_ls_server.features import diagnostics as diag

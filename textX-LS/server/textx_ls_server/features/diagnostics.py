@@ -1,6 +1,6 @@
 from typing import List
 
-from pygls.types import Diagnostic, Position, Range
+from lsprotocol.types import Diagnostic, Position, Range
 
 from textx.exceptions import TextXError
 from textx_ls_core.features.validate import validate
@@ -21,9 +21,7 @@ def _create_diagnostics(doc: TextXDocument) -> List[Diagnostic]:
     """
     return [
         Diagnostic(_get_diagnostic_range(err), _get_diagnostic_message(err))
-        for err in validate(
-            doc.get_metamodel(True), doc.source, doc.path, doc.project_root
-        )
+        for err in validate(doc.get_metamodel(True), doc.source, doc.path)
     ]
 
 

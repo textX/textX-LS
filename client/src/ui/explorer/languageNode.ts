@@ -13,10 +13,12 @@ export class LanguageNode extends TextXNode {
     super(label, TreeItemCollapsibleState.None);
   }
 
+  // @ts-ignore
   public get tooltip(): string | undefined {
     return this.desc;
   }
 
+  // @ts-ignore
   public get description(): string | undefined {
     return this.desc;
   }

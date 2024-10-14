@@ -2,7 +2,8 @@ import { exec } from "child_process";
 import { mkdtemp, readdir, readFileSync, unlink } from "fs";
 import { tmpdir } from "os";
 import { dirname, join } from "path";
-import * as stripJsonComments from "strip-json-comments";
+// @ts-ignore
+import stripJsonComments from "strip-json-comments";
 import { extensions, window, workspace } from "vscode";
 import { ICommand } from "./interfaces";
 import { TokenColors } from "./types";

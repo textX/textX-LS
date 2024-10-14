@@ -5,7 +5,7 @@ import { IGeneratorService } from "../../services";
 import TYPES from "../../types";
 import { GeneratorNode } from "./generatorNode";
 
-export interface IGeneratorProvider extends TreeDataProvider<GeneratorNode> {}
+export interface IGeneratorProvider extends TreeDataProvider<GeneratorNode> { }
 
 @injectable()
 export class TextXGeneratorProvider implements IGeneratorProvider {
@@ -23,8 +23,8 @@ export class TextXGeneratorProvider implements IGeneratorProvider {
     return new Promise(async (resolve) => {
       const generators = await this.generatorService.getAll();
       const nodes = generators.map((gen) => new GeneratorNode(gen.language,
-                                                                   gen.target,
-                                                                   gen.description));
+        gen.target,
+        gen.description));
       resolve(nodes);
     });
   }
@@ -34,6 +34,7 @@ export class TextXGeneratorProvider implements IGeneratorProvider {
   }
 
   public refresh(): void {
+    // @ts-ignore
     this._onDidChangeTreeData.fire();
   }
 

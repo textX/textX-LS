@@ -6,7 +6,7 @@ export class GeneratorNode extends TreeItem {
 
   public readonly contextValue = "generator";
   public readonly iconPath = {
-    dark: join(RESOURCES_PATH , "dark", "gears.svg"),
+    dark: join(RESOURCES_PATH, "dark", "gears.svg"),
     light: join(RESOURCES_PATH, "light", "gears.svg"),
   };
 
@@ -18,10 +18,12 @@ export class GeneratorNode extends TreeItem {
     super(`${language}-${target}`, TreeItemCollapsibleState.None);
   }
 
+  // @ts-ignore
   public get tooltip(): string | undefined {
     return this.desc;
   }
 
+  // @ts-ignore
   public get description(): string | undefined {
     return this.desc;
   }

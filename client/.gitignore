@@ -1,0 +1,7 @@
+node_modules
+out
+textxls
+libs
+.vscode-test
+dist
+vsc-extension-quickstart.md
