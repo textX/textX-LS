@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
-// import { trueCasePathSync } from "true-case-path";
+import { trueCasePathSync } from "true-case-path";
 import { commands, window } from "vscode";
 import { IEventService, IExtensionService, IGeneratorService, ISyntaxHighlightService, IWatcherService } from ".";
 import {
@@ -172,10 +172,10 @@ export class ProjectService implements IProjectService {
     // also it does not work with drive letter, for e.g. "C:\\x\\y\\z"
     if (IS_WIN) {
       // correct case
-      // distLocation = trueCasePathSync(distLocation);
-      // if (distLocation && distLocation[1] === ":") {
-      //   distLocation = `**\\${distLocation.slice(2)}`;
-      // }
+      distLocation = trueCasePathSync(distLocation);
+      if (distLocation && distLocation[1] === ":") {
+        distLocation = `**\\${distLocation.slice(2)}`;
+      }
     }
 
     // watch grammars

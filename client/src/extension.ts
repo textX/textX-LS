@@ -89,7 +89,7 @@ export async function activate(context: ExtensionContext) {
 
   client.start();
 
-  // context.subscriptions.push(client);
+  context.subscriptions.push(client);
 }
 
 export function deactivate(): Thenable<void> {

@@ -30,7 +30,7 @@ export async function getPython(): Promise<string> {
 
   python = await window.showInputBox({
     ignoreFocusOut: true,
-    placeHolder: "Enter a path to the python 3.5+.",
+    placeHolder: "Enter a path to the python 3.8+.",
     prompt: "This python will be used to create a virtual environment inside the extension directory.",
     validateInput: async (value: string) => {
       if (await checkPythonVersion(value)) {
@@ -43,7 +43,7 @@ export async function getPython(): Promise<string> {
 
   // User canceled the input
   if (python === "undefined") {
-    throw new Error("Python 3.5+ is required!");
+    throw new Error("Python 3.8+ is required!");
   }
 
   return python;
