@@ -40,6 +40,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "pygls==1.3.1",
+        "lsprotocol==2023.0.1",
         "textx>=4.0.1",
         "setuptools==75.1.0",
         "textx-ls-core>=0.2.0",
