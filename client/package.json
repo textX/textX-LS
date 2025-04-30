@@ -220,10 +220,12 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@vscode/debugadapter": "^1.68.0",
     "inversify": "^6.0.2",
     "reflect-metadata": "^0.2.2",
     "strip-json-comments": "^5.0.1",
     "true-case-path": "^2.2.1",
+    "vscode-debugprotocol": "^1.51.0",
     "vscode-languageclient": "^9.0.1"
   }
 }
