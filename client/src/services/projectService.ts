@@ -2,7 +2,7 @@ import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
 import { trueCasePathSync } from "true-case-path";
-import { commands, window } from "vscode";
+import { ExtensionContext, commands, window } from "vscode";
 import { IEventService, IExtensionService, IGeneratorService, ISyntaxHighlightService, IWatcherService } from ".";
 import {
   CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
@@ -30,6 +30,7 @@ export class ProjectService implements IProjectService {
     @inject(TYPES.IExtensionService) private readonly extensionService: IExtensionService,
     @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService,
     @inject(TYPES.IWatcherService) private readonly watcherService: IWatcherService,
+    @inject(TYPES.ExtensionContext) private readonly extensionContext: ExtensionContext,
   ) {
     this.registerCommands();
   }
@@ -145,7 +146,7 @@ export class ProjectService implements IProjectService {
       } else {
         const path = fileOrFolderOrTreeItem.fsPath;
         const setuppyPath = basename(path) === "setup.py" ? path : join(path, "setup.py");
-        projectName = execSync(`${getPythonFromVenvPath()} ${setuppyPath} --name`);
+        projectName = execSync(`${getPythonPath(this.extensionContext)} ${setuppyPath} --name`);
       }
 
       if (projectName) {

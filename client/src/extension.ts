@@ -52,6 +52,8 @@ function startLangServer(
 
 export async function activate(context: ExtensionContext) {
 
+  container.bind<ExtensionContext>(TYPES.ExtensionContext).toConstantValue(context);
+
   if (isStartedInDebugMode()) {
     // Development - Run the server manually
     client = startLangServerTCP(parseInt(process.env.SERVER_PORT || "2087"));
