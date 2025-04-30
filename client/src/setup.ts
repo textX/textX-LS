@@ -1,8 +1,8 @@
 import { existsSync } from "fs";
 import { join } from "path";
-import { ExtensionContext, ProgressLocation, window, workspace } from "vscode";
-import { IS_WIN, LS_VENV_NAME, LS_VENV_PATH, LS_WHEELS_DIR, TEXTX_LS_SERVER } from "./constants";
-import { execAsync, readdirAsync } from "./utils";
+import { ExtensionContext, ProgressLocation, Uri, window, workspace } from "vscode";
+import { IS_WIN, LS_VENV_NAME, LS_WHEELS_DIR, TEXTX_LS_SERVER } from "./constants";
+import { execAsync, readdirAsync, uriExists } from "./utils";
 
 async function checkPythonVersion(python: string): Promise<boolean> {
   try {
@@ -13,13 +13,13 @@ async function checkPythonVersion(python: string): Promise<boolean> {
   }
 }
 
-async function createVirtualEnvironment(python: string, name: string, cwd: string): Promise<string> {
-  const path = join(cwd, name);
-  if (!existsSync(path)) {
+async function createVirtualEnvironment(python: string, name: string, cwd: Uri): Promise<string> {
+  const uri = Uri.joinPath(cwd, name);
+  if (!await uriExists(uri)) {
     const createVenvCmd = `${python} -m venv ${name}`;
     await execAsync(createVenvCmd, { cwd });
   }
-  return path;
+  return uri.fsPath;
 }
 
 export async function getPython(): Promise<string> {
@@ -53,7 +53,8 @@ function getPythonCrossPlatform(): string {
   return IS_WIN ? "python" : "python3";
 }
 
-export function getPythonFromVenvPath(venvPath: string = LS_VENV_PATH): string {
+export function getPythonPath(context: ExtensionContext): string {
+  const venvPath = Uri.joinPath(context.globalStorageUri, LS_VENV_NAME).fsPath;
   return IS_WIN ? join(venvPath, "Scripts", "python") : join(venvPath, "bin", "python");
 }
 
@@ -88,7 +89,7 @@ async function installAllWheelsFromDirectory(python: string, cwd: string) {
 
 export async function installLSWithProgress(context: ExtensionContext): Promise<string> {
   // Check if LS is already installed
-  let venvPython = getPythonFromVenvPath();
+  let venvPython = getPythonPath(context);
   const isServerPackageInstalled = !!(await getVenvPackageVersion(venvPython, TEXTX_LS_SERVER));
 
   if (isServerPackageInstalled) {
@@ -107,11 +108,11 @@ export async function installLSWithProgress(context: ExtensionContext): Promise<
         const python = await getPython();
 
         // Create virtual environment
-        const venv = await createVirtualEnvironment(python, LS_VENV_NAME, context.extensionPath);
+        const venv = await createVirtualEnvironment(python, LS_VENV_NAME, context.globalStorageUri);
 
         // Install source from wheels
         venvPython = getPythonFromVenvPath(venv);
-        const wheelsPath = join(context.extensionPath, LS_WHEELS_DIR);
+        const wheelsPath = join(venv, LS_WHEELS_DIR);
         await installAllWheelsFromDirectory(venvPython, wheelsPath);
 
         window.showInformationMessage("textX extension is ready! :)");

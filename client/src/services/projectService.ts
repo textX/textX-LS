@@ -10,7 +10,7 @@ import {
   IS_WIN, VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXProject } from "../interfaces";
-import { getPythonFromVenvPath } from "../setup";
+import { getPythonPath } from "../setup";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
 

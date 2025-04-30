@@ -4,7 +4,7 @@ import { tmpdir } from "os";
 import { dirname, join } from "path";
 // @ts-ignore
 import stripJsonComments from "strip-json-comments";
-import { extensions, window, workspace } from "vscode";
+import { extensions, Uri, window, workspace } from "vscode";
 import { ICommand } from "./interfaces";
 import { TokenColors } from "./types";
 
@@ -121,4 +121,18 @@ export function timeoutPromise<T>(ms: number, promise: Promise<T>): Promise<T> {
 
 export function textxExtensionName(name: string): string {
   return `textX.${name.toLowerCase().replace(/_/g, "-")}`;
+}
+
+/**
+ * Checks if a file/folder exists at the given Uri.
+ * @param uri - The Uri to check.
+ * @returns `true` if the path exists, `false` otherwise.
+ */
+export async function uriExists(uri: Uri): Promise<boolean> {
+  try {
+    await workspace.fs.stat(uri); // Throws if file doesn't exist
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
