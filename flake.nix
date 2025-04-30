@@ -11,7 +11,7 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          config = { allowUnfree = true; };
+          config.allowUnfree = true;
         };
 
         # Python development environment
@@ -25,23 +25,8 @@
           debugpy
         ]);
 
-
-        esbuildPMExtension = pkgs.vscode-utils.extensionFromVscodeMarketplace {
-          name = "esbuild-problem-matchers";
-          publisher = "connor4312";
-          version = "0.0.3";
-          sha256 = "esLqld9bTlFJ9/qx4qlIx1F3MtMZpr8G9/FMqGvAvtg=";
-        };
-
-        vscode-with-extensions = pkgs.vscode-with-extensions.override {
-          vscodeExtensions = with pkgs.vscode-extensions; [
-            ms-python.python
-            ms-python.debugpy
-            esbuildPMExtension
-          ];
-        };
-
         deps = with pkgs; [
+          vscode
           nodejs
           typescript
           vscode-with-extensions
