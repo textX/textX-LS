@@ -37,7 +37,7 @@
         devShells.default = pkgs.mkShell {
           packages = [ pythonEnv ] ++ deps;
 
-          venvDir = "./venv";
+          VIRTUAL_ENV = "./venv";
           shellHook = ''
             echo "Python environment env: ${pythonEnv}"
             echo "Node.js version: $(node --version)"
@@ -49,18 +49,18 @@
             fi
 
             # Create virtualenv if it doesn't exist
-            if [ ! -d "$venvDir" ]; then
+            if [ ! -d "$VIRTUAL_ENV" ]; then
               echo "=== Creating Python virtual env and installing deps ==="
-              python -m venv "$venvDir"
+              python -m venv "$VIRTUAL_ENV"
 
               # Activate the virtualenv
-              source "$venvDir/bin/activate"
+              source "$VIRTUAL_ENV/bin/activate"
 
               pip install --upgrade pip
               pip install -r requirements.txt
             else
               # Activate the virtualenv
-              source "$venvDir/bin/activate"
+              source "$VIRTUAL_ENV/bin/activate"
             fi
 
             echo "Ready for the development!"
