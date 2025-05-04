@@ -65,31 +65,32 @@ export async function activate(context: ExtensionContext) {
     }
   }
 
-  client.onDidChangeState((event) => {
-    if (event.newState === State.Running) {
-      // inversifyjs - get instances
-      const generatorProvider = container.get<IGeneratorProvider>(TYPES.IGeneratorProvider);
-      const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
-      const watcherService = container.get<IWatcherService>(TYPES.IWatcherService);
+  try {
+    await client.start();
 
-      // Tree Providers
-      context.subscriptions.push(window.registerTreeDataProvider("textxGenerators", generatorProvider));
-      context.subscriptions.push(window.registerTreeDataProvider("textxLanguages", languageProvider));
-      context.subscriptions.push(watcherService);
+    // inversifyjs - get instances
+    const generatorProvider = container.get<IGeneratorProvider>(TYPES.IGeneratorProvider);
+    const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
+    const watcherService = container.get<IWatcherService>(TYPES.IWatcherService);
 
-      // Ping server -  temporary fix for windows
-      // It's like server goes into IDLE state and subprocesses are paused
-      if (!isStartedInDebugMode() && IS_WIN) {
-        setInterval(() => {
-          commands.executeCommand(CMD_PING.external);
-        }, PING_INTERVAL);
-      }
+    context.subscriptions.push(
+      window.registerTreeDataProvider("textxGenerators", generatorProvider),
+      window.registerTreeDataProvider("textxLanguages", languageProvider),
+      watcherService,
+      client
+    );
+
+    // Ping server -  temporary fix for windows
+    // It's like server goes into IDLE state and subprocesses are paused
+    if (!isStartedInDebugMode() && IS_WIN) {
+      setInterval(() => {
+        commands.executeCommand(CMD_PING.external);
+      }, PING_INTERVAL);
     }
-  });
+  } catch (err) {
+    window.showErrorMessage(`textX server failed to initialize: ${err}`);
+  }
 
-  client.start();
-
-  context.subscriptions.push(client);
 }
 
 export function deactivate(): Thenable<void> {
