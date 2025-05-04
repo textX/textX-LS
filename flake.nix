@@ -15,9 +15,8 @@
         };
 
         # Python development environment
-        pythonEnv = pkgs.python311.withPackages (ps: with ps; [
+        pythonEnv = pkgs.python312.withPackages (ps: with ps; [
           pip
-          setuptools
           black
           pytest
           pytest-cov
