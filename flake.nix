@@ -27,6 +27,7 @@
         deps = with pkgs; [
           vscode
           nodejs
+          vsce
           typescript
           vscode-with-extensions
           ruff
