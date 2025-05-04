@@ -10,7 +10,7 @@ import {
   IS_WIN, VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXProject } from "../interfaces";
-import { getPythonFromVenvPath } from "../setup";
+import { getPython } from "../setup";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
 
@@ -145,7 +145,7 @@ export class ProjectService implements IProjectService {
       } else {
         const path = fileOrFolderOrTreeItem.fsPath;
         const setuppyPath = basename(path) === "setup.py" ? path : join(path, "setup.py");
-        projectName = execSync(`${getPythonFromVenvPath()} ${setuppyPath} --name`);
+        projectName = execSync(`${getPython()} ${setuppyPath} --name`);
       }
 
       if (projectName) {

@@ -13,8 +13,6 @@ export const RESOURCES_PATH = join(EXTENSION_PATH, "resources");
 export const EXTENSION_GENERATOR_TARGET = "vscode";
 export const EXTENSION_SYNTAX_HIGHLIGHT_TARGET = "textmate";
 export const IS_WIN = process.platform === "win32";
-export const LS_VENV_NAME = "textxls";
-export const LS_VENV_PATH = join(EXTENSION_PATH, LS_VENV_NAME);
 export const LS_WHEELS_DIR = "wheels";
 export const TEXTX_LS_CORE = "textx_ls_core";
 export const TEXTX_LS_SERVER = "textx_ls_server";
