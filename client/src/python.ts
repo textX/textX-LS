@@ -1,6 +1,6 @@
 import { existsSync } from "fs";
 import { join } from "path";
-import { ExtensionContext, ProgressLocation, window, workspace, extensions } from "vscode";
+import { ExtensionContext, ProgressLocation, window, extensions } from "vscode";
 import { LS_WHEELS_DIR, TEXTX_LS_SERVER } from "./constants";
 import { execAsync, readdirAsync } from "./utils";
 
@@ -13,7 +13,7 @@ async function checkPythonVersion(python: string): Promise<boolean> {
   }
 }
 
-export async function getPython(): Promise<string> {
+async function getPython(): Promise<string> {
   // 1. Try python configured through Python extension "Select Interpreter"
   const pythonExt = extensions.getExtension('ms-python.python');
   if (pythonExt) {
@@ -46,7 +46,9 @@ export async function getPython(): Promise<string> {
     prompt: "Could not find valid Python automatically. Please specify path to Python 3.8+",
     validateInput: async (value: string) => {
       const trimmed = value.trim();
-      if (!trimmed) return "Path cannot be empty";
+      if (!trimmed) {
+        return "Path cannot be empty";
+      }
       return await checkPythonVersion(trimmed)
         ? null
         : "Invalid Python (requires 3.8+)";
@@ -72,7 +74,9 @@ async function getSystemPythonPath(): Promise<string | undefined> {
   for (const cmd of candidates) {
     try {
       const result = await execAsync(`${cmd} --version`, { stdio: 'pipe' });
-      if (result) return cmd;
+      if (result) {
+        return cmd;
+      }
     } catch {
       continue;
     }
@@ -94,6 +98,25 @@ async function getPackageVersion(python: string, name: string): Promise<number[]
     return packageVersion.pop().match(new RegExp(/\d/g)).map((v) => Number.parseInt(v));
   } catch (err) {
     return null;
+  }
+}
+
+/**
+ * Get the package name from an editable-installed Python project.
+ * @param projectPath - Absolute path to the Python project.
+ * @returns Package name (or `undefined` if not found).
+ */
+export async function getEditablePackageName(projectPath: string): Promise<string | undefined> {
+  const python = await getPython();
+  const jsonPackageMetadata = await execAsync(`${python} -m pip list --editable --format json`);
+  try {
+      const packages = JSON.parse(jsonPackageMetadata);
+      const foundPackage = packages.find((pkg: any) =>
+          pkg.editable_project_location.toLowerCase() === projectPath.toLowerCase()
+      );
+      return foundPackage?.name;
+  } catch (e) {
+      console.error(`Failed to parse pip output: ${e}`);
   }
 }
 

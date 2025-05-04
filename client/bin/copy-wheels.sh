@@ -13,8 +13,8 @@ server_dist_dir="$server_dir/dist"
 
 
 # Build wheels
-cd $core_dir && python setup.py sdist bdist_wheel clean --all
-cd $server_dir && python setup.py sdist bdist_wheel clean --all
+cd $core_dir && flit build
+cd $server_dir && flit build
 
 # Copy wheels
 cd $core_dist_dir && cp *.whl $client_wheels_dir

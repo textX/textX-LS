@@ -19,7 +19,7 @@ textX for VS Code extension provides a syntax highlighting and intellisense for 
 
 There are two options for _installing_ a textX language project:
 
-- **editable mode** - by _right_ clicking on a project root directory, or a _setup.py_ file and clicking on `Install textX project`
+- **editable mode** - by _right_ clicking on a project root directory, or a _setup.py_, _setup.cfg_, or _pyproject.toml_ file and clicking on `Install textX project`
 - **from wheel** - by opening a _textX view_, clicking on a _plus_ (+) icon and choosing a wheel (previously built manually)
 
 Install in an editable mode|  Install from a wheel

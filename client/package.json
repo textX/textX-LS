@@ -3,7 +3,7 @@
   "displayName": "textX",
   "description": "VS Code extension for domain specific languages based on textX",
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "0.3.0-dev.0",
   "publisher": "textX",
   "icon": "media/textX-logo.png",
   "author": {
@@ -123,7 +123,7 @@
         {
           "command": "textx.installProjectEditable",
           "group": "textX@1",
-          "when": "resourceLangId == python && resourceFilename == setup.py"
+          "when": "resourceFilename == 'setup.py' || resourceFilename == 'setup.cfg' || resourceFilename == 'pyproject.toml'"
         },
         {
           "command": "textx.installProjectEditable",
@@ -133,7 +133,7 @@
         {
           "command": "textx.uninstallProject",
           "group": "textX@2",
-          "when": "resourceLangId == python && resourceFilename == setup.py"
+          "when": "resourceFilename == 'setup.py' || resourceFilename == 'setup.cfg' || resourceFilename == 'pyproject.toml'"
         },
         {
           "command": "textx.uninstallProject",

@@ -1,4 +1,3 @@
-import { execSync } from "child_process";
 import { inject, injectable } from "inversify";
 import { basename, dirname, join } from "path";
 import { trueCasePathSync } from "true-case-path";
@@ -10,9 +9,9 @@ import {
   IS_WIN, VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXProject } from "../interfaces";
-import { getPython } from "../setup";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
+import { getEditablePackageName } from "../python";
 
 export interface IProjectService {
   getInstalled(): Promise<Map<string, ITextXProject>>;
@@ -110,7 +109,8 @@ export class ProjectService implements IProjectService {
     commands.registerCommand(CMD_PROJECT_INSTALL_EDITABLE.internal, async (fileOrFolder) => {
       if (fileOrFolder) {
         const path = fileOrFolder.fsPath;
-        const pyModulePath = basename(path) === "setup.py" ? dirname(path) : path;
+        const pyModulePath = ["setup.py", "setup.cfg", "pyproject.toml"].includes(basename(path))
+          ? dirname(path) : path;
         this.install(pyModulePath, true);
       } else {
         window.showErrorMessage("Cannot get python module path.");
@@ -144,9 +144,9 @@ export class ProjectService implements IProjectService {
         projectName = fileOrFolderOrTreeItem.projectName;
       } else {
         const path = fileOrFolderOrTreeItem.fsPath;
-        const setuppyPath = basename(path) === "setup.py" ? path : join(path, "setup.py");
-        const python = await getPython();
-        projectName = execSync(`${python} ${setuppyPath} --name`);
+        const projectPath = ["setup.py", "setup.cfg", "pyproject.toml"].includes(basename(path))
+          ? dirname(path) : path;
+        projectName = await getEditablePackageName(projectPath);
       }
 
       if (projectName) {

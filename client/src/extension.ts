@@ -5,7 +5,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, State } from "vsc
 import { CMD_PING, IS_WIN, PING_INTERVAL, TEXTX_LS_SERVER } from "./constants";
 import container from "./inversify.config";
 import { IWatcherService } from "./services";
-import { installLSWithProgress } from "./setup";
+import { installLSWithProgress } from "./python";
 import TYPES from "./types";
 import { IGeneratorProvider, ILanguageProvider } from "./ui/explorer";
 

@@ -122,3 +122,4 @@ export function timeoutPromise<T>(ms: number, promise: Promise<T>): Promise<T> {
 export function textxExtensionName(name: string): string {
   return `textX.${name.toLowerCase().replace(/_/g, "-")}`;
 }
+
