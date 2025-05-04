@@ -1,7 +1,7 @@
 import { existsSync } from "fs";
 import { join } from "path";
-import { ExtensionContext, ProgressLocation, window, workspace } from "vscode";
-import { IS_WIN, LS_WHEELS_DIR, TEXTX_LS_SERVER } from "./constants";
+import { ExtensionContext, ProgressLocation, window, workspace, extensions } from "vscode";
+import { LS_WHEELS_DIR, TEXTX_LS_SERVER } from "./constants";
 import { execAsync, readdirAsync } from "./utils";
 
 async function checkPythonVersion(python: string): Promise<boolean> {
@@ -14,34 +14,70 @@ async function checkPythonVersion(python: string): Promise<boolean> {
 }
 
 export async function getPython(): Promise<string> {
-  let python = workspace.getConfiguration("python").get<string>("defaultInterpreterPath", getPythonCrossPlatform());
-  if (await checkPythonVersion(python)) {
-    return python;
+  // 1. Try python configured through Python extension "Select Interpreter"
+  const pythonExt = extensions.getExtension('ms-python.python');
+  if (pythonExt) {
+    await pythonExt.activate();
+    const api = pythonExt.exports;
+    const envPath = api.environments?.getActiveEnvironmentPath?.();
+    console.log('Active Python environment:', envPath);
+    return envPath?.path;
   }
 
-  python = await window.showInputBox({
+  // 2. Fallback to VIRTUAL_ENV python (if in virtual environment)
+  const virtualEnvPython = process.env.VIRTUAL_ENV
+    ? join(process.env.VIRTUAL_ENV, process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python')
+    : undefined;
+
+  if (virtualEnvPython && await checkPythonVersion(virtualEnvPython)) {
+    return virtualEnvPython;
+  }
+
+  // 3. Try system python (cross-platform)
+  const systemPython = await getSystemPythonPath(); // Implement this function based on OS
+  if (systemPython && await checkPythonVersion(systemPython)) {
+    return systemPython;
+  }
+
+  // 4. Finally prompt user
+  const python = await window.showInputBox({
     ignoreFocusOut: true,
-    placeHolder: "Enter a path to the python 3.8+.",
-    prompt: "This python will be used to install necessary dependencies. You can use Python from a venv.",
+    placeHolder: "Enter path to Python 3.8+ interpreter",
+    prompt: "Could not find valid Python automatically. Please specify path to Python 3.8+",
     validateInput: async (value: string) => {
-      if (await checkPythonVersion(value)) {
-        return null;
-      } else {
-        return "Not a valid python path!";
-      }
+      const trimmed = value.trim();
+      if (!trimmed) return "Path cannot be empty";
+      return await checkPythonVersion(trimmed)
+        ? null
+        : "Invalid Python (requires 3.8+)";
     },
   });
 
-  // User canceled the input
-  if (python === "undefined") {
-    throw new Error("Python 3.8+ is required!");
+  if (python === undefined) {
+    throw new Error("Python 3.8+ is required for this extension.");
   }
 
-  return python;
+  return python.trim();
 }
 
-function getPythonCrossPlatform(): string {
-  return IS_WIN ? "python" : "python3";
+// Helper function to get system Python path
+async function getSystemPythonPath(): Promise<string | undefined> {
+  const candidates = [
+    'python3',  // Unix-like systems
+    'python',   // Windows/fallback
+    'python38', // Specific version fallbacks
+    'python3.8'
+  ];
+
+  for (const cmd of candidates) {
+    try {
+      const result = await execAsync(`${cmd} --version`, { stdio: 'pipe' });
+      if (result) return cmd;
+    } catch {
+      continue;
+    }
+  }
+  return undefined;
 }
 
 async function getPythonVersion(python: string): Promise<number[]> {

@@ -145,7 +145,8 @@ export class ProjectService implements IProjectService {
       } else {
         const path = fileOrFolderOrTreeItem.fsPath;
         const setuppyPath = basename(path) === "setup.py" ? path : join(path, "setup.py");
-        projectName = execSync(`${getPython()} ${setuppyPath} --name`);
+        const python = await getPython();
+        projectName = execSync(`${python} ${setuppyPath} --name`);
       }
 
       if (projectName) {
