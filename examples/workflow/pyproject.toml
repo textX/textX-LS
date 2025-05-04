@@ -1,0 +1,47 @@
+[project]
+name = "textx-lang-workflow"
+version = "0.1.0"
+description = "Workflow textX example"
+authors = [
+    {name = "textX team", email = "igor.dejanovic@gmail.com"},
+]
+license = {text = "MIT"}
+keywords = ["textX", "workflow", "example", "DSL"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+requires-python = ">=3.8"
+dependencies = [
+    "textX >= 4",
+    "importlib-metadata; python_version < '3.10'",  # For entry_points backward compatibility
+]
+
+[project.urls]
+Homepage = "https://github.com/textX/textX-LS/examples/workflow"
+Repository = "https://github.com/textX/textX-LS/"
+
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=3.8.0,<4"]
+
+[tool.flit.module]
+name = "tx_workflow"
+
+[tool.flit.sdist]
+exclude = ["**/.*"]
+
+[project.entry-points.textx_languages]
+workflow = "tx_workflow:workflow"

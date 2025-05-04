@@ -153,9 +153,9 @@ async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str
     """Command that installs a textX language project.
 
     Args:
-        params: path to the python project directory (containing `setup.py`) or
-                path to the wheel and flag that indicates if project should be
-                install in editable (development) mode
+        params: path to the python project directory (containing `setup.py`, `setup.cfg`,
+                or `pyproject.toml`) or path to the wheel and flag that indicates if
+                project should be install in editable (development) mode
     Returns:
         Project name, version and package dist location or Nones
     Raises:

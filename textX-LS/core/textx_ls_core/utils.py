@@ -63,8 +63,8 @@ def get_file_extension(uri: str) -> str:
 
 
 def get_project_name_and_version(folder_or_wheel: str) -> Tuple[str, str]:
-    """Returns project name for a given project folder (with setup.py)
-    or wheel file.
+    """Returns project name for a given project folder (with setup.py, setup.cfg,
+    or pyproject.toml) or wheel file.
 
     Args:
         folder_or_wheel: path to the folder or wheel of textx language project
@@ -78,13 +78,16 @@ def get_project_name_and_version(folder_or_wheel: str) -> Tuple[str, str]:
     # Folder with setup.py inside (project) ...
     setuppy = join(folder_or_wheel, "setup.py")
     if isfile(setuppy):
-        from unittest import mock
-        import setuptools
+        try:
+            from unittest import mock
+            import setuptools
 
-        with mock.patch.object(setuptools, "setup") as mock_setup:
-            with open(setuppy, "r") as f:
-                exec(f.read())
-            project_metadata.update(mock_setup.call_args[1])
+            with mock.patch.object(setuptools, "setup") as mock_setup:
+                with open(setuppy, "r") as f:
+                    exec(f.read())
+                project_metadata.update(mock_setup.call_args[1])
+        except Exception:
+            pass
     # ... or setup.cfg
     setupcfg = join(folder_or_wheel, "setup.cfg")
     if isfile(setupcfg):
@@ -94,6 +97,19 @@ def get_project_name_and_version(folder_or_wheel: str) -> Tuple[str, str]:
             cfg_parser = ConfigParser()
             cfg_parser.read(setupcfg)
             project_metadata.update(dict(cfg_parser.items("metadata")))
+        except Exception:
+            pass
+
+    # ... or pyproject.toml
+    pyproject = join(folder_or_wheel, "pyproject.toml")
+    if isfile(pyproject):
+        try:
+            import tomllib  # Requires Python 3.11+ standard library
+
+            with open(pyproject, "rb") as f:
+                data = tomllib.load(f)
+
+            project_metadata.update(data["project"])
         except Exception:
             pass
 
