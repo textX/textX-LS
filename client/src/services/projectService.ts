@@ -81,8 +81,8 @@ export class ProjectService implements IProjectService {
         if (isActive) {
           await commands.executeCommand(VS_CMD_WINDOW_RELOAD);
         }
-      } catch (_) {
-        window.showErrorMessage(`Uninstalling extension for project '${projectName}' failed.`);
+      } catch (err) {
+        window.showErrorMessage(`Uninstalling extension for project '${projectName}' failed: ${err}`);
       }
     }
   }
