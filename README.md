@@ -47,13 +47,16 @@ Building a custom VS Code extension for newly registered language is delegated t
 
 ## Development Setup
 
-This project requires _python 3.6_ and _node v10.16_ for development.
-
 **Installation steps:**
 
-1. `python -m venv env && source env/bin/activate`
-1. `pip install -r requirements.txt`
-1. `cd client && npm i`
+1. Install [Nix](https://nixos.org/download/) (used for reproducible envs).
+   Be sure to configure flake feature by adding:
+   ```
+   experimental-features = nix-command flakes
+   ```
+   to `~/.config/nix/nix.conf`. See more here: https://nixos.wiki/wiki/flakes
+1. `nix develop` - will create a shell with all dependencies. See [direnv tool](https://direnv.net/)
+   which can be used to automate this step.
 
 To register _pre-commit_ hooks, run: `pre-commit install`
 To run _pre-commit_ hooks manually: `pre-commit run --all-files`
@@ -61,6 +64,12 @@ To run _pre-commit_ hooks manually: `pre-commit run --all-files`
 **Running the extension in VS Code**:
 
 In order to run the extension, **client** directory must be added as a workspace folder or opened as a root project.
+
+E.g. you can run:
+
+``` sh
+code --extensions-dir vscode-extensions client
+```
 
 Now, switch to _debug_ view, choose `Server + Client` option and press _F5_.
 
