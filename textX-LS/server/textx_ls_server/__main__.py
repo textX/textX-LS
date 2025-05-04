@@ -1,3 +1,4 @@
+import sys
 import argparse
 import logging
 
@@ -26,6 +27,8 @@ def main():
     parser = argparse.ArgumentParser()
     add_arguments(parser)
     args = parser.parse_args()
+
+    print(f"LSP Server Python: {sys.executable}")
 
     if args.tcp:
         textx_server.start_tcp(args.host, args.port)
