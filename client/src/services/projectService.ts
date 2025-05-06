@@ -1,7 +1,6 @@
 import { inject, injectable } from "inversify";
 import { basename, dirname } from "path";
-import { minimatch } from 'minimatch';
-import { commands, languages, TextDocument, window, workspace } from "vscode";
+import { commands, window, workspace } from "vscode";
 import { IEventService, IGeneratorService, ISyntaxHighlightService } from ".";
 import {
   CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
@@ -9,7 +8,7 @@ import {
   CMD_VALIDATE_DOCUMENTS,
   CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR,
 } from "../constants";
-import { ITextXLanguage, ITextXProject } from "../interfaces";
+import { ITextXProject } from "../interfaces";
 import TYPES from "../types";
 import { ProjectNode } from "../ui/explorer/projectNode";
 import { getEditablePackageName } from "../python";
@@ -23,8 +22,6 @@ export interface IProjectService {
 
 @injectable()
 export class ProjectService implements IProjectService {
-  private languages: Map<string, ITextXLanguage> = new Map<string, ITextXLanguage>();
-  private open_handlers: Map<string, Disposable> = new Map<string, Disposable>();
 
   constructor(
     @inject(TYPES.IGeneratorService) private readonly generatorService: IGeneratorService,
@@ -37,7 +34,7 @@ export class ProjectService implements IProjectService {
     workspace.onDidSaveTextDocument(doc => {
       if (doc.languageId === 'textx') {
         this.loadLanguageKeywordsForGrammar(doc.fileName);
-        -       commands.executeCommand(CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR.external, doc.fileName);
+-       commands.executeCommand(CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR.external, doc.fileName);
       }
     });
 
@@ -53,49 +50,16 @@ export class ProjectService implements IProjectService {
   async refreshInstalled() {
     let projects = await this.getInstalled();
     Object.values(projects).forEach((p: ITextXProject) => {
-      p.languages?.forEach((language) => this.registerLanguage(language));
-      this.loadLanguageKeywordsForProject(p.projectName);
-      commands.executeCommand(CMD_VALIDATE_DOCUMENTS.external, p.projectName);
+        this.loadLanguageKeywordsForProject(p.projectName);
+        commands.executeCommand(CMD_VALIDATE_DOCUMENTS.external, p.projectName);
     });
-  }
-
-  private registerLanguage(language: ITextXLanguage): void {
-    this.languages[language.name] = language;
-    const setLanguage = async (document: TextDocument) => {
-      if (document.languageId === 'plaintext' && minimatch(document.fileName, `**/${language.pattern}`)) {
-        console.log(document.languageId);
-        const doc = await languages.setTextDocumentLanguage(document, language.name);
-        console.log(document.languageId);
-      }
-    };
-
-    // Handle existing documents
-    workspace.textDocuments.forEach(doc => {
-      setLanguage(doc).catch(err => console.error(err));
-    });
-
-    // Handle future documents
-    this.open_handlers[language.name] = workspace.onDidOpenTextDocument(doc => {
-      setLanguage(doc).catch(err => console.error(err));
-    });
-  }
-
-  private unregisterLanguage(language: ITextXLanguage) {
-    this.languages.delete(language.name);
-    this.open_handlers[language.name].dispose();
-    this.open_handlers.delete(language.name);
   }
 
   public async install(pyModulePath: string, editableMode: boolean = false): Promise<void> {
-    const [project_name, languages] = await commands.executeCommand<[string, Array<ITextXLanguage>]>(
+    const installed = await commands.executeCommand<string>(
       CMD_PROJECT_INSTALL.external, pyModulePath, editableMode);
 
-    if (project_name) {
-      languages.forEach((language) => this.registerLanguage(language));
-
-      this.loadLanguageKeywordsForProject(project_name);
-      commands.executeCommand(CMD_VALIDATE_DOCUMENTS.external, project_name);
-
+    if (installed) {
       // Refresh textX languages view
       this.eventService.fireLanguagesChanged();
     }
@@ -106,12 +70,9 @@ export class ProjectService implements IProjectService {
   }
 
   public async uninstall(projectName: string): Promise<void> {
-    const [isUninstalled, languages] = await commands.executeCommand<[boolean, Array<ITextXLanguage>]>(
-      CMD_PROJECT_UNINSTALL.external, projectName);
-
+    const isUninstalled = await commands.executeCommand<string>(CMD_PROJECT_UNINSTALL.external,
+      projectName);
     if (isUninstalled) {
-      languages.forEach((language) => this.unregisterLanguage(language));
-
       // Refresh textX languages view
       this.eventService.fireLanguagesChanged();
     }

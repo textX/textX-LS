@@ -37,8 +37,7 @@ export interface ITextXGenerator {
 export interface ITextXLanguage {
   name: string;
   projectName: string;
-  description: string;
-  pattern: string;
+  description?: string;
 }
 
 export interface ITextXProject {
