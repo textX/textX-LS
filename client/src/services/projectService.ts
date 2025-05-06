@@ -1,13 +1,12 @@
 import { inject, injectable } from "inversify";
 import { basename, dirname } from "path";
 import { commands, window, workspace } from "vscode";
-import { IEventService, IExtensionService, IGeneratorService, ISyntaxHighlightService } from ".";
+import { IEventService, IGeneratorService, ISyntaxHighlightService } from ".";
 import {
   CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
   CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL,
   CMD_VALIDATE_DOCUMENTS,
   CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR,
-  VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXProject } from "../interfaces";
 import TYPES from "../types";
@@ -27,7 +26,6 @@ export class ProjectService implements IProjectService {
   constructor(
     @inject(TYPES.IGeneratorService) private readonly generatorService: IGeneratorService,
     @inject(TYPES.IEventService) private readonly eventService: IEventService,
-    @inject(TYPES.IExtensionService) private readonly extensionService: IExtensionService,
     @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService,
   ) {
     this.registerCommands();
@@ -58,14 +56,12 @@ export class ProjectService implements IProjectService {
   }
 
   public async install(pyModulePath: string, editableMode: boolean = false): Promise<void> {
-    const [projectName, projectVersion, _distLocation] = await commands.executeCommand<string>(
+    const installed = await commands.executeCommand<string>(
       CMD_PROJECT_INSTALL.external, pyModulePath, editableMode);
 
-    if (projectName) {
+    if (installed) {
       // Refresh textX languages view
       this.eventService.fireLanguagesChanged();
-
-      await this.generatorService.generateAndInstallExtension(projectName, projectVersion, editableMode);
     }
   }
 
@@ -79,16 +75,6 @@ export class ProjectService implements IProjectService {
     if (isUninstalled) {
       // Refresh textX languages view
       this.eventService.fireLanguagesChanged();
-
-      // Uninstall vscode extension
-      try {
-        const { isActive } = await this.extensionService.uninstall(projectName);
-        if (isActive) {
-          await commands.executeCommand(VS_CMD_WINDOW_RELOAD);
-        }
-      } catch (err) {
-        window.showErrorMessage(`Uninstalling extension for project '${projectName}' failed: ${err}`);
-      }
     }
   }
 

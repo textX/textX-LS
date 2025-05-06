@@ -2,30 +2,8 @@ from typing import Any, List, Mapping, Optional
 
 from textx import GeneratorDesc, generator_descriptions, generator_for_language_target
 
-from ..exceptions import GenerateExtensionError, GenerateSyntaxHighlightError
+from ..exceptions import GenerateSyntaxHighlightError
 from .projects import get_language_desc, get_languages_by_project_name
-
-
-def generate_extension(target: str, dest_dir: str, **cmd_args: Optional[dict]) -> None:
-    """Generates client installable extension.
-
-    Args:
-        target: target (client) to generate extension for (e.g. `vscode`)
-        dest_dir: destination directory where extension will be written
-        cmd_args: other optional arguments
-    Returns:
-        None
-    Raises:
-        GenerateExtensionError: if generator does not exists (`TextXRegistrationError`)
-                                or any other error that happened while generating
-                                the extension
-
-    """
-    try:
-        extension_gen = generator_for_language_target("textX", target)
-        extension_gen(None, None, dest_dir, **cmd_args)
-    except Exception as e:
-        raise GenerateExtensionError(target, cmd_args) from e
 
 
 def generate_syntaxes(

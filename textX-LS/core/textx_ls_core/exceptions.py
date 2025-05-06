@@ -4,19 +4,6 @@ class TextXLSError(Exception):
     pass
 
 
-class GenerateExtensionError(TextXLSError):
-    """Indicates an error while generating an extension."""
-
-    def __init__(self, target, cmd_args):
-        super().__init__(
-            "Failed to generate the extension for '{}' with following arguments: '{}'.".format(
-                target, cmd_args
-            )
-        )
-        self.target = target
-        self.cmd_args = cmd_args
-
-
 class GenerateSyntaxHighlightError(TextXLSError):
     """Indicates an error while generating a syntax highlighting data."""
 
