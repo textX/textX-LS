@@ -73,48 +73,38 @@ def get_project_name_and_version(
         folder_or_wheel: path to the folder or wheel of textx language project
     Returns:
         Project name and version
-    Raises:
-        None
 
     """
     project_metadata = {}
     # Folder with setup.py inside (project) ...
     setuppy = join(folder_or_wheel, "setup.py")
     if isfile(setuppy):
-        try:
-            from unittest import mock
-            import setuptools
+        from unittest import mock
+        import setuptools
 
-            with mock.patch.object(setuptools, "setup") as mock_setup:
-                with open(setuppy, "r") as f:
-                    exec(f.read())
-                project_metadata.update(mock_setup.call_args[1])
-        except Exception:
-            pass
+        with mock.patch.object(setuptools, "setup") as mock_setup:
+            with open(setuppy, "r") as f:
+                exec(f.read())
+            project_metadata.update(mock_setup.call_args[1])
+
     # ... or setup.cfg
     setupcfg = join(folder_or_wheel, "setup.cfg")
     if isfile(setupcfg):
-        try:
-            from configparser import ConfigParser
+        from configparser import ConfigParser
 
-            cfg_parser = ConfigParser()
-            cfg_parser.read(setupcfg)
-            project_metadata.update(dict(cfg_parser.items("metadata")))
-        except Exception:
-            pass
+        cfg_parser = ConfigParser()
+        cfg_parser.read(setupcfg)
+        project_metadata.update(dict(cfg_parser.items("metadata")))
 
     # ... or pyproject.toml
     pyproject = join(folder_or_wheel, "pyproject.toml")
     if isfile(pyproject):
-        try:
-            import tomllib  # Requires Python 3.11+ standard library
+        import tomllib  # Requires Python 3.11+ standard library
 
-            with open(pyproject, "rb") as f:
-                data = tomllib.load(f)
+        with open(pyproject, "rb") as f:
+            data = tomllib.load(f)
 
-            project_metadata.update(data["project"])
-        except Exception:
-            pass
+        project_metadata.update(data["project"])
 
     # installed from wheel
     if isfile(folder_or_wheel) and folder_or_wheel.endswith(".whl"):
