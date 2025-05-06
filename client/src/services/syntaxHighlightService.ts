@@ -74,28 +74,48 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
     }
   }
 
-  private getKeywordDecorationOptions(scope: string): DecorationRenderOptions {
-    return { color: this.tokenColors.get(scope).foreground };
+  private getKeywordDecorationOptions(scope: string): DecorationRenderOptions | undefined {
+    const scopesToTry = [
+      scope,
+      scope.replace(/\.\w+$/, ''), // Parent scope
+      'keyword.control',           // Common fallback
+      'entity.name.type'           // Type fallback
+    ];
+
+    for (const scopeToTry of scopesToTry) {
+      const tokenColor = this.tokenColors.get(scopeToTry);
+      if (tokenColor?.foreground) {
+        return { color: tokenColor.foreground };
+      }
+    }
+
+    return undefined;
   }
 
   private getKeywordsFromTextmateJSON(textmate: string): IKeywordInfo[] {
     const patterns = JSON.parse(textmate).repository.language_keyword.patterns;
     return patterns.flatMap((pattern: { match: string; name: string; }) => {
-      // Handle both single matches and group matches
       const matches = pattern.match.match(/\\b\((.*?)\)\\b/);
       if (!matches) {
         return [];
       }
 
-      return matches[1].split('|').map(keyword => ({
-        decoration: window.createTextEditorDecorationType(
-          this.getKeywordDecorationOptions(pattern.name)
-        ),
-        keyword: keyword,
-        length: keyword.length,
-        regex: new RegExp(`\\b${keyword}\\b`, "g"),
-        scope: pattern.name
-      }));
+      return matches[1].split('|').map(keyword => {
+        const decorationOptions = this.getKeywordDecorationOptions(pattern.name);
+
+        if (!decorationOptions || !decorationOptions.color) {
+          console.warn(`No decoration options found for scope: ${pattern.name}`);
+          return null;
+        }
+
+        return {
+          decoration: window.createTextEditorDecorationType(decorationOptions),
+          keyword: keyword.trim(),
+          length: keyword.length,
+          regex: new RegExp(`\\b${keyword}\\b`, "g"),
+          scope: pattern.name
+        };
+      }).filter(Boolean); // Filter out null entries
     });
   }
 
