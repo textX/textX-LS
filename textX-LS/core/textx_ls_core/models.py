@@ -20,6 +20,7 @@ class TextXLanguage:
         self.name = lang_desc.name
         self.description = lang_desc.description or self.name
         self.projectName = lang_desc.project_name
+        self.pattern = lang_desc.pattern
 
 
 class TextXProject:

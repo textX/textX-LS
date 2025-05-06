@@ -26,10 +26,11 @@ from textx_ls_core.features.generators import (
 )
 from textx_ls_core.features.projects import (
     get_projects,
+    get_languages_by_project_name,
     install_project_async,
     uninstall_project_async,
 )
-from textx_ls_core.models import TextXProject
+from textx_ls_core.models import TextXProject, TextXLanguage
 from textx_ls_core.utils import (
     compare_project_names,
     get_project_name_and_version_for_file,
@@ -135,7 +136,7 @@ def cmd_generate_syntaxes_for_grammar(
 
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATOR_LIST)
-def cmd_generator_list(ls: TextXLanguageServer, params) -> List[GeneratorDesc]:
+def cmd_generator_list(_ls: TextXLanguageServer, _params) -> List[GeneratorDesc]:
     """Command that returns all registered generators.
 
     Args:
@@ -150,7 +151,9 @@ def cmd_generator_list(ls: TextXLanguageServer, params) -> List[GeneratorDesc]:
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_INSTALL)
-async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str, str]:
+async def cmd_project_install(
+    ls: TextXLanguageServer, params
+) -> Tuple[str, List[TextXLanguage]]:
     """Command that installs a textX language project.
 
     Args:
@@ -158,7 +161,7 @@ async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str
                 or `pyproject.toml`) or path to the wheel and flag that indicates if
                 project should be install in editable (development) mode
     Returns:
-        Project name, version and package dist location or Nones
+        Project name, list of contributed languages or None, []
     Raises:
         None
 
@@ -171,11 +174,15 @@ async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str
         project_name, _project_version, _dist_location = await install_project_async(
             folder_or_wheel, ls.python_path, editable, ls.show_message_log
         )
-        ls.show_message("Project {} is successfully installed.".format(project_name))
-        return True
+        languages = get_languages_by_project_name(project_name)
+        ls.show_message(
+            f"Project {project_name} is successfully installed. "
+            f"Contributed languages: {[l.name for l in languages]}"
+        )
+        return project_name, languages
     except InstallTextXProjectError as e:
         ls.show_errors(str(e), e.detailed_err_msg)
-        return False
+        return None, []
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_LIST)
@@ -200,7 +207,9 @@ def cmd_project_scaffold(ls: TextXLanguageServer, params) -> None:
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_UNINSTALL)
-async def cmd_project_uninstall(ls: TextXLanguageServer, params) -> bool:
+async def cmd_project_uninstall(
+    ls: TextXLanguageServer, params
+) -> Tuple[bool, List[TextXLanguage]]:
     """Command that uninstalls a textX language project.
 
     Args:
@@ -216,12 +225,13 @@ async def cmd_project_uninstall(ls: TextXLanguageServer, params) -> bool:
     ls.show_message("Uninstalling project {}".format(project_name))
 
     try:
+        languages = get_languages_by_project_name(project_name)
         await uninstall_project_async(project_name, ls.python_path, ls.show_message_log)
-        ls.show_message("Project {} is successfully uninstalled.".format(project_name))
-        return True
+        ls.show_message(f"Project {project_name} is successfully uninstalled.")
+        return True, languages
     except UninstallTextXProjectError as e:
         ls.show_errors(str(e), e.detailed_err_msg)
-        return False
+        return False, []
 
 
 @textx_server.command(TextXLanguageServer.CMD_VALIDATE_DOCUMENTS)

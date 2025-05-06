@@ -222,6 +222,7 @@
   "dependencies": {
     "@vscode/debugadapter": "^1.68.0",
     "inversify": "^6.0.2",
+    "minimatch": "^10.0.1",
     "reflect-metadata": "^0.2.2",
     "strip-json-comments": "^5.0.1",
     "true-case-path": "^2.2.1",
