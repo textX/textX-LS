@@ -1,6 +1,6 @@
 [project]
 name = "textx-ls-core"
-version = "0.2.0"
+version = "0.3.0-dev0"
 description = "a core language server logic for domain specific languages based on textX"
 authors = [
     {name = "Daniel Elero", email = "danixeee@gmail.com"},
