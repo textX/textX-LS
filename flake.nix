@@ -22,6 +22,7 @@
           coverage
           flake8
           mock
+          flit
           pytest
           pytest-cov
           python-lsp-server
