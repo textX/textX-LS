@@ -5,6 +5,7 @@ import { IEventService, IExtensionService, IGeneratorService, ISyntaxHighlightSe
 import {
   CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
   CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL,
+  CMD_VALIDATE_DOCUMENTS,
   CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR,
   VS_CMD_WINDOW_RELOAD,
 } from "../constants";
@@ -34,24 +35,26 @@ export class ProjectService implements IProjectService {
     // Refresh syntax higlighting keywords on grammar save
     workspace.onDidSaveTextDocument(doc => {
       if (doc.languageId === 'textx') {
-        this.loadLanguageKeywords(doc.fileName);
+        this.loadLanguageKeywordsForGrammar(doc.fileName);
 -       commands.executeCommand(CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR.external, doc.fileName);
       }
     });
 
+    this.refreshInstalled();
   }
 
   public async getInstalled(): Promise<Map<string, ITextXProject>> {
     let projects = await commands.executeCommand<Map<string, ITextXProject>>(CMD_PROJECT_LIST.external);
     projects = projects || new Map<string, ITextXProject>();
-    // watch editable projects
-    Object.values(projects).forEach((p: ITextXProject) => {
-      if (p.editable) {
-        this.loadLanguageKeywords(p.projectName);
-      }
-    });
-
     return projects;
+  }
+
+  async refreshInstalled() {
+    let projects = await this.getInstalled();
+    Object.values(projects).forEach((p: ITextXProject) => {
+        this.loadLanguageKeywordsForProject(p.projectName);
+        commands.executeCommand(CMD_VALIDATE_DOCUMENTS.external, p.projectName);
+    });
   }
 
   public async install(pyModulePath: string, editableMode: boolean = false): Promise<void> {
@@ -89,9 +92,16 @@ export class ProjectService implements IProjectService {
     }
   }
 
-  private async loadLanguageKeywords(grammarPath: string) {
+  private async loadLanguageKeywordsForGrammar(grammarPath: string) {
     const languageSyntaxes: Map<string, string> =
       await this.generatorService.generateLanguagesSyntaxesForGrammar(grammarPath);
+    this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
+    this.syntaxHighlightService.highlightAllEditorsDocument();
+  }
+
+  private async loadLanguageKeywordsForProject(project_name: string) {
+    const languageSyntaxes: Map<string, string> =
+      await this.generatorService.generateLanguagesSyntaxes(project_name);
     this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
     this.syntaxHighlightService.highlightAllEditorsDocument();
   }
