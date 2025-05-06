@@ -1,7 +1,7 @@
 import sys
 from typing import Callable, List, Optional, Tuple
 
-from pkg_resources import DistributionNotFound, get_distribution
+from importlib.metadata import distribution, PackageNotFoundError
 
 from textx import (
     LanguageDesc,
@@ -119,8 +119,8 @@ def get_projects(with_langs: Optional[bool] = True) -> List[TextXProject]:
     for lang in get_languages():
         project_name = lang.projectName
         if project_name not in projects:
-            dist = get_distribution(project_name)
-            dist_location = dist.location
+            dist = distribution(project_name)
+            dist_location = str(dist.locate_file("").parent)
             editable = dist_is_editable(dist_location, project_name)
             projects[project_name] = TextXProject(
                 project_name, editable, dist.version, dist_location
@@ -133,7 +133,7 @@ def get_projects(with_langs: Optional[bool] = True) -> List[TextXProject]:
 async def install_project_async(
     folder_or_wheel: str,
     python_path: str,
-    editable: Optional[str] = False,
+    editable: Optional[bool] = False,
     msg_handler: Optional[Callable] = None,
 ) -> Tuple[str, str, str]:
     """Installs textX project.
@@ -147,7 +147,6 @@ async def install_project_async(
         A tuple of project name, version and package dist location if project is installed successfully
     Raises:
         InstallTextXProjectError: If project is not installed
-
     """
     project_name, version = get_project_name_and_version(folder_or_wheel)
     dist_location = None
@@ -158,7 +157,6 @@ async def install_project_async(
 
     retcode, output = await run_async(cmd, msg_handler)
 
-    # Not installed
     if retcode != 0:
         raise InstallTextXProjectError(project_name, folder_or_wheel, output)
 
@@ -168,10 +166,10 @@ async def install_project_async(
 
     clear_language_registrations()
 
-    # Checks if language with the same name already exist
     try:
         language_descriptions()
-        dist_location = get_distribution(project_name).location
+        dist = distribution(project_name)
+        dist_location = str(dist.locate_file("").parent)  # Get absolute path
     except Exception as e:
         await uninstall_project_async(project_name, python_path)
         raise InstallTextXProjectError(project_name, dist_location, output) from e
@@ -199,8 +197,9 @@ async def uninstall_project_async(
 
     # Get dist location before uninstalling with pip
     try:
-        dist_location = get_distribution(project_name).location
-    except DistributionNotFound as e:
+        dist = distribution(project_name)
+        dist_location = str(dist.locate_file("").parent)  # Get installation path
+    except PackageNotFoundError as e:
         raise UninstallTextXProjectError(project_name, "") from e
 
     # Call pip uninstall command
@@ -208,9 +207,8 @@ async def uninstall_project_async(
     if retcode != 0:
         raise UninstallTextXProjectError(project_name, output)
 
-    # Manually remove package from sys.path if needed
-    is_editable = dist_is_editable(dist_location, project_name)
-    if is_editable and dist_location in sys.path:
+    # Remove package from sys.path if it exists there
+    if dist_location in sys.path:
         sys.path.remove(dist_location)
 
     clear_language_registrations()
