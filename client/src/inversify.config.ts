@@ -11,6 +11,7 @@ import {
 const container = new Container();
 // Services
 container.bind<services.IEventService>(TYPES.IEventService).to(services.EventService).inSingletonScope();
+container.bind<services.IExtensionService>(TYPES.IExtensionService).to(services.ExtensionService).inSingletonScope();
 container.bind<services.IGeneratorService>(TYPES.IGeneratorService).to(services.GeneratorService);
 container.bind<services.IProjectService>(TYPES.IProjectService).to(services.ProjectService);
 container.bind<services.ISyntaxHighlightService>(TYPES.ISyntaxHighlightService).to(services.SyntaxHighlightService)

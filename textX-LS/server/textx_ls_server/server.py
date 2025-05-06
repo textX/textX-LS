@@ -16,11 +16,13 @@ from pygls.server import LanguageServer
 from textx import GeneratorDesc
 
 from textx_ls_core.exceptions import (
+    GenerateExtensionError,
     GenerateSyntaxHighlightError,
     InstallTextXProjectError,
     UninstallTextXProjectError,
 )
 from textx_ls_core.features.generators import (
+    generate_extension,
     generate_syntaxes,
     get_generators,
 )
@@ -53,6 +55,7 @@ class TextXLanguageServer(LanguageServer):
 
     """
 
+    CMD_GENERATE_EXTENSION = "textx/generateExtension"
     CMD_GENERATE_SYNTAXES = "textx/generateSyntaxes"
     CMD_GENERATE_SYNTAXES_FOR_GRAMMAR = "textx/generateSyntaxesForGrammar"
     CMD_GENERATOR_LIST = "textx/getGenerators"
@@ -91,6 +94,28 @@ class TextXLanguageServer(LanguageServer):
 
 
 textx_server = TextXLanguageServer()
+
+
+@textx_server.command(TextXLanguageServer.CMD_GENERATE_EXTENSION)
+def cmd_generate_extension(ls: TextXLanguageServer, params) -> bool:
+    """Command that generates the extension.
+
+    Args:
+        params: a list that has `target`, `destination directory` and `command args`
+    Returns:
+        True if extension is successfully generated, otherwise False
+    Raises:
+        None
+
+    """
+    target, dest_dir, cmd_args = params
+
+    try:
+        generate_extension(target, dest_dir, **cmd_args)
+        return True
+    except GenerateExtensionError as e:
+        ls.show_errors(str(e))
+        return False
 
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATE_SYNTAXES)
@@ -168,14 +193,14 @@ async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str
     ls.show_message("Installing project from {}".format(folder_or_wheel))
 
     try:
-        project_name, _project_version, _dist_location = await install_project_async(
+        project_name, project_version, dist_location = await install_project_async(
             folder_or_wheel, ls.python_path, editable, ls.show_message_log
         )
         ls.show_message("Project {} is successfully installed.".format(project_name))
-        return True
+        return project_name, project_version, dist_location
     except InstallTextXProjectError as e:
         ls.show_errors(str(e), e.detailed_err_msg)
-        return False
+        return None, None, None
 
 
 @textx_server.command(TextXLanguageServer.CMD_PROJECT_LIST)
