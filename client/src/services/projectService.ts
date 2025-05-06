@@ -36,7 +36,7 @@ export class ProjectService implements IProjectService {
     workspace.onDidSaveTextDocument(doc => {
       if (doc.languageId === 'textx') {
         this.loadLanguageKeywordsForGrammar(doc.fileName);
--       commands.executeCommand(CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR.external, doc.fileName);
+        -       commands.executeCommand(CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR.external, doc.fileName);
       }
     });
 
@@ -52,8 +52,8 @@ export class ProjectService implements IProjectService {
   async refreshInstalled() {
     let projects = await this.getInstalled();
     Object.values(projects).forEach((p: ITextXProject) => {
-        this.loadLanguageKeywordsForProject(p.projectName);
-        commands.executeCommand(CMD_VALIDATE_DOCUMENTS.external, p.projectName);
+      this.loadLanguageKeywordsForProject(p.projectName);
+      commands.executeCommand(CMD_VALIDATE_DOCUMENTS.external, p.projectName);
     });
   }
 
@@ -173,6 +173,8 @@ export class ProjectService implements IProjectService {
         if (decision === "Yes") {
           this.uninstall(projectName.toString().trim());
         }
+      } else {
+        window.showErrorMessage("Project is not installed");
       }
     });
   }
