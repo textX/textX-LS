@@ -18,6 +18,10 @@
         pythonEnv = pkgs.python312.withPackages (ps: with ps; [
           pip
           black
+          bandit
+          coverage
+          flake8
+          mock
           pytest
           pytest-cov
           python-lsp-server
@@ -30,6 +34,7 @@
           vsce
           typescript
           vscode-with-extensions
+          pre-commit
           ruff
         ];
 
