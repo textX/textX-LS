@@ -57,6 +57,9 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
 
     const document = editor.document;
     const languageId = document.languageId;
+    if (!this.languageKeywordsCache.has(languageId)) {
+      return;
+    }
     const documentText = document.getText();
     const offsetToPosition = editor.document.positionAt;
 
