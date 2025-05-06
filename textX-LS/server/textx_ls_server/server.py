@@ -32,7 +32,10 @@ from textx_ls_core.features.projects import (
     uninstall_project_async,
 )
 from textx_ls_core.models import TextXProject
-from textx_ls_core.utils import compare_project_names
+from textx_ls_core.utils import (
+    compare_project_names,
+    get_project_name_and_version_for_file,
+)
 
 from .features.diagnostics import send_diagnostics
 from .protocol import TextXDocument, TextXProtocol
@@ -54,6 +57,7 @@ class TextXLanguageServer(LanguageServer):
 
     CMD_GENERATE_EXTENSION = "textx/generateExtension"
     CMD_GENERATE_SYNTAXES = "textx/generateSyntaxes"
+    CMD_GENERATE_SYNTAXES_FOR_GRAMMAR = "textx/generateSyntaxesForGrammar"
     CMD_GENERATOR_LIST = "textx/getGenerators"
     CMD_PING = "textx/ping"
     CMD_PROJECT_INSTALL = "textx/installProject"
@@ -61,6 +65,7 @@ class TextXLanguageServer(LanguageServer):
     CMD_PROJECT_SCAFFOLD = "textx/scaffoldProject"
     CMD_PROJECT_UNINSTALL = "textx/uninstallProject"
     CMD_VALIDATE_DOCUMENTS = "textx/validateDocuments"
+    CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR = "textx/validateDocumentsForGrammar"
 
     def __init__(self):
         super().__init__(name=PACKAGE_NAME, version=VERSION, protocol_cls=TextXProtocol)
@@ -114,7 +119,9 @@ def cmd_generate_extension(ls: TextXLanguageServer, params) -> bool:
 
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATE_SYNTAXES)
-def cmd_generate_syntaxes(ls: TextXLanguageServer, params) -> Mapping[str, Any]:
+def cmd_generate_syntaxes(
+    ls: TextXLanguageServer, params: List[Any]
+) -> Mapping[str, Any]:
     """Command that generates syntax highlighting for all project languages.
 
     Args:
@@ -131,6 +138,25 @@ def cmd_generate_syntaxes(ls: TextXLanguageServer, params) -> Mapping[str, Any]:
     except GenerateSyntaxHighlightError as e:
         ls.show_errors(str(e))
         return {}
+
+
+@textx_server.command(TextXLanguageServer.CMD_GENERATE_SYNTAXES_FOR_GRAMMAR)
+def cmd_generate_syntaxes_for_grammar(
+    ls: TextXLanguageServer, params: List[Any]
+) -> Mapping[str, Any]:
+    """Command that generates syntax highlighting for all project languages.
+
+    Args:
+        params: a list that has `project name`, `target` and `command args`
+    Returns:
+        A map where keys are language names and values are syntax specifications
+    Raises:
+        None
+
+    """
+    grammar_path, target, cmd_args = params
+    project_name, _ = get_project_name_and_version_for_file(grammar_path)
+    return cmd_generate_syntaxes(ls, [project_name, target, cmd_args])
 
 
 @textx_server.command(TextXLanguageServer.CMD_GENERATOR_LIST)
@@ -247,6 +273,24 @@ def cmd_validate_documents(ls: TextXLanguageServer, params) -> None:
                     ),
                     MessageType.Warning,
                 )
+
+
+@textx_server.command(TextXLanguageServer.CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR)
+def cmd_validate_documents_for_grammar(ls: TextXLanguageServer, params) -> None:
+    """Command that re-validates all documents in the workspace for the
+    given grammar project.
+
+    Args:
+        params: grammar_path
+    Returns:
+        None
+    Raises:
+        None
+
+    """
+    grammar_path = params[0]
+    project_name, _ = get_project_name_and_version_for_file(grammar_path)
+    return cmd_validate_documents(ls, [project_name])
 
 
 @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)

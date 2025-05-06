@@ -3,7 +3,7 @@ import { join } from "path";
 import { commands, window } from "vscode";
 import { IExtensionService, ISyntaxHighlightService } from ".";
 import {
-  CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_GENERATOR_LIST, EXTENSION_GENERATOR_TARGET,
+  CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_GENERATE_SYNTAXES_FOR_GRAMMAR, CMD_GENERATOR_LIST, EXTENSION_GENERATOR_TARGET,
   EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VS_CMD_WINDOW_RELOAD, VSCE_COMMAND_PATH,
 } from "../constants";
 import { ITextXExtensionInstall, ITextXGenerator } from "../interfaces";
@@ -14,6 +14,7 @@ export interface IGeneratorService {
   // tslint:disable-next-line: max-line-length
   generateAndInstallExtension(projectName: string, projectVersion: string, editableMode: boolean): Promise<ITextXExtensionInstall>;
   generateLanguagesSyntaxes(projectName: string): Promise<Map<string, string>>;
+  generateLanguagesSyntaxesForGrammar(grammarPath: string): Promise<Map<string, string>>;
   getAll(): Promise<ITextXGenerator[]>;
   getByLanguage(languageName: string): Promise<ITextXGenerator[]>;
 }
@@ -71,6 +72,11 @@ export class GeneratorService implements IGeneratorService {
 
   public async generateLanguagesSyntaxes(projectName: string): Promise<Map<string, string>> {
     return await commands.executeCommand(CMD_GENERATE_SYNTAXES.external, projectName,
+      EXTENSION_SYNTAX_HIGHLIGHT_TARGET, { silent: 1 });
+  }
+
+  public async generateLanguagesSyntaxesForGrammar(grammarPath: string): Promise<Map<string, string>> {
+    return await commands.executeCommand(CMD_GENERATE_SYNTAXES_FOR_GRAMMAR.external, grammarPath,
       EXTENSION_SYNTAX_HIGHLIGHT_TARGET, { silent: 1 });
   }
 

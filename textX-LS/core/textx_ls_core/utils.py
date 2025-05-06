@@ -1,6 +1,7 @@
 import asyncio
 from os import linesep
 from os.path import basename, isdir, isfile, join, splitext
+from pathlib import Path
 from typing import Callable, Iterable, Optional, Tuple
 
 
@@ -62,7 +63,9 @@ def get_file_extension(uri: str) -> str:
         return ""
 
 
-def get_project_name_and_version(folder_or_wheel: str) -> Tuple[str, str]:
+def get_project_name_and_version(
+    folder_or_wheel: str,
+) -> Tuple[Optional[str], Optional[str]]:
     """Returns project name for a given project folder (with setup.py, setup.cfg,
     or pyproject.toml) or wheel file.
 
@@ -121,6 +124,41 @@ def get_project_name_and_version(folder_or_wheel: str) -> Tuple[str, str]:
         project_metadata.update({"name": project_metadata.get("project")})
 
     return project_metadata.get("name", None), project_metadata.get("version", None)
+
+
+def get_project_name_and_version_for_file(
+    file_path: str,
+) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Find project root containing pyproject.toml/setup.py/setup.cfg for a given file,
+    then return project name and version.
+
+    Args:
+        file_path: Path to any file within the project
+
+    Returns:
+        Tuple of (project_name, version) or (None, None) if not found
+
+    """
+    # Convert to absolute path and get parent if it's a file
+    path = Path(file_path).absolute()
+    if path.is_file():
+        path = path.parent
+
+    # Walk up the directory tree
+    for parent in [path, *path.parents]:
+        # Check for any project file
+        project_files = [
+            parent / "pyproject.toml",
+            parent / "setup.py",
+            parent / "setup.cfg",
+        ]
+
+        if any(f.exists() for f in project_files):
+            # Found project root
+            return get_project_name_and_version(str(parent))
+
+    return None, None
 
 
 async def run_async(

@@ -1,12 +1,12 @@
 import { inject, injectable } from "inversify";
-import { basename, dirname, join } from "path";
-import { trueCasePathSync } from "true-case-path";
-import { commands, window } from "vscode";
-import { IEventService, IExtensionService, IGeneratorService, ISyntaxHighlightService, IWatcherService } from ".";
+import { basename, dirname } from "path";
+import { commands, window, workspace } from "vscode";
+import { IEventService, IExtensionService, IGeneratorService, ISyntaxHighlightService } from ".";
 import {
   CMD_PROJECT_INSTALL, CMD_PROJECT_INSTALL_EDITABLE, CMD_PROJECT_LIST,
-  CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL, CMD_VALIDATE_DOCUMENTS,
-  IS_WIN, VS_CMD_WINDOW_RELOAD,
+  CMD_PROJECT_LIST_REFRESH, CMD_PROJECT_SCAFFOLD, CMD_PROJECT_UNINSTALL,
+  CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR,
+  VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXProject } from "../interfaces";
 import TYPES from "../types";
@@ -28,9 +28,17 @@ export class ProjectService implements IProjectService {
     @inject(TYPES.IEventService) private readonly eventService: IEventService,
     @inject(TYPES.IExtensionService) private readonly extensionService: IExtensionService,
     @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService,
-    @inject(TYPES.IWatcherService) private readonly watcherService: IWatcherService,
   ) {
     this.registerCommands();
+
+    // Refresh syntax higlighting keywords on grammar save
+    workspace.onDidSaveTextDocument(doc => {
+      if (doc.languageId === 'textx') {
+        this.loadLanguageKeywords(doc.fileName);
+-       commands.executeCommand(CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR.external, doc.fileName);
+      }
+    });
+
   }
 
   public async getInstalled(): Promise<Map<string, ITextXProject>> {
@@ -39,7 +47,6 @@ export class ProjectService implements IProjectService {
     // watch editable projects
     Object.values(projects).forEach((p: ITextXProject) => {
       if (p.editable) {
-        this.watchProject(p.projectName, p.distLocation);
         this.loadLanguageKeywords(p.projectName);
       }
     });
@@ -48,13 +55,12 @@ export class ProjectService implements IProjectService {
   }
 
   public async install(pyModulePath: string, editableMode: boolean = false): Promise<void> {
-    const [projectName, projectVersion, distLocation] = await commands.executeCommand<string>(
+    const [projectName, projectVersion, _distLocation] = await commands.executeCommand<string>(
       CMD_PROJECT_INSTALL.external, pyModulePath, editableMode);
 
     if (projectName) {
       // Refresh textX languages view
       this.eventService.fireLanguagesChanged();
-      this.watchProject(projectName, distLocation);
 
       await this.generatorService.generateAndInstallExtension(projectName, projectVersion, editableMode);
     }
@@ -71,9 +77,6 @@ export class ProjectService implements IProjectService {
       // Refresh textX languages view
       this.eventService.fireLanguagesChanged();
 
-      // unwatch project
-      this.unwatchProject(projectName);
-
       // Uninstall vscode extension
       try {
         const { isActive } = await this.extensionService.uninstall(projectName);
@@ -86,8 +89,9 @@ export class ProjectService implements IProjectService {
     }
   }
 
-  private async loadLanguageKeywords(projectName: string) {
-    const languageSyntaxes: Map<string, string> = await this.generatorService.generateLanguagesSyntaxes(projectName);
+  private async loadLanguageKeywords(grammarPath: string) {
+    const languageSyntaxes: Map<string, string> =
+      await this.generatorService.generateLanguagesSyntaxesForGrammar(grammarPath);
     this.syntaxHighlightService.addLanguageKeywordsFromTextmate(languageSyntaxes);
     this.syntaxHighlightService.highlightAllEditorsDocument();
   }
@@ -161,31 +165,6 @@ export class ProjectService implements IProjectService {
         }
       }
     });
-  }
-
-  private unwatchProject(projectName: string): void {
-    this.watcherService.unwatch(projectName);
-  }
-
-  private watchProject(projectName: string, distLocation: string): void {
-    // NOTE:
-    // watch does not work on windows if path is not case-correct
-    // also it does not work with drive letter, for e.g. "C:\\x\\y\\z"
-    if (IS_WIN) {
-      // correct case
-      distLocation = trueCasePathSync(distLocation);
-      if (distLocation && distLocation[1] === ":") {
-        distLocation = `**\\${distLocation.slice(2)}`;
-      }
-    }
-
-    // watch grammars
-    this.watcherService
-      .watch(projectName, join(distLocation, "**", "*.tx"))
-      .onDidChange(async (_) => {
-        this.loadLanguageKeywords(projectName);
-        commands.executeCommand(CMD_VALIDATE_DOCUMENTS.external, projectName);
-      });
   }
 
 }

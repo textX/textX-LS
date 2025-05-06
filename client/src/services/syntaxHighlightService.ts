@@ -79,17 +79,23 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
   }
 
   private getKeywordsFromTextmateJSON(textmate: string): IKeywordInfo[] {
-    return JSON.parse(textmate).repository.language_keyword.patterns.map((pattern) => {
-      const keyword: string = pattern.match;
-      const scope: string = pattern.name;
+    const patterns = JSON.parse(textmate).repository.language_keyword.patterns;
+    return patterns.flatMap((pattern: { match: string; name: string; }) => {
+      // Handle both single matches and group matches
+      const matches = pattern.match.match(/\\b\((.*?)\)\\b/);
+      if (!matches) {
+        return [];
+      }
 
-      return {
-        decoration: window.createTextEditorDecorationType(this.getKeywordDecorationOptions(scope)),
-        keyword,
+      return matches[1].split('|').map(keyword => ({
+        decoration: window.createTextEditorDecorationType(
+          this.getKeywordDecorationOptions(pattern.name)
+        ),
+        keyword: keyword,
         length: keyword.length,
-        regex: this.getKeywordsRegex(keyword),
-        scope,
-      };
+        regex: new RegExp(`\\b${keyword}\\b`, "g"),
+        scope: pattern.name
+      }));
     });
   }
 
@@ -105,10 +111,6 @@ export class SyntaxHighlightService implements ISyntaxHighlightService {
         offsetToPosition(matchIndex + keyword.length)));
     }
     return ranges;
-  }
-
-  private getKeywordsRegex(keyword: string): RegExp {
-    return new RegExp(`\\b${keyword}\\b`, "g");
   }
 
   private reinitializeDecorations(): void {

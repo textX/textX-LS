@@ -24,6 +24,7 @@ export const VSCE_COMMAND_PATH = IS_WIN ?
 // TextX-LS
 export const CMD_GENERATE_EXTENSION: ICommand = getCommands("generateExtension");
 export const CMD_GENERATE_SYNTAXES: ICommand = getCommands("generateSyntaxes");
+export const CMD_GENERATE_SYNTAXES_FOR_GRAMMAR: ICommand = getCommands("generateSyntaxesForGrammar");
 export const CMD_GENERATOR_LIST: ICommand = getCommands("getGenerators");
 export const CMD_GENERATOR_LIST_REFRESH: ICommand = getCommands("refreshGenerators");
 export const CMD_PROJECT_INSTALL: ICommand = getCommands("installProject");
@@ -33,6 +34,7 @@ export const CMD_PROJECT_LIST_REFRESH: ICommand = getCommands("refreshProjects")
 export const CMD_PROJECT_SCAFFOLD: ICommand = getCommands("scaffoldProject");
 export const CMD_PROJECT_UNINSTALL: ICommand = getCommands("uninstallProject");
 export const CMD_VALIDATE_DOCUMENTS: ICommand = getCommands("validateDocuments");
+export const CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR: ICommand = getCommands("validateDocumentsForGrammar");
 
 // VS Code
 export const VS_CMD_INSTALL_EXTENSION = "workbench.extensions.installExtension";

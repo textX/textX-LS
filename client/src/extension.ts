@@ -4,7 +4,6 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, State } from "vsc
 
 import { CMD_PING, IS_WIN, PING_INTERVAL, TEXTX_LS_SERVER } from "./constants";
 import container from "./inversify.config";
-import { IWatcherService } from "./services";
 import { installLSWithProgress } from "./python";
 import TYPES from "./types";
 import { IGeneratorProvider, ILanguageProvider } from "./ui/explorer";
@@ -71,12 +70,10 @@ export async function activate(context: ExtensionContext) {
     // inversifyjs - get instances
     const generatorProvider = container.get<IGeneratorProvider>(TYPES.IGeneratorProvider);
     const languageProvider = container.get<ILanguageProvider>(TYPES.ILanguageProvider);
-    const watcherService = container.get<IWatcherService>(TYPES.IWatcherService);
 
     context.subscriptions.push(
       window.registerTreeDataProvider("textxGenerators", generatorProvider),
       window.registerTreeDataProvider("textxLanguages", languageProvider),
-      watcherService,
       client
     );
 
