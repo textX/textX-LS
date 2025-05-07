@@ -70,6 +70,7 @@ class TextXLanguageServer(LanguageServer):
     def __init__(self):
         super().__init__(name=PACKAGE_NAME, version=VERSION, protocol_cls=TextXProtocol)
         self.python_path = sys.executable
+        register_commands(self)
 
     def show_errors(self, err_msg: str, detailed_err_msg: Optional[str] = None) -> None:
         """Helper method to display pop up error message and detailed log to the
@@ -93,260 +94,255 @@ class TextXLanguageServer(LanguageServer):
         )
 
 
-textx_server = TextXLanguageServer()
+def register_commands(textx_server: TextXLanguageServer):  # noqa: C901
 
+    @textx_server.command(TextXLanguageServer.CMD_GENERATE_EXTENSION)
+    def cmd_generate_extension(ls: TextXLanguageServer, params) -> bool:
+        """Command that generates the extension.
 
-@textx_server.command(TextXLanguageServer.CMD_GENERATE_EXTENSION)
-def cmd_generate_extension(ls: TextXLanguageServer, params) -> bool:
-    """Command that generates the extension.
+        Args:
+            params: a list that has `target`, `destination directory` and `command args`
+        Returns:
+            True if extension is successfully generated, otherwise False
+        Raises:
+            None
 
-    Args:
-        params: a list that has `target`, `destination directory` and `command args`
-    Returns:
-        True if extension is successfully generated, otherwise False
-    Raises:
-        None
+        """
+        target, dest_dir, cmd_args = params
 
-    """
-    target, dest_dir, cmd_args = params
+        try:
+            generate_extension(target, dest_dir, **cmd_args)
+            return True
+        except GenerateExtensionError as e:
+            ls.show_errors(str(e))
+            return False
 
-    try:
-        generate_extension(target, dest_dir, **cmd_args)
-        return True
-    except GenerateExtensionError as e:
-        ls.show_errors(str(e))
-        return False
+    @textx_server.command(TextXLanguageServer.CMD_GENERATE_SYNTAXES)
+    def cmd_generate_syntaxes(
+        ls: TextXLanguageServer, params: List[Any]
+    ) -> Mapping[str, Any]:
+        """Command that generates syntax highlighting for all project languages.
 
+        Args:
+            params: a list that has `project name`, `target` and `command args`
+        Returns:
+            A map where keys are language names and values are syntax specifications
+        Raises:
+            None
 
-@textx_server.command(TextXLanguageServer.CMD_GENERATE_SYNTAXES)
-def cmd_generate_syntaxes(
-    ls: TextXLanguageServer, params: List[Any]
-) -> Mapping[str, Any]:
-    """Command that generates syntax highlighting for all project languages.
+        """
+        project_name, target, cmd_args = params
+        try:
+            return generate_syntaxes(project_name, target, **cmd_args)
+        except GenerateSyntaxHighlightError as e:
+            ls.show_errors(str(e))
+            return {}
 
-    Args:
-        params: a list that has `project name`, `target` and `command args`
-    Returns:
-        A map where keys are language names and values are syntax specifications
-    Raises:
-        None
+    @textx_server.command(TextXLanguageServer.CMD_GENERATE_SYNTAXES_FOR_GRAMMAR)
+    def cmd_generate_syntaxes_for_grammar(
+        ls: TextXLanguageServer, params: List[Any]
+    ) -> Mapping[str, Any]:
+        """Command that generates syntax highlighting for all project languages.
 
-    """
-    project_name, target, cmd_args = params
-    try:
-        return generate_syntaxes(project_name, target, **cmd_args)
-    except GenerateSyntaxHighlightError as e:
-        ls.show_errors(str(e))
-        return {}
+        Args:
+            params: a list that has `project name`, `target` and `command args`
+        Returns:
+            A map where keys are language names and values are syntax specifications
+        Raises:
+            None
 
+        """
+        grammar_path, target, cmd_args = params
+        project_name, _ = get_project_name_and_version_for_file(grammar_path)
+        return cmd_generate_syntaxes(ls, [project_name, target, cmd_args])
 
-@textx_server.command(TextXLanguageServer.CMD_GENERATE_SYNTAXES_FOR_GRAMMAR)
-def cmd_generate_syntaxes_for_grammar(
-    ls: TextXLanguageServer, params: List[Any]
-) -> Mapping[str, Any]:
-    """Command that generates syntax highlighting for all project languages.
+    @textx_server.command(TextXLanguageServer.CMD_GENERATOR_LIST)
+    def cmd_generator_list(ls: TextXLanguageServer, params) -> List[GeneratorDesc]:
+        """Command that returns all registered generators.
 
-    Args:
-        params: a list that has `project name`, `target` and `command args`
-    Returns:
-        A map where keys are language names and values are syntax specifications
-    Raises:
-        None
+        Args:
+            params: empty
+        Returns:
+            A list of generators
+        Raises:
+            None
 
-    """
-    grammar_path, target, cmd_args = params
-    project_name, _ = get_project_name_and_version_for_file(grammar_path)
-    return cmd_generate_syntaxes(ls, [project_name, target, cmd_args])
+        """
+        return get_generators()
 
+    @textx_server.command(TextXLanguageServer.CMD_PROJECT_INSTALL)
+    async def cmd_project_install(
+        ls: TextXLanguageServer, params
+    ) -> Tuple[str, str, str]:
+        """Command that installs a textX language project.
 
-@textx_server.command(TextXLanguageServer.CMD_GENERATOR_LIST)
-def cmd_generator_list(ls: TextXLanguageServer, params) -> List[GeneratorDesc]:
-    """Command that returns all registered generators.
+        Args:
+            params: path to the python project directory (containing `setup.py`, `setup.cfg`,
+                    or `pyproject.toml`) or path to the wheel and flag that indicates if
+                    project should be install in editable (development) mode
+        Returns:
+            Project name, version and package dist location or Nones
+        Raises:
+            None
 
-    Args:
-        params: empty
-    Returns:
-        A list of generators
-    Raises:
-        None
+        """
+        folder_or_wheel, editable = params
 
-    """
-    return get_generators()
+        ls.show_message("Installing project from {}".format(folder_or_wheel))
 
+        try:
+            project_name, project_version, dist_location = await install_project_async(
+                folder_or_wheel, ls.python_path, editable, ls.show_message_log
+            )
+            ls.show_message(
+                "Project {} is successfully installed.".format(project_name)
+            )
+            return project_name, project_version, dist_location
+        except InstallTextXProjectError as e:
+            ls.show_errors(str(e), e.detailed_err_msg)
+            return None, None, None
 
-@textx_server.command(TextXLanguageServer.CMD_PROJECT_INSTALL)
-async def cmd_project_install(ls: TextXLanguageServer, params) -> Tuple[str, str, str]:
-    """Command that installs a textX language project.
+    @textx_server.command(TextXLanguageServer.CMD_PROJECT_LIST)
+    def cmd_project_list(ls: TextXLanguageServer, params) -> List[TextXProject]:
+        """Command that returns all registered textX projects.
 
-    Args:
-        params: path to the python project directory (containing `setup.py`, `setup.cfg`,
-                or `pyproject.toml`) or path to the wheel and flag that indicates if
-                project should be install in editable (development) mode
-    Returns:
-        Project name, version and package dist location or Nones
-    Raises:
-        None
+        Args:
+            params: an indicator if languages should be added to the project DTO
+        Returns:
+            A list of textX projects
+        Raises:
+            None
 
-    """
-    folder_or_wheel, editable = params
+        """
+        load_langs = params[0] if len(params) == 1 else True
+        return get_projects(load_langs)
 
-    ls.show_message("Installing project from {}".format(folder_or_wheel))
+    @textx_server.command(TextXLanguageServer.CMD_PROJECT_SCAFFOLD)
+    def cmd_project_scaffold(ls: TextXLanguageServer, params) -> None:
+        ls.show_message("Not implemented")
 
-    try:
-        project_name, project_version, dist_location = await install_project_async(
-            folder_or_wheel, ls.python_path, editable, ls.show_message_log
-        )
-        ls.show_message("Project {} is successfully installed.".format(project_name))
-        return project_name, project_version, dist_location
-    except InstallTextXProjectError as e:
-        ls.show_errors(str(e), e.detailed_err_msg)
-        return None, None, None
+    @textx_server.command(TextXLanguageServer.CMD_PROJECT_UNINSTALL)
+    async def cmd_project_uninstall(ls: TextXLanguageServer, params) -> bool:
+        """Command that uninstalls a textX language project.
 
+        Args:
+            params: project name
+        Returns:
+            True if textX project is uninstalled successfully, otherwise False
+        Raises:
+            None
 
-@textx_server.command(TextXLanguageServer.CMD_PROJECT_LIST)
-def cmd_project_list(ls: TextXLanguageServer, params) -> List[TextXProject]:
-    """Command that returns all registered textX projects.
+        """
+        # import pudb; pudb.set_trace()
+        project_name = params[0]
 
-    Args:
-        params: an indicator if languages should be added to the project DTO
-    Returns:
-        A list of textX projects
-    Raises:
-        None
+        ls.show_message("Uninstalling project {}".format(project_name))
 
-    """
-    load_langs = params[0] if len(params) == 1 else True
-    return get_projects(load_langs)
+        try:
+            await uninstall_project_async(
+                project_name, ls.python_path, ls.show_message_log
+            )
+            ls.show_message(
+                "Project {} is successfully uninstalled.".format(project_name)
+            )
+            return True
+        except UninstallTextXProjectError as e:
+            ls.show_errors(str(e), e.detailed_err_msg)
+            return False
 
+    @textx_server.command(TextXLanguageServer.CMD_VALIDATE_DOCUMENTS)
+    def cmd_validate_documents(ls: TextXLanguageServer, params) -> None:
+        """Command that re-validates all documents in the workspace that matches project.
 
-@textx_server.command(TextXLanguageServer.CMD_PROJECT_SCAFFOLD)
-def cmd_project_scaffold(ls: TextXLanguageServer, params) -> None:
-    ls.show_message("Not implemented")
+        Args:
+            params: project name
+        Returns:
+            None
+        Raises:
+            None
 
+        """
+        project_name = params[0]
+        for doc in ls.workspace.documents.values():
+            if project_name and compare_project_names(project_name, doc.project_name):
+                if doc.is_refreshable:
+                    send_diagnostics(ls, doc)
+                else:
+                    ls.show_message(
+                        "Metamodel for language '{}' is cached and it couldn't be reloaded!".format(
+                            doc.language_id
+                        ),
+                        MessageType.Warning,
+                    )
 
-@textx_server.command(TextXLanguageServer.CMD_PROJECT_UNINSTALL)
-async def cmd_project_uninstall(ls: TextXLanguageServer, params) -> bool:
-    """Command that uninstalls a textX language project.
+    @textx_server.command(TextXLanguageServer.CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR)
+    def cmd_validate_documents_for_grammar(ls: TextXLanguageServer, params) -> None:
+        """Command that re-validates all documents in the workspace for the
+        given grammar project.
 
-    Args:
-        params: project name
-    Returns:
-        True if textX project is uninstalled successfully, otherwise False
-    Raises:
-        None
+        Args:
+            params: grammar_path
+        Returns:
+            None
+        Raises:
+            None
 
-    """
-    project_name = params[0]
+        """
+        grammar_path = params[0]
+        project_name, _ = get_project_name_and_version_for_file(grammar_path)
+        return cmd_validate_documents(ls, [project_name])
 
-    ls.show_message("Uninstalling project {}".format(project_name))
+    @textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)
+    @skip_not_supported_langs
+    def doc_change(
+        ls: TextXLanguageServer, params: DidChangeTextDocumentParams, doc: TextXDocument
+    ) -> None:
+        """Validates model on document text change.
 
-    try:
-        await uninstall_project_async(project_name, ls.python_path, ls.show_message_log)
-        ls.show_message("Project {} is successfully uninstalled.".format(project_name))
-        return True
-    except UninstallTextXProjectError as e:
-        ls.show_errors(str(e), e.detailed_err_msg)
-        return False
+        Args:
+            params: Read LSP
+            doc: document that will be validated
+        Returns:
+            None
+        Raises:
+            None
 
+        """
+        send_diagnostics(ls, doc)
 
-@textx_server.command(TextXLanguageServer.CMD_VALIDATE_DOCUMENTS)
-def cmd_validate_documents(ls: TextXLanguageServer, params) -> None:
-    """Command that re-validates all documents in the workspace that matches project.
+    @textx_server.feature(TEXT_DOCUMENT_DID_CLOSE)
+    def doc_close(ls: TextXLanguageServer, params: DidCloseTextDocumentParams) -> None:
+        """Clear diagnostics when document is closed.
 
-    Args:
-        params: project name
-    Returns:
-        None
-    Raises:
-        None
+        Args:
+            params: Read LSP
+        Returns:
+            None
+        Raises:
+            None
 
-    """
-    project_name = params[0]
-    for doc in ls.workspace.documents.values():
-        if project_name and compare_project_names(project_name, doc.project_name):
-            if doc.is_refreshable:
-                send_diagnostics(ls, doc)
-            else:
-                ls.show_message(
-                    "Metamodel for language '{}' is cached and it couldn't be reloaded!".format(
-                        doc.language_id
-                    ),
-                    MessageType.Warning,
-                )
+        """
+        ls.publish_diagnostics(params.text_document.uri, [])
 
+    @textx_server.feature(TEXT_DOCUMENT_DID_OPEN)
+    @skip_not_supported_langs
+    def doc_open(
+        ls: TextXLanguageServer, params: DidOpenTextDocumentParams, doc: TextXDocument
+    ) -> None:
+        """Validates model when document is open.
 
-@textx_server.command(TextXLanguageServer.CMD_VALIDATE_DOCUMENTS_FOR_GRAMMAR)
-def cmd_validate_documents_for_grammar(ls: TextXLanguageServer, params) -> None:
-    """Command that re-validates all documents in the workspace for the
-    given grammar project.
+        Args:
+            params: Read LSP
+            doc: document that will be validated
+        Returns:
+            None
+        Raises:
+            None
 
-    Args:
-        params: grammar_path
-    Returns:
-        None
-    Raises:
-        None
+        """
+        send_diagnostics(ls, doc)
 
-    """
-    grammar_path = params[0]
-    project_name, _ = get_project_name_and_version_for_file(grammar_path)
-    return cmd_validate_documents(ls, [project_name])
-
-
-@textx_server.feature(TEXT_DOCUMENT_DID_CHANGE)
-@skip_not_supported_langs
-def doc_change(
-    ls: TextXLanguageServer, params: DidChangeTextDocumentParams, doc: TextXDocument
-) -> None:
-    """Validates model on document text change.
-
-    Args:
-        params: Read LSP
-        doc: document that will be validated
-    Returns:
-        None
-    Raises:
-        None
-
-    """
-    send_diagnostics(ls, doc)
-
-
-@textx_server.feature(TEXT_DOCUMENT_DID_CLOSE)
-def doc_close(ls: TextXLanguageServer, params: DidCloseTextDocumentParams) -> None:
-    """Clear diagnostics when document is closed.
-
-    Args:
-        params: Read LSP
-    Returns:
-        None
-    Raises:
-        None
-
-    """
-    ls.publish_diagnostics(params.text_document.uri, [])
-
-
-@textx_server.feature(TEXT_DOCUMENT_DID_OPEN)
-@skip_not_supported_langs
-def doc_open(
-    ls: TextXLanguageServer, params: DidOpenTextDocumentParams, doc: TextXDocument
-) -> None:
-    """Validates model when document is open.
-
-    Args:
-        params: Read LSP
-        doc: document that will be validated
-    Returns:
-        None
-    Raises:
-        None
-
-    """
-    send_diagnostics(ls, doc)
-
-
-@textx_server.command(TextXLanguageServer.CMD_PING)
-def _cmd_ping(ls: TextXLanguageServer, params) -> None:
-    """Prevent server going into IDLE state on windows (?)."""
-    pass
+    @textx_server.command(TextXLanguageServer.CMD_PING)
+    def _cmd_ping(ls: TextXLanguageServer, params) -> None:
+        """Prevent server going into IDLE state on windows (?)."""
+        pass
