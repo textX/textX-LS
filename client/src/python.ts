@@ -153,8 +153,9 @@ export async function installLSWithProgress(context: ExtensionContext): Promise<
         const wheelsPath = join(context.extensionPath, LS_WHEELS_DIR);
         await installAllWheelsFromDirectory(python, wheelsPath);
 
-        // Install vscode generator
+        // Install vscode and syntax coloring generators
         await execAsync(`${python} -m pip install textx-gen-vscode>=0.1.3`);
+        await execAsync(`${python} -m pip install textx-gen-coloring>=0.2.0`);
 
         window.showInformationMessage("textX extension is ready! :)");
         resolve(python);
