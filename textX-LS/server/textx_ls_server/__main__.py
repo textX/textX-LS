@@ -1,10 +1,23 @@
+import os
 import sys
 import argparse
 import logging
+from platformdirs import user_log_dir
 
 from .server import TextXLanguageServer
 
-logging.basicConfig(filename="textX.log", level=logging.DEBUG, filemode="w")
+log_dir = user_log_dir("textX")
+os.makedirs(log_dir, exist_ok=True)
+
+log_path = os.path.join(log_dir, "textx_ls_server.log")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s: %(message)s",
+    handlers=[logging.FileHandler(log_path), logging.StreamHandler()],
+)
+
+logger = logging.getLogger(__name__)
 
 
 def add_arguments(parser):
@@ -27,30 +40,29 @@ def main():
     args = parser.parse_args()
 
     if not args.stdio:
-        print(f"LSP Server Python: {sys.executable}")
+        logger.info("LSP Server Python: %s", sys.executable)
 
     while True:
         if args.tcp:
             TextXLanguageServer().start_tcp(args.host, args.port)
         elif args.ws:
-            print(f"Starting WebSocket server on {args.host}:{args.port}")
+            logger.info("Starting WebSocket server on %s:%s", args.host, args.port)
             TextXLanguageServer().start_ws(args.host, args.port)
         elif args.pyodide:
-            print("Starting Pyodide server")
+            logger.info("Starting Pyodide server")
             TextXLanguageServer().start_pyodide()
         elif args.stdio:
             TextXLanguageServer().start_io()
         else:
-            print("You must provide transport type.")
+            logger.error("You must provide transport type.")
             break
 
         if not args.restart_on_close:
-            if not args.stdio:
-                print("Stopping server.")
+            logger.info("Stopping server.")
             break
 
         if not args.stdio:
-            print("Restarting server.")
+            logger.info("Restarting server.")
 
 
 if __name__ == "__main__":
