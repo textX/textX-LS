@@ -1,6 +1,6 @@
 import * as net from "net";
 import { commands, ExtensionContext, window, StatusBarAlignment } from "vscode";
-import { LanguageClient, LanguageClientOptions, ServerOptions, State } from "vscode-languageclient/node";
+import { Executable, LanguageClient, LanguageClientOptions, ServerOptions, State, TransportKind } from "vscode-languageclient/node";
 import { CMD_PING, PING_INTERVAL, TEXTX_LS_SERVER } from "./constants";
 import container from "./inversify.config";
 import { installLSWithProgress } from "./python";
@@ -95,8 +95,14 @@ async function startLangServerProcess(command: string, args: string[], cwd: stri
     args,
     command,
     options: { cwd },
-  };
-  return new LanguageClient("textX", serverOptions, getClientOptions());
+    transport: TransportKind.stdio,
+  } as Executable;
+
+  return new LanguageClient(
+    "textX",
+    serverOptions,
+    getClientOptions()
+  );
 }
 
 async function createClient(context: ExtensionContext): Promise<LanguageClient> {
