@@ -4,7 +4,7 @@ import { commands, window } from "vscode";
 import { IExtensionService, ISyntaxHighlightService } from ".";
 import {
   CMD_GENERATE_EXTENSION, CMD_GENERATE_SYNTAXES, CMD_GENERATE_SYNTAXES_FOR_GRAMMAR, CMD_GENERATOR_LIST, EXTENSION_GENERATOR_TARGET,
-  EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VS_CMD_WINDOW_RELOAD, VSCE_COMMAND_PATH,
+  EXTENSION_SYNTAX_HIGHLIGHT_TARGET, VS_CMD_WINDOW_RELOAD,
 } from "../constants";
 import { ITextXExtensionInstall, ITextXGenerator } from "../interfaces";
 import TYPES from "../types";
@@ -25,7 +25,7 @@ export class GeneratorService implements IGeneratorService {
   constructor(
     @inject(TYPES.ISyntaxHighlightService) private readonly syntaxHighlightService: ISyntaxHighlightService,
     @inject(TYPES.IExtensionService) private readonly extensionService: IExtensionService,
-  ) { }
+  ) {}
 
   public async generateAndInstallExtension(
     projectName: string, projectVersion: string, editableMode: boolean = false,
@@ -35,17 +35,14 @@ export class GeneratorService implements IGeneratorService {
       mkdtempWrapper(async (folder) => {
         const cmdArgs = {
           project_name: projectName,
-          skip_keywords: editableMode,
           version: projectVersion,
-          vsce: VSCE_COMMAND_PATH,
-          vsix: 1,
         };
 
+        const extensionPath = join(folder, projectName + ".vsix");
         const isGenerated = await commands.executeCommand(
-          CMD_GENERATE_EXTENSION.external, EXTENSION_GENERATOR_TARGET, folder, cmdArgs);
+          CMD_GENERATE_EXTENSION.external, EXTENSION_GENERATOR_TARGET, extensionPath, cmdArgs);
 
         if (isGenerated) {
-          const extensionPath = join(folder, projectName + ".vsix");
 
           try {
             const install = await this.extensionService.install(extensionPath, projectVersion);

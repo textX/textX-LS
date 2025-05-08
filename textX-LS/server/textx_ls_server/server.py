@@ -101,17 +101,18 @@ def register_commands(textx_server: TextXLanguageServer):  # noqa: C901
         """Command that generates the extension.
 
         Args:
-            params: a list that has `target`, `destination directory` and `command args`
+            params: a list that has `target`, `destination vsix filename`
+            and `command args`
         Returns:
             True if extension is successfully generated, otherwise False
         Raises:
             None
 
         """
-        target, dest_dir, cmd_args = params
+        target, dest_file, cmd_args = params
 
         try:
-            generate_extension(target, dest_dir, **cmd_args)
+            generate_extension(target, dest_file, **cmd_args)
             return True
         except GenerateExtensionError as e:
             ls.show_errors(str(e))

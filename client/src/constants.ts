@@ -16,9 +16,6 @@ export const IS_WIN = process.platform === "win32";
 export const LS_WHEELS_DIR = "wheels";
 export const TEXTX_LS_CORE = "textx_ls_core";
 export const TEXTX_LS_SERVER = "textx_ls_server";
-export const VSCE_COMMAND_PATH = IS_WIN ?
-    join(EXTENSION_PATH, "libs", "vsce") :
-    join(EXTENSION_PATH, "libs", "node_modules", "@vscode", "vsce", "vsce");
 
 // Commands
 // TextX-LS
