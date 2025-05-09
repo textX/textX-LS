@@ -14,10 +14,6 @@ and a _Visual Studio Code_ extension:
 
 - _[client](https://github.com/textX/textX-LS/tree/master/client)_
 
-## :warning: This project got a new maintainer
-
-After several years of inactivity this project is in a transition to a new maintainer.
-Please see [this announcement](https://github.com/textX/textX-LS/issues/68).
 
 ## Required textX Generator Plugins
 
@@ -55,6 +51,7 @@ Building a custom VS Code extension for newly registered language is delegated t
    experimental-features = nix-command flakes
    ```
    to `~/.config/nix/nix.conf`. See more here: https://nixos.wiki/wiki/flakes
+
 1. `nix develop` - will create a shell with all dependencies. See [direnv tool](https://direnv.net/)
    which can be used to automate this step.
 
@@ -74,6 +71,19 @@ code --extensions-dir vscode-extensions client
 Now, switch to _debug_ view, choose `Server + Client` option and press _F5_.
 
 A new VS Code window should be opened in [examples](./examples) directory.
+
+Alternatively, you can run server as a separate process from the cli. See script
+`textX-LS/server/run_server.sh`. In that case choose debug configuration `Launch
+Client` in VS Code.
+
+Logging of LSP messages is done to the user log folder:
+
+| Platform | Log file                                                                               |
+|----------|----------------------------------------------------------------------------------------|
+| Linux    | `~/.local/state/textX/textx_ls_server.log` or `~/.cache/textX/log/textx_ls_server.log` |
+| macOS    | `~/Library/Logs/textX/textx_ls_server.log`                                             |
+| Windows  | `%LOCALAPPDATA%\textX\Logs\textx_ls_server.log`                                        |
+
 
 ## CI/CD and Artifacts
 
