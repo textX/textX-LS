@@ -13,6 +13,8 @@ server_dist_dir="$server_dir/dist"
 
 
 # Build wheels
+rm "$core_dist_dir"/*
+rm "$server_dist_dir"/*
 cd $core_dir && flit build
 cd $server_dir && flit build
 
