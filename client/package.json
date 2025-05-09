@@ -3,7 +3,7 @@
   "displayName": "textX",
   "description": "VS Code extension for domain specific languages based on textX",
   "license": "MIT",
-  "version": "0.3.0-dev.0",
+  "version": "0.3.0",
   "publisher": "textX",
   "icon": "media/textX-logo.png",
   "author": {

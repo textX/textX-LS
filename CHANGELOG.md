@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning][semver].
 
 ## [unreleased]
 
+## [0.3.0] (released 2025-05-09)
+
+### Added
+- dev: debug adapter and protocol
+
+### Changed
+- Use Nix flake for creating development setup.
+- User virtual env is used for client VS Code extension so it can be interacted
+  with from the CLI easily.
+- Python is searched in user virtual env (env variable VIRUAL_ENV) or using
+  setup from MS Python extension.
+- Moved to pyproject.toml
+- dropped dependency to setuptools pkg_resources
+- use flit for build
+- moved to logging module for server and deps
+- Removed dependency to vsce (change in textx-gen-vscode)
+- improved dynamic syntax highlighting
+- more robust LSP server connection handling
+- LSP server restarts on client close
+- improved IO LSP communication
+
+### Fixed
+- added lsprotocol server dependency
+- race condition on activation
+- better error reporting on installation failure and other errors
+
 ## [0.1.2] (released 12/30/2019)
 
 ### Fixed
