@@ -1,3 +1,3 @@
 -e ./textX-LS/core
 -e ./textX-LS/server
-textx_gen_vscode>=0.1.3
+textx_gen_vscode>=0.2.2
