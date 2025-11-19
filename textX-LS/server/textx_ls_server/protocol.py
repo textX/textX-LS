@@ -118,7 +118,9 @@ class TextXProtocol(LanguageServerProtocol):
     """
 
     @lsp_method(TEXT_DOCUMENT_DID_CHANGE)
-    def lsp_text_document__did_change(self, params: DidChangeTextDocumentParams) -> None:
+    def lsp_text_document__did_change(
+        self, params: DidChangeTextDocumentParams
+    ) -> None:
         """Updates document's content if document is in the workspace.
 
         Args:
@@ -174,7 +176,7 @@ class TextXProtocol(LanguageServerProtocol):
                     )
                 )
                 return
-            
+
             self.workspace._text_documents[doc_uri] = TextXDocument(
                 doc_uri,
                 self._get_project_root(doc_uri),
