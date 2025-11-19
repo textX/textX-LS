@@ -99,7 +99,10 @@ def get_project_name_and_version(
     # ... or pyproject.toml
     pyproject = join(folder_or_wheel, "pyproject.toml")
     if isfile(pyproject):
-        import tomllib  # Requires Python 3.11+ standard library
+        try:
+            import tomllib  # Python 3.11+
+        except ModuleNotFoundError:
+            import tomli as tomllib  # Python < 3.11
 
         with open(pyproject, "rb") as f:
             data = tomllib.load(f)
