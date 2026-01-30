@@ -68,7 +68,8 @@ E.g. you can run:
 code --extensions-dir vscode-extensions client
 ```
 
-Now, switch to _debug_ view, choose `Server + Client` option and press _F5_.
+Now, switch to _debug_ view (_Ctrl-Shift-D_), choose `Server + Client` option
+and press _F5_.
 
 A new VS Code window should be opened in [examples](./examples) directory.
 
