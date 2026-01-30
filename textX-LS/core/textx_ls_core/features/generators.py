@@ -23,7 +23,7 @@ def generate_extension(target: str, dest_dir: str, **cmd_args: Optional[dict]) -
     """
     try:
         extension_gen = generator_for_language_target("textX", target)
-        extension_gen(None, None, dest_dir, **cmd_args)
+        extension_gen(None, None, dest_dir, True, False, **cmd_args)
     except Exception as e:
         raise GenerateExtensionError(target, cmd_args) from e
 
