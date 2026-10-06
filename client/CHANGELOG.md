@@ -5,12 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][keepachangelog],
 and this project adheres to [Semantic Versioning][semver].
 
-## [0.3.1]
+## [0.3.1] (released 11/19/2025)
 
 ### Fixed
 - Support Python older than 3.11
 
-## [0.3.0] (released 2025-05-09)
+## [0.3.0] (released 11/19/2025)
 
 ### Added
 - dev: debug adapter and protocol
@@ -36,7 +36,20 @@ and this project adheres to [Semantic Versioning][semver].
 - race condition on activation
 - better error reporting on installation failure and other errors
 
-## [0.1.2] (released 12/30/2019)
+## [0.2.0] (released 10/14/2024)
+
+### Changed
+- Upgrade textx-ls-core and textx-ls-server:
+  - increase versions of all dependencies
+  - use textX 4.0.1
+  - use pygls 1.3.1
+  - use python version 3.12 (minumum 3.8)
+- Add options to run textx-ls-server in ws and pyodide mode
+- Upgrade VS Code extension
+
+[#69]: https://github.com/textX/textX-LS/pull/69
+
+## [0.1.2] (released 1/3/2020)
 
 ### Fixed
 
@@ -48,6 +61,13 @@ and this project adheres to [Semantic Versioning][semver].
 
 ## [0.1.1] (released 12/29/2019)
 
+### Added
+
+- Implement a mechanism to install/uninstall textX language project ([#18])
+- Generate and install VS Code extension for installed language project ([#18])
+- Add custom activity bar with registered languages and generator ([#18])
+- Use webpack to optimize VS Code extension ([#16])
+
 ### Changed
 
 - Read python path from input-box if not found automatically ([#23])
@@ -57,16 +77,6 @@ and this project adheres to [Semantic Versioning][semver].
 - Various fixes for windows platform ([#23])
 
 [#23]: https://github.com/textX/textX-LS/pull/23
-
-## [0.1.0] (released 10/22/2019)
-
-### Added
-
-- Implement a mechanism to install/uninstall textX language project ([#18])
-- Generate and install VS Code extension for installed language project ([#18])
-- Add custom activity bar with registered languages and generator ([#18])
-- Use webpack to optimize VS Code extension ([#16])
-
 [#18]: https://github.com/textX/textX-LS/pull/18
 [#16]: https://github.com/textX/textX-LS/pull/16/
 [keepachangelog]: https://keepachangelog.com/en/1.0.0/

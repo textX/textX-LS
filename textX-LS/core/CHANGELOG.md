@@ -5,12 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][keepachangelog],
 and this project adheres to [Semantic Versioning][semver].
 
-## [0.3.1]
-
-### Fixed
-- Support Python older than 3.11
-
-## [0.3.0] (released 2025-05-09)
+## [0.3.0] (released 11/20/2025)
 
 ### Added
 - dev: debug adapter and protocol
@@ -35,16 +30,18 @@ and this project adheres to [Semantic Versioning][semver].
 - added lsprotocol server dependency
 - race condition on activation
 - better error reporting on installation failure and other errors
+- support Python older than 3.11
 
-## [0.1.2] (released 12/30/2019)
+## [0.2.0] (released 10/14/2024)
 
-### Fixed
-
-- Pass project root when loading models ([#37])
-- Prevent server idle state on windows ([#26])
-
-[#37]: https://github.com/textX/textX-LS/pull/37
-[#26]: https://github.com/textX/textX-LS/pull/26
+### Changed
+- Upgrade textx-ls-core and textx-ls-server:
+  - increase versions of all dependencies
+  - use textX 4.0.1
+  - use pygls 1.3.1
+  - use python version 3.12 (minumum 3.8)
+- Add options to run textx-ls-server in ws and pyodide mode
+- Upgrade VS Code extension
 
 ## [0.1.1] (released 12/29/2019)
 
