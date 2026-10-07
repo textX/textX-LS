@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning][semver].
 - race condition on activation
 - better error reporting on installation failure and other errors
 
-## [0.1.2] (released 12/30/2019)
+## [0.1.2] (released 2019-12-30)
 
 ### Fixed
 
@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning][semver].
 [#37]: https://github.com/textX/textX-LS/pull/37
 [#26]: https://github.com/textX/textX-LS/pull/26
 
-## [0.1.1] (released 12/29/2019)
+## [0.1.1] (released 2019-12-29)
 
 ### Changed
 
@@ -58,7 +58,7 @@ and this project adheres to [Semantic Versioning][semver].
 
 [#23]: https://github.com/textX/textX-LS/pull/23
 
-## [0.1.0] (released 10/22/2019)
+## [0.1.0] (released 2019-10-22)
 
 ### Added
 
