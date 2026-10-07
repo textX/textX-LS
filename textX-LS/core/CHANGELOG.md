@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][keepachangelog],
 and this project adheres to [Semantic Versioning][semver].
 
+## [0.3.2]
+
+### Fixed
+- Generating a VS Code extension passed the wrong arguments to `textx-gen-vscode`.
+
 ## [0.3.1]
 
 ### Fixed

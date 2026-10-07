@@ -1,7 +1,7 @@
 import { existsSync } from "fs";
 import { join } from "path";
 import { ExtensionContext, ProgressLocation, window, extensions } from "vscode";
-import { LS_WHEELS_DIR, TEXTX_LS_SERVER } from "./constants";
+import { LS_WHEELS_DIR, TEXTX_LS_CORE, TEXTX_LS_SERVER } from "./constants";
 import { execAsync, readdirAsync } from "./utils";
 
 async function checkPythonVersion(python: string): Promise<boolean> {
@@ -120,6 +120,73 @@ export async function getEditablePackageName(projectPath: string): Promise<strin
   }
 }
 
+function isNewerVersion(candidate: number[], installed: number[]): boolean {
+  for (let i = 0; i < 3; i++) {
+    if (candidate[i] !== installed[i]) {
+      return candidate[i] > installed[i];
+    }
+  }
+  return false;
+}
+
+async function findBundledWheel(
+  wheelsPath: string,
+  distribution: string,
+): Promise<{ file: string; version: number[] } | null> {
+  if (!existsSync(wheelsPath)) {
+    return null;
+  }
+  const files = await readdirAsync(wheelsPath);
+  const prefix = `${distribution}-`;
+  const wheel = files.find((file) => file.startsWith(prefix) && file.endsWith(".whl"));
+  if (!wheel) {
+    return null;
+  }
+  const version = wheel.slice(prefix.length).split("-")[0]
+    .split(".")
+    .map((part) => Number.parseInt(part, 10));
+  if (version.length !== 3 || version.some((part) => Number.isNaN(part))) {
+    return null;
+  }
+  return { file: wheel, version };
+}
+
+async function bundledWheelIfNewer(
+  python: string,
+  wheelsPath: string,
+  distribution: string,
+): Promise<{ file: string; version: number[] } | null> {
+  const bundled = await findBundledWheel(wheelsPath, distribution);
+  if (!bundled) {
+    return null;
+  }
+  const installed = await getPackageVersion(python, distribution);
+  if (installed && !isNewerVersion(bundled.version, installed)) {
+    return null;
+  }
+  return bundled;
+}
+
+async function upgradeBundledWheelsIfNewer(python: string, wheelsPath: string): Promise<void> {
+  const core = await bundledWheelIfNewer(python, wheelsPath, TEXTX_LS_CORE);
+  const server = await bundledWheelIfNewer(python, wheelsPath, TEXTX_LS_SERVER);
+  if (!core && !server) {
+    return;
+  }
+
+  await window.withProgress({
+    location: ProgressLocation.Notification,
+  }, async (progress) => {
+    progress.report({ message: "Updating textX language server..." });
+    if (core) {
+      await execAsync(`${python} -m pip install --upgrade ${core.file}[vscode]`, { cwd: wheelsPath });
+    }
+    if (server) {
+      await execAsync(`${python} -m pip install --upgrade ${server.file}`, { cwd: wheelsPath });
+    }
+  });
+}
+
 async function installAllWheelsFromDirectory(python: string, cwd: string) {
   // install wheels
   const files = await readdirAsync(cwd);
@@ -138,7 +205,8 @@ export async function installLSWithProgress(context: ExtensionContext): Promise<
   const isServerPackageInstalled = !!(await getPackageVersion(python, TEXTX_LS_SERVER));
 
   if (isServerPackageInstalled) {
-    return Promise.resolve(python);
+    await upgradeBundledWheelsIfNewer(python, join(context.extensionPath, LS_WHEELS_DIR));
+    return python;
   }
 
   // Install with progress bar
