@@ -5,12 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][keepachangelog],
 and this project adheres to [Semantic Versioning][semver].
 
+## [0.3.2]
+
+### Fixed
+- Generating a VS Code extension passed the wrong arguments to `textx-gen-vscode`.
+
 ## [0.3.1]
 
 ### Fixed
 - Support Python older than 3.11
 
-## [0.3.0] (released 2025-05-09)
+## [0.3.0] (released 2025-11-20)
 
 ### Added
 - dev: debug adapter and protocol
@@ -36,17 +41,20 @@ and this project adheres to [Semantic Versioning][semver].
 - race condition on activation
 - better error reporting on installation failure and other errors
 
-## [0.1.2] (released 12/30/2019)
+## [0.2.0] (released 2024-10-14)
+
+### Changed
+- Require textX 4.0.1 and Python 3.8 ([#69])
+- Drop the click dependency
+- Read project metadata from setup.cfg as well as setup.py
 
 ### Fixed
-
 - Pass project root when loading models ([#37])
-- Prevent server idle state on windows ([#26])
 
+[#69]: https://github.com/textX/textX-LS/pull/69
 [#37]: https://github.com/textX/textX-LS/pull/37
-[#26]: https://github.com/textX/textX-LS/pull/26
 
-## [0.1.1] (released 12/29/2019)
+## [0.1.1] (released 2019-12-29)
 
 ### Changed
 
@@ -58,7 +66,7 @@ and this project adheres to [Semantic Versioning][semver].
 
 [#23]: https://github.com/textX/textX-LS/pull/23
 
-## [0.1.0] (released 10/22/2019)
+## [0.1.0] (released 2019-10-22)
 
 ### Added
 

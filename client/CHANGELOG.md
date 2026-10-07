@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][keepachangelog],
 and this project adheres to [Semantic Versioning][semver].
 
+## [0.3.2]
+
+### Fixed
+- Generating a VS Code extension passed the wrong arguments to `textx-gen-vscode`.
+- Upgrade an already installed textX core or language server when the extension ships a newer wheel.
+
 ## [0.3.1]
 
 ### Fixed
@@ -36,7 +42,7 @@ and this project adheres to [Semantic Versioning][semver].
 - race condition on activation
 - better error reporting on installation failure and other errors
 
-## [0.1.2] (released 12/30/2019)
+## [0.1.2] (released 2019-12-30)
 
 ### Fixed
 
@@ -46,7 +52,7 @@ and this project adheres to [Semantic Versioning][semver].
 [#37]: https://github.com/textX/textX-LS/pull/37
 [#26]: https://github.com/textX/textX-LS/pull/26
 
-## [0.1.1] (released 12/29/2019)
+## [0.1.1] (released 2019-12-29)
 
 ### Changed
 
@@ -58,7 +64,7 @@ and this project adheres to [Semantic Versioning][semver].
 
 [#23]: https://github.com/textX/textX-LS/pull/23
 
-## [0.1.0] (released 10/22/2019)
+## [0.1.0] (released 2019-10-22)
 
 ### Added
 
